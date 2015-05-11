@@ -109,7 +109,7 @@ $(TARGET).elf : $(OBJS)
 .PHONY: clean
 # Erase all hex, map, object, and elf files.
 clean :
-	$(RM) *.hex *.map *.o *.elf *.dep *.dis       
+	$(RM) *.hex *.map *.o *.elf *.dep *.dis *~
 
 .PHONY: write
 # After making, call the NU32utility to program via bootloader.
