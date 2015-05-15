@@ -1,6 +1,7 @@
 #include "NU32.h"
 #include "adc.h"
 #include "utils.h"
+#include "i2c_master_int.h"
 #include <i2c/plib_i2c.h>
 
 
@@ -270,36 +271,28 @@ uint8_t receive_single_register(uint8_t reg_addr)
 
 int init_adc()
 {
-	// General I2C options.
-	//PLIB_I2C_SlaveClockStretchingEnable(ADC_I2C_BUS);
-	//PLIB_I2C_SMBDisable(ADC_I2C_BUS);
-	//PLIB_I2C_HighFrequencyDisable(ADC_I2C_BUS);
-	//PLIB_I2C_ReservedAddressProtectEnable(ADC_I2C_BUS);
-
-	PLIB_I2C_BaudRateSet(ADC_I2C_BUS, NU32_SYS_FREQ, ADC_I2C_BAUD);
-
-	PLIB_I2C_Enable(ADC_I2C_BUS);
-
+	i2c_master_setup();
+	
 
 	// --- Initialize The ADC --- //
 
-	transmit_single_register(PU_CTRL_ADDR, 0x01);
-	transmit_single_register(PU_CTRL_ADDR, 0x02);
+	i2c_write_byte(PU_CTRL_ADDR, 0x01);
+	i2c_write_byte(PU_CTRL_ADDR, 0x02);
 	
 	// The documentation says to wait about 200 microseconds, but we will wait for 400
 	// just to be safe.
 	wait_usec(400);
 
 	// Check the PUR bit
-	uint8_t reg00 = receive_single_register(0x00);
-	return reg00;
-	if( !(reg00 & 0x08) )
+	unsigned char readMe = 0;
+	i2c_write_read(PU_CTRL_ADDR, NULL, 0, &readMe, 1);
+	if( !(readMe & 0x08) )
 		return -1;
 
 	// It is powered up and ready.  Now do the rest of the initialization.
-	transmit_single_register(PU_CTRL_ADDR, 0x3E);
-	transmit_single_register(CTRL2_ADDR, 0x30);
-	transmit_single_register(ADC_REGISTERS_ADDR, 0x30);
+	i2c_write_byte(PU_CTRL_ADDR, 0x3E);
+	/* i2c_write_byte(CTRL2_ADDR, 0x30); */
+	/* i2c_write_byte(ADC_REGISTERS_ADDR, 0x30); */
 
 
 	// --- Initialize Notification Pin --- //
@@ -314,3 +307,7 @@ int init_adc()
 }
 
 
+int check_data_available()
+{
+	//i2c_write_read(PU_CTRL_ADDR, 
+}
