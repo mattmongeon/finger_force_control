@@ -1,135 +1,316 @@
 #include "NU32.h"
-#include "i2c.h"
+#include "adc.h"
+#include "utils.h"
+#include <i2c/plib_i2c.h>
 
 
-static volatile enum {IDLE, START, WRITE, READ,RESTART,ACK,NACK, STOP, ERROR} state = IDLE;   // keeps track of the current i2c state
+#define ADC_ADDRESS   (0x2A << 1)  // Shift left because of the R/W bit
+#define ADC_I2C_BUS   I2C_ID_1
+#define ADC_I2C_BAUD  50000
 
-static buffer_t to_write = 0;  // data to write
-static buffer_t  to_read = 0;  // data to read
-static volatile unsigned char address = 0;                     // the 7-bit address to write to / read from
-static volatile unsigned int n_write = 0;                          // number of data bytes to write
-static volatile unsigned int n_read = 0;                           // number of data bytes to read
+#define PU_CTRL_ADDR  0x00
+#define CTRL2_ADDR    0x02
+#define ADC_REGISTERS_ADDR 0x15
 
 
-void __ISR(_I2C_1_VECTOR, IPL1SOFT) I2C1SlaveInterrupt(void)
+volatile int adc_data_ready = 0;
+
+
+void __ISR(_EXTERNAL_2_VECTOR, IPL5SOFT) adc_auto_read()
 {
-	static unsigned int write_index = 0, read_index = 0;   // indexes into the read/write arrays
+	// PORTEbits.RE9
+    // Read from the ADC
+	if( PORTEbits.RE9 )
+		adc_data_ready = 1;
 
-	switch(state) {
-    case START:                                 // start bit has been sent
-		write_index = 0;                          // reset indices
-		read_index = 0;
-		if(n_write > 0)
-		{                        // there are bytes to write
-			state = WRITE;                         // transition to write mode
-			I2C1TRN = address << 1;                // send the address, with write mode set
-		}
-		else
-		{
-			state = ACK;                           // skip directly to reading
-			I2C1TRN = (address << 1) & 1;
-		}
-      
-		break;
-		
-    case WRITE:                                 // a write has finished
-		if(I2C1STATbits.ACKSTAT)
-		{                // did not receive a nack from the slave, this is an error
-			state = ERROR;
-		}
-		else
-		{        
-			if(write_index < n_write)
-			{             // still more data to write
-				I2C1TRN = to_write[write_index];      // write the data
-				++write_index;
-			}
-			else
-			{                                // done writing data, time to read or stop
-				if(n_read > 0)
-				{                      // we want to read so issue a restart
-					state = RESTART;         
-					I2C1CONbits.RSEN = 1;               // send the restart to begin the read
-				}
-				else
-				{                                // no data to read, issue a stop
-					state = STOP;
-					I2C1CONbits.PEN = 1;
-				}
-			}
-		}
-		break;
-		
-    case RESTART: // the restart has completed
-		// now we want to read, send the read address
-		state = ACK;                  // when interrupted in ACK mode, we will initiate reading a byte
-		I2C1TRN = (address << 1) | 1; // the address is sent with the read bit sent
-		break;
-		
-    case READ:
-		to_read[read_index] = I2C1RCV;
-		++read_index;
-		if(read_index == n_read)
-		{ // we are done reading, so send a nack
-			state = NACK;
-			I2C1CONbits.ACKDT = 1;
-		}
-		else
-		{
-			state = ACK;
-			I2C1CONbits.ACKDT = 0;
-		}
-		I2C1CONbits.ACKEN = 1;
-		break;
-		
-    case ACK:  // just sent an ack meaning we want to read more bytes
-		state = READ;
-		I2C1CONbits.RCEN = 1;
-		break;
-		
-    case NACK:  //issue a stop
-		state = STOP;
-		I2C1CONbits.PEN = 1;
-		break;
-		
-    case STOP:
-		state = IDLE; // we have returned to idle mode, indicating that the data is ready
-		break;
-		
-    default:
-		// some error has occurred
-		state = ERROR;
+    IFS0CLR = 0x800;
+}
+
+
+void master_start()
+{
+	while( PLIB_I2C_ReceiverOverflowHasOccurred(ADC_I2C_BUS) )
+	{
+		PLIB_I2C_ReceiverOverflowClear(ADC_I2C_BUS);
+	}
+
+	while( PLIB_I2C_TransmitterOverflowHasOccurred(ADC_I2C_BUS) )
+	{
+		PLIB_I2C_TransmitterOverflowClear(ADC_I2C_BUS);
+	}
+
+	while( PLIB_I2C_ArbitrationLossHasOccurred(ADC_I2C_BUS) )
+	{
+		;
 	}
 	
-	IFS1bits.I2C1MIF = 0;       //clear the interrupt flag
+	PLIB_I2C_MasterStart(ADC_I2C_BUS);
+
+	while(!PLIB_I2C_StartWasDetected(ADC_I2C_BUS))
+	{
+		;
+	}
 }
 
 
-void i2c_setup()
+void master_restart()
 {
-	I2C1BRG = 90;                       // I2CBRG = [1/(2*Fsck) - PGD]*Pblck - 2
-	                                    // Fsck is the frequency (usually 100khz or 400 khz), PGD = 104ns
-                                        // this is 400 khz mode
-                                        // enable the i2c interrupts
-	IPC8bits.I2C1IP  = 1;            // master has interrupt priority 1
-	IEC1bits.I2C1MIE = 1;            // master interrupt is enabled
-	IFS1bits.I2C1MIF = 0;            // clear the interrupt flag
-	I2C1CONbits.ON = 1;                 // turn on the I2C2 module
+	while( PLIB_I2C_ReceiverOverflowHasOccurred(ADC_I2C_BUS) )
+	{
+		PLIB_I2C_ReceiverOverflowClear(ADC_I2C_BUS);
+	}
+
+	while( PLIB_I2C_TransmitterOverflowHasOccurred(ADC_I2C_BUS) )
+	{
+		PLIB_I2C_TransmitterOverflowClear(ADC_I2C_BUS);
+	}
+
+	while( PLIB_I2C_ArbitrationLossHasOccurred(ADC_I2C_BUS) )
+	{
+		;
+	}
+	
+	PLIB_I2C_MasterStartRepeat(ADC_I2C_BUS);
 }
 
 
-// initiate an i2c write read operation at the given address. You can optionally only read or only write by passing zero lengths for the reading or writing
-// this will not return until the transaction is complete.  returns false on error
-int i2c_write_read(unsigned int addr, const buffer_t write, unsigned int wlen, const buffer_t read, unsigned int rlen )
+void transmit_byte(uint8_t byte)
 {
-	n_write = wlen;
-	n_read = rlen;
-	to_write = write;
-	to_read = read;
-	address = addr;
-	state = START;
-	I2C1CONbits.SEN = 1;        // initialize the start
-	while(state != IDLE && state != ERROR) { ; }  // initialize the sequence
-	return state != ERROR;
+	while( PLIB_I2C_ReceiverOverflowHasOccurred(ADC_I2C_BUS) )
+	{
+		PLIB_I2C_ReceiverOverflowClear(ADC_I2C_BUS);
+	}
+
+	while( PLIB_I2C_TransmitterOverflowHasOccurred(ADC_I2C_BUS) )
+	{
+		PLIB_I2C_TransmitterOverflowClear(ADC_I2C_BUS);
+	}
+
+	PLIB_I2C_TransmitterByteSend(ADC_I2C_BUS, byte);
+
+	while( !PLIB_I2C_TransmitterByteHasCompleted(ADC_I2C_BUS) && PLIB_I2C_TransmitterIsBusy(ADC_I2C_BUS) )
+	{
+		;
+	}
+
+	while( !PLIB_I2C_TransmitterByteWasAcknowledged(ADC_I2C_BUS) )
+	{
+		;
+	}
 }
+
+
+uint8_t read_one_byte()
+{
+    while( PLIB_I2C_ReceiverOverflowHasOccurred(ADC_I2C_BUS) )
+    {
+        PLIB_I2C_ReceiverOverflowClear(ADC_I2C_BUS);
+    }
+	
+    PLIB_I2C_MasterReceiverClock1Byte(ADC_I2C_BUS);
+
+	while( !PLIB_I2C_ReceivedByteIsAvailable(ADC_I2C_BUS) )
+	{
+		;
+	}
+
+	uint8_t byte = PLIB_I2C_ReceivedByteGet(ADC_I2C_BUS);
+
+    while( !PLIB_I2C_MasterReceiverReadyToAcknowledge(ADC_I2C_BUS) )
+    {
+		;
+    }
+
+	// Send NACK
+	PLIB_I2C_ReceivedByteAcknowledge(ADC_I2C_BUS, false);
+	while(!PLIB_I2C_ReceiverByteAcknowledgeHasCompleted(ADC_I2C_BUS))
+	{
+		;
+	}
+
+	return byte;
+}
+
+
+void stop_transmission()
+{
+	while(!PLIB_I2C_BusIsIdle(ADC_I2C_BUS))
+	{
+		;
+	}
+
+	while(PLIB_I2C_TransmitterOverflowHasOccurred(ADC_I2C_BUS))
+	{
+		PLIB_I2C_TransmitterOverflowClear(ADC_I2C_BUS);
+	}
+
+	PLIB_I2C_MasterStop(ADC_I2C_BUS);
+
+	while(!PLIB_I2C_StopWasDetected(ADC_I2C_BUS))
+	{
+		;
+	}
+}
+
+
+void transmit_single_register(uint8_t reg_addr, uint8_t data)
+{
+	while( !PLIB_I2C_BusIsIdle(ADC_I2C_BUS) )
+	{
+		;
+	}
+
+
+	// --- Start Master Transmit --- //
+	
+	master_start();
+
+
+	// --- Send Address Byte --- //
+
+	transmit_byte(ADC_ADDRESS);
+
+
+	// --- Transmit Configuration Data --- //
+
+	// First the register address
+	transmit_byte(reg_addr);
+
+	// Now the data
+	transmit_byte(data);
+
+	// --- Stop Transmission --- //
+
+	stop_transmission();
+}
+
+
+void transmit_burst_data( uint8_t start_reg_addr, uint8_t* pBuffer, int num_bytes )
+{
+	while( !PLIB_I2C_BusIsIdle(ADC_I2C_BUS) )
+	{
+		;
+	}
+
+
+	// --- Start Master Transmit --- //
+	
+	master_start();
+
+
+	// --- Send Address Byte --- //
+
+	transmit_byte(ADC_ADDRESS);
+
+
+	// --- Transmit Configuration Data --- //
+
+	// First the register address
+	transmit_byte(start_reg_addr);
+
+	// Now the data buffer
+	int i = 0;
+	while( i < num_bytes )
+	{
+		transmit_byte(pBuffer[i]);
+		++i;
+	}
+
+	// --- Stop Transmission --- //
+
+	stop_transmission();
+}
+
+
+uint8_t receive_single_register(uint8_t reg_addr)
+{
+	while( !PLIB_I2C_BusIsIdle(ADC_I2C_BUS) )
+	{
+		;
+	}
+
+
+	// --- Start Master Transmit --- //
+	
+	master_start();
+
+
+	// --- Send Address Byte --- //
+
+	transmit_byte(ADC_ADDRESS);
+
+
+	// --- Specify Register --- //
+
+	transmit_byte(reg_addr);
+
+
+	// --- Redo Start --- //
+
+	master_restart();
+
+
+	// --- Send Address With R Bit --- //
+
+	transmit_byte(ADC_ADDRESS | 0x01);
+
+
+	// --- Receive Data --- //
+
+	uint8_t byte = read_one_byte();
+
+	
+	// --- Stop Transmission --- //
+
+	stop_transmission();
+
+	return byte;
+}
+
+
+int init_adc()
+{
+	// General I2C options.
+	//PLIB_I2C_SlaveClockStretchingEnable(ADC_I2C_BUS);
+	//PLIB_I2C_SMBDisable(ADC_I2C_BUS);
+	//PLIB_I2C_HighFrequencyDisable(ADC_I2C_BUS);
+	//PLIB_I2C_ReservedAddressProtectEnable(ADC_I2C_BUS);
+
+	PLIB_I2C_BaudRateSet(ADC_I2C_BUS, NU32_SYS_FREQ, ADC_I2C_BAUD);
+
+	PLIB_I2C_Enable(ADC_I2C_BUS);
+
+
+	// --- Initialize The ADC --- //
+
+	transmit_single_register(PU_CTRL_ADDR, 0x01);
+	transmit_single_register(PU_CTRL_ADDR, 0x02);
+	
+	// The documentation says to wait about 200 microseconds, but we will wait for 400
+	// just to be safe.
+	wait_usec(400);
+
+	// Check the PUR bit
+	uint8_t reg00 = receive_single_register(0x00);
+	return reg00;
+	if( !(reg00 & 0x08) )
+		return -1;
+
+	// It is powered up and ready.  Now do the rest of the initialization.
+	transmit_single_register(PU_CTRL_ADDR, 0x3E);
+	transmit_single_register(CTRL2_ADDR, 0x30);
+	transmit_single_register(ADC_REGISTERS_ADDR, 0x30);
+
+
+	// --- Initialize Notification Pin --- //
+	
+	// Take in the notification pin
+	INTCONSET = 0x4;       // step 3: INT2 triggers on rising edge
+	IPC2SET = 0x17 << 24;  // step 4: Set priority to 5, subpriority to 3
+	IFS0CLR = 0x800;       // step 5: clear the interrupt flag.
+	IEC0SET = 0x800;       // step 6: enable INT2 interrupt
+	
+	return 0;
+}
+
 
