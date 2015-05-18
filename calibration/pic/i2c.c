@@ -1,6 +1,8 @@
 #include "i2c.h"
 #include "NU32.h"
 
+// Based on Nick Marchuk's code at https://code.google.com/p/nu32-pic32/wiki/13I2Cloopback
+
 
 //Turn on I2C Module and calibrate for standard operation.
 void i2c_initialize(int baudrate)

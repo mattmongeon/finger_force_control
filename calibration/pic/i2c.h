@@ -2,6 +2,9 @@
 #define INCLUDED_I2C_H
 
 
+// Based on Nick Marchuk's code at https://code.google.com/p/nu32-pic32/wiki/13I2Cloopback
+
+
 void i2c_initialize(int baudrate);
 void i2c_write(char deviceaddress, char registeraddress, char value);
 char i2c_readonebyte(int ack);
