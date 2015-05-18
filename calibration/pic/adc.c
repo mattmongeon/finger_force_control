@@ -5,13 +5,15 @@
 #include <i2c/plib_i2c.h>
 
 
-#define ADC_ADDRESS   (0x2A << 1)  // Shift left because of the R/W bit
+#define ADC_ADDRESS   0x2A
 #define ADC_I2C_BUS   I2C_ID_1
 #define ADC_I2C_BAUD  50000
 
 #define PU_CTRL_ADDR  0x00
 #define CTRL2_ADDR    0x02
 #define ADC_REGISTERS_ADDR 0x15
+#define I2C_CONTROL_ADDR 0x11
+#define ADCO_B2_ADDR  0x12
 
 
 volatile int adc_data_ready = 0;
@@ -271,6 +273,17 @@ uint8_t receive_single_register(uint8_t reg_addr)
 
 int init_adc()
 {
+	// --- Initialize Notification Pin --- //
+	
+	// Take in the notification pin
+	INTCONSET = 0x4;       // step 3: INT2 triggers on rising edge
+	IPC2SET = 0x17 << 24;  // step 4: Set priority to 5, subpriority to 3
+	IFS0CLR = 0x800;       // step 5: clear the interrupt flag.
+	IEC0SET = 0x800;       // step 6: enable INT2 interrupt
+	
+
+	// --- Initialize I2C --- //
+	
 	i2c_master_setup();
 	
 
@@ -291,23 +304,30 @@ int init_adc()
 
 	// It is powered up and ready.  Now do the rest of the initialization.
 	i2c_write_byte(PU_CTRL_ADDR, 0x3E);
+	// i2c_write_byte(I2C_CONTROL_ADDR, 0x80);
 	/* i2c_write_byte(CTRL2_ADDR, 0x30); */
 	/* i2c_write_byte(ADC_REGISTERS_ADDR, 0x30); */
 
-
-	// --- Initialize Notification Pin --- //
-	
-	// Take in the notification pin
-	INTCONSET = 0x4;       // step 3: INT2 triggers on rising edge
-	IPC2SET = 0x17 << 24;  // step 4: Set priority to 5, subpriority to 3
-	IFS0CLR = 0x800;       // step 5: clear the interrupt flag.
-	IEC0SET = 0x800;       // step 6: enable INT2 interrupt
-	
 	return 0;
 }
 
 
 int check_data_available()
 {
-	//i2c_write_read(PU_CTRL_ADDR, 
+	unsigned char reg = 0;
+	i2c_write_read(PU_CTRL_ADDR, NULL, 0, &reg, 1);
+	return (reg & 0x20);
+}
+
+
+unsigned int read_adc()
+{
+	unsigned char regs[3];
+	i2c_write_read(ADCO_B2_ADDR, NULL, 0, regs, 3);
+
+	unsigned int retVal = (unsigned int)(regs[2]);
+	retVal += ((unsigned int)(regs[1])) << 8;
+	retVal += ((unsigned int)(regs[0])) << 16;
+	
+	return retVal;
 }
