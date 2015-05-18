@@ -24,12 +24,16 @@ int main()
 	int init_retVal = init_adc();
 
 	__builtin_disable_interrupts();
+	
 	LCD_Setup();
+	isense_init();
+	motor_init();
+	
 	__builtin_enable_interrupts();
 
 
 	LCD_Clear();
-	LCD_WriteString("LCD ready!");
+	LCD_WriteString("Initialized!");
 
 	wait_usec(500000);
 

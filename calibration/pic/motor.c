@@ -1,5 +1,5 @@
 #include "motor.h"
-#include "utilities.h"
+#include "utils.h"
 #include "isense.h"
 #include "NU32.h"
 
@@ -11,6 +11,8 @@
 
 
 // --- Protected Variables --- //
+
+static volatile state_t state = IDLE;
 
 static volatile int current_ref_mA = 0;
 
@@ -28,7 +30,7 @@ typedef enum
 static volatile enumDirection motorDirection = CLOCKWISE;
 
 
-static int control_loop(int current_sensor_mA, control_data* d)
+static int control_loop(int current_sensor_mA)
 {
 	int error = current_ref_mA - current_sensor_mA;
 
@@ -50,15 +52,6 @@ static int control_loop(int current_sensor_mA, control_data* d)
 
 	motor_pwm_set(u_new);
 
-	if( d != 0 )
-	{
-		d->u = u_new;
-		d->error = error;
-		d->error_int = error_int;
-		d->kp_term = kp*error;
-		d->ki_term = ki*error_int;
-	}
-
 	return u_new;
 }
 
@@ -69,7 +62,7 @@ void __ISR(_TIMER_2_VECTOR, IPL5SOFT) current_controller()
 	
 	// --- State Machine --- //
 
-	switch(util_state_get())
+	switch(motor_state_get())
 	{
 	case IDLE:
 		error_int = 0;
@@ -88,28 +81,27 @@ void __ISR(_TIMER_2_VECTOR, IPL5SOFT) current_controller()
 	{
 		// --- Update the Tuning Reference --- //
 
-		control_data d;
+		int reference = 0;
 		if( square_wave_timer < 25 )
 		{
-			d.reference = -100;
+			reference = -100;
 		}
 		else if( square_wave_timer < 50 )
 		{
-			d.reference = 100;
+			reference = 100;
 		}
 
-		motor_mA_set(d.reference);
+		motor_mA_set(reference);
 
 
 		// --- Run the Control Loop --- //
 		
-		d.sensor = isense_mA();
-		d.u = control_loop(d.sensor, &d);
+	    int sensor = isense_mA();
+		int u = control_loop(sensor);
 
 
 		// --- Write Data To Matlab --- //
 		
-		util_buffer_write(d);
 		++square_wave_timer;
 		square_wave_timer %= 50;
 		
@@ -120,7 +112,7 @@ void __ISR(_TIMER_2_VECTOR, IPL5SOFT) current_controller()
 		square_wave_timer = 0;
 		
 		// follow the current reference set by motor_amps_set
-		control_loop(isense_mA(), 0);
+		control_loop(isense_mA());
 		
 		break;
 
@@ -198,7 +190,7 @@ void motor_duty_cycle_pct_set(int duty_pct)
 
 void motor_pwm_set(int pwm_new)
 {
-	if( util_state_get() != IDLE )
+	if( motor_state_get() != IDLE )
 	{
 		int motorPWM = pwm_new;
 		if( motorPWM >= 0 )
@@ -263,3 +255,19 @@ void motor_gains_write()
 	sprintf(buffer, "%f %f\r\n", kp, ki);
 	NU32_WriteUART1(buffer);
 }
+
+state_t motor_state_get()
+{
+	return state;
+}
+
+void motor_state_set(state_t s)
+{
+	__builtin_disable_interrupts();
+
+	state = s;
+
+	__builtin_enable_interrupts();
+}
+
+
