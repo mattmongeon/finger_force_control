@@ -323,17 +323,9 @@ int check_data_available()
 
 int read_adc(char writeaddress)
 {
-    char readaddress = writeaddress + 0x01;
-
-    i2c_startevent();
-	i2c_sendonebyte(writeaddress);
-	i2c_sendonebyte(ADCO_B2_ADDR);
-
-    i2c_repeatstartevent();
-	i2c_sendonebyte(readaddress);
-	char value1 = i2c_readonebyte(1);
-	char value2 = i2c_readonebyte(1);
-	char value3 = i2c_readonebyte(0);
-	i2c_stopevent();
-    return (value1<<16) + (value2<<8) + (value3);
+	char value1 = 0, value2 = 0, value3 = 0;
+	i2c_read(ADC_ADDRESS, ADCO_B2_ADDR, &value1);
+	i2c_read(ADC_ADDRESS, ADCO_B2_ADDR + 1, &value2);
+	i2c_read(ADC_ADDRESS, ADCO_B2_ADDR + 2, &value3);
+	return (value1<<16) + (value2<<8) + (value3);
 }

@@ -52,9 +52,10 @@ int main()
 		else if( adc_data_ready )
 		{
 			int adc = read_adc();
-			//wait_usec(100000);
-			NU32_LED1 = 1;
-			NU32_LED2 = 1;
+			NU32_LED1 = !NU32_LED1;
+			NU32_LED2 = !NU32_LED2;
+			adc_data_ready = 0;
+			wait_usec(100000);
 		}
 		
 		
