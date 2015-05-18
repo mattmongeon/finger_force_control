@@ -16,13 +16,23 @@ int main()
 	
 	wait_usec(500000);
 
-	NU32_LED1 = 0;
+	NU32_LED1 = 1;
 	NU32_LED2 = 0;
 
 	
 	int init_retVal = init_adc();
 	
 
+	wait_usec(500000);
+
+
+	NU32_LED1 = 0;
+	NU32_LED2 = 0;
+
+
+	wait_usec(500000);
+	
+	
 	int errorLEDs = (init_retVal != 0);
 	NU32_LED1 = 0;
 	NU32_LED2 = (errorLEDs != 0);
@@ -39,13 +49,12 @@ int main()
 			NU32_LED1 = !NU32_LED1;
 			NU32_LED2 = !NU32_LED2;
 		}
-
-		if( check_data_available() )
+		else if( adc_data_ready )
 		{
 			int adc = read_adc();
-			wait_usec(100000);
-			NU32_LED1 = adc & 0x1;
-			NU32_LED2 = adc & 0x2;
+			//wait_usec(100000);
+			NU32_LED1 = 1;
+			NU32_LED2 = 1;
 		}
 		
 		
