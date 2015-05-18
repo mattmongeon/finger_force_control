@@ -2,10 +2,11 @@
 #include "adc.h"
 #include "utils.h"
 #include "i2c_master_int.h"
+#include "i2c.h"
 #include <i2c/plib_i2c.h>
 
 
-#define ADC_ADDRESS   0x2A
+#define ADC_ADDRESS   (0x2A << 1)
 #define ADC_I2C_BUS   I2C_ID_1
 #define ADC_I2C_BAUD  50000
 
@@ -284,13 +285,13 @@ int init_adc()
 
 	// --- Initialize I2C --- //
 	
-	i2c_master_setup();
+	i2c_initialize(90);
 	
 
 	// --- Initialize The ADC --- //
 
-	i2c_write_byte(PU_CTRL_ADDR, 0x01);
-	i2c_write_byte(PU_CTRL_ADDR, 0x02);
+	i2c_write(ADC_ADDRESS, PU_CTRL_ADDR, 0x01);
+	i2c_write(ADC_ADDRESS, PU_CTRL_ADDR, 0x02);
 	
 	// The documentation says to wait about 200 microseconds, but we will wait for 400
 	// just to be safe.
@@ -298,12 +299,12 @@ int init_adc()
 
 	// Check the PUR bit
 	unsigned char readMe = 0;
-	i2c_write_read(PU_CTRL_ADDR, NULL, 0, &readMe, 1);
+	i2c_read(ADC_ADDRESS, PU_CTRL_ADDR, &readMe);
 	if( !(readMe & 0x08) )
 		return -1;
 
 	// It is powered up and ready.  Now do the rest of the initialization.
-	i2c_write_byte(PU_CTRL_ADDR, 0x3E);
+	i2c_write(ADC_ADDRESS, PU_CTRL_ADDR, 0x3E);
 	// i2c_write_byte(I2C_CONTROL_ADDR, 0x80);
 	/* i2c_write_byte(CTRL2_ADDR, 0x30); */
 	/* i2c_write_byte(ADC_REGISTERS_ADDR, 0x30); */
@@ -315,19 +316,24 @@ int init_adc()
 int check_data_available()
 {
 	unsigned char reg = 0;
-	i2c_write_read(PU_CTRL_ADDR, NULL, 0, &reg, 1);
+	i2c_read(ADC_ADDRESS, PU_CTRL_ADDR, &reg);
 	return (reg & 0x20);
 }
 
 
-unsigned int read_adc()
+int read_adc(char writeaddress)
 {
-	unsigned char regs[3];
-	i2c_write_read(ADCO_B2_ADDR, NULL, 0, regs, 3);
+    char readaddress = writeaddress + 0x01;
 
-	unsigned int retVal = (unsigned int)(regs[2]);
-	retVal += ((unsigned int)(regs[1])) << 8;
-	retVal += ((unsigned int)(regs[0])) << 16;
-	
-	return retVal;
+    i2c_startevent();
+	i2c_sendonebyte(writeaddress);
+	i2c_sendonebyte(ADCO_B2_ADDR);
+
+    i2c_repeatstartevent();
+	i2c_sendonebyte(readaddress);
+	char value1 = i2c_readonebyte(1);
+	char value2 = i2c_readonebyte(1);
+	char value3 = i2c_readonebyte(0);
+	i2c_stopevent();
+    return (value1<<16) + (value2<<8) + (value3);
 }
