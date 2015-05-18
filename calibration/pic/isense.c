@@ -52,9 +52,9 @@ int isense_mA()
 	// Using y = mx + b with x being ticks.  Linear model basd on a model fit
 	// using Mathematica using several current measurements.
 	int mA = isense_ticks();
-	mA *= 102209;
-	mA /= 500;
-	mA -= 103007;
+	mA *= 53407;
+	mA /= 250;
+	mA -= 107699;
 	mA /= 100;
 	
     return mA;
