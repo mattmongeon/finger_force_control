@@ -11,13 +11,13 @@ int main()
 {
 	NU32_Startup();  // cache on, min flash wait, interrupts on, LED/button init, UART init
 
-	NU32_LED1 = 0;
-	NU32_LED2 = 0;
+	NU32_LED1 = 1;
+	NU32_LED2 = 1;
 	
 	wait_usec(500000);
 
-	NU32_LED1 = 1;
-	NU32_LED2 = 1;
+	NU32_LED1 = 0;
+	NU32_LED2 = 0;
 
 	
 	int init_retVal = init_adc();
@@ -29,7 +29,8 @@ int main()
 
 	
 	_CP0_SET_COUNT(0);
-	
+
+	int i = 0;
 	while(1)
 	{
 		if( errorLEDs && (_CP0_GET_COUNT() >= (NU32_SYS_FREQ/8ul)) )
@@ -38,11 +39,15 @@ int main()
 			NU32_LED1 = !NU32_LED1;
 			NU32_LED2 = !NU32_LED2;
 		}
-		else if( adc_data_ready && (_CP0_GET_COUNT() >= (NU32_SYS_FREQ/8ul)) )
+
+		if( check_data_available() )
 		{
-			NU32_LED1 = !NU32_LED1;
-			NU32_LED2 = !NU32_LED2;
+			int adc = read_adc();
+			wait_usec(100000);
+			NU32_LED1 = adc & 0x1;
+			NU32_LED2 = adc & 0x2;
 		}
+		
 		
 		/* NU32_ReadUART1(buffer, BUF_SIZE); */
 		/* NU32_LED2 = 1; */
