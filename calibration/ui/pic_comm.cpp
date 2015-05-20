@@ -15,7 +15,8 @@ cPicComm::cPicComm()
 
 cPicComm::~cPicComm()
 {
-
+	if( mPortHandle != -1 )
+		CloseSerialPort();
 }
 
 bool cPicComm::OpenSerialPort()
@@ -68,12 +69,13 @@ int cPicComm::ReadRawLoadCellValue()
 {
 	WriteCommandToPic(nUtils::READ_RAW_LOAD_CELL);
 
-	std::cout << "Reading from PIC" << std::endl;
+	std::cout << "Reading from PIC...  ";
 	unsigned char buffer[4];
 	ReadFromPic(buffer, 3);
 	buffer[3] = 0;
 
 	int retVal = reinterpret_cast<int&>(buffer);
+	std::cout << retVal << std::endl; 
 	return retVal;
 }
 
