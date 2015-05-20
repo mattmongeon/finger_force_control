@@ -6,6 +6,7 @@
 
 
 extern volatile int adc_data_ready;
+extern volatile int adc_value;
 
 
 int main()
@@ -56,31 +57,41 @@ int main()
 	char buffer[20];
 	while(1)
 	{
-		if( errorLEDs && (_CP0_GET_COUNT() >= (NU32_SYS_FREQ/8ul)) )
-		{
-			LCD_WriteString("Error!");
-			_CP0_SET_COUNT(0);
-			NU32_LED1 = !NU32_LED1;
-			NU32_LED2 = !NU32_LED2;
-		}
-		else if( adc_data_ready )
-		{
-			adc_data_ready = 0;
-			int adc = read_adc();
-			LCD_Clear();
-			LCD_Move(0,0);
-			LCD_WriteString("Sensor:");
-			LCD_Move(1,0);
-			sprintf(buffer, "%d", adc);
-			LCD_WriteString(buffer);
-		}
-		
-		
-		/* NU32_ReadUART1(buffer, BUF_SIZE); */
-		/* NU32_LED2 = 1; */
+		NU32_ReadUART1(buffer, 20);
+		LCD_Clear();
+		LCD_WriteString("Received:  ");
+		LCD_WriteChar(buffer[0]);
+		LCD_Move(1,0);
 
-		/* sprintf(buffer, "%d\r\n", isense_ticks()); */
-		/* NU32_WriteUART1(buffer); */		
+		switch(buffer[0])
+		{
+		case 'l':
+		{
+			LCD_WriteString("Raw Load Cell");
+			
+			while(!adc_data_ready)
+			{
+				;
+			}
+
+			// Send the value
+			int toSend = adc_value;
+			memset(buffer, 0, sizeof(buffer));
+			memcpy(&(buffer[0]), &toSend, 4);
+			NU32_WriteUART1(buffer);
+
+			break;
+		}
+
+		case 'q':
+		{
+			LCD_WriteString("Quit!");
+			break;
+		}
+
+		default:
+			break;
+		};
 	}
 
 	return 0;
