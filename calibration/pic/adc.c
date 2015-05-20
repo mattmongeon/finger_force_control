@@ -17,8 +17,18 @@
 #define ADCO_B2_ADDR  0x12
 
 
-volatile int adc_data_ready = 0;
-volatile int adc_value = 0;
+static volatile unsigned long adc_value_timestamp = 0;
+static volatile int adc_value = 0;
+
+
+static int read_adc()
+{
+	char value1 = 0, value2 = 0, value3 = 0;
+	i2c_read(ADC_ADDRESS, ADCO_B2_ADDR, &value1);
+	i2c_read(ADC_ADDRESS, ADCO_B2_ADDR + 1, &value2);
+	i2c_read(ADC_ADDRESS, ADCO_B2_ADDR + 2, &value3);
+	return (value1<<16) + (value2<<8) + (value3);
+}
 
 
 void __ISR(_EXTERNAL_2_VECTOR, IPL5SOFT) adc_auto_read()
@@ -27,7 +37,7 @@ void __ISR(_EXTERNAL_2_VECTOR, IPL5SOFT) adc_auto_read()
     // Read from the ADC
 	if( PORTEbits.RE9 )
 	{
-		adc_data_ready = 1;
+		adc_value_timestamp = _CP0_GET_COUNT();
 		adc_value = read_adc();
 	}
 
@@ -76,20 +86,24 @@ int init_adc()
 }
 
 
-int check_data_available()
+int get_adc_value()
 {
-	unsigned char reg = 0;
-	i2c_read(ADC_ADDRESS, PU_CTRL_ADDR, &reg);
-	return (reg & 0x20);
+	static unsigned long last_timestamp = 0;
+
+	// Wait for a unique value.
+	while(last_timestamp == adc_value_timestamp)
+	{
+		;
+	}
+
+	
+	__builtin_disable_interrupts();
+	
+	int retVal = adc_value;
+	last_timestamp = adc_value_timestamp;
+
+	__builtin_enable_interrupts();
+
+	
+	return retVal;
 }
-
-
-int read_adc()
-{
-	char value1 = 0, value2 = 0, value3 = 0;
-	i2c_read(ADC_ADDRESS, ADCO_B2_ADDR, &value1);
-	i2c_read(ADC_ADDRESS, ADCO_B2_ADDR + 1, &value2);
-	i2c_read(ADC_ADDRESS, ADCO_B2_ADDR + 2, &value3);
-	return (value1<<16) + (value2<<8) + (value3);
-}
-
