@@ -4,9 +4,7 @@
 
 int init_adc();
 
-int check_data_available();
-
-int read_adc();
+int get_adc_value();
 
 
 #endif // INCLUDED_I2C_H
