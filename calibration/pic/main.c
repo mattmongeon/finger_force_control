@@ -22,10 +22,9 @@ int main()
 	NU32_LED2 = 0;
 
 	
-	int init_retVal = init_adc();
-
 	__builtin_disable_interrupts();
 	
+	int init_retVal = init_adc();
 	LCD_Setup();
 	isense_init();
 	motor_init();
@@ -68,17 +67,17 @@ int main()
 		case 'l':
 		{
 			LCD_WriteString("Raw Load Cell");
-			
-			while(!adc_data_ready)
-			{
-				;
-			}
 
+			
 			// Send the value
-			int toSend = adc_value;
+			int toSend = get_adc_value();
 			memset(buffer, 0, sizeof(buffer));
 			memcpy(&(buffer[0]), &toSend, 4);
 			NU32_WriteUART1(buffer);
+
+			LCD_Clear();
+			sprintf(buffer, "%d", toSend);
+			LCD_WriteString(buffer);
 
 			break;
 		}
