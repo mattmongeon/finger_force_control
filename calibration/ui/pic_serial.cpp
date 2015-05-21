@@ -67,8 +67,13 @@ void cPicSerial::CloseSerialPort()
 
 bool cPicSerial::WriteCommandToPic(const std::string& cmd) const
 {
-	write(mPortHandle, cmd.data(), 2);
-	return 1;
+	return WriteToPic((unsigned char*)(cmd.data()), 2);
+	// return write(mPortHandle, cmd.data(), 2) == 2;
+}
+
+bool cPicSerial::WriteToPic(unsigned char* buffer, int numBytes) const
+{
+	return write(mPortHandle, buffer, numBytes) == numBytes;
 }
 
 bool cPicSerial::ReadFromPic(unsigned char* buffer, int numBytes) const
