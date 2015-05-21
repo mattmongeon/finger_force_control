@@ -20,6 +20,7 @@ void printMenu()
 	std::cout << "-------------" << std::endl;
 	std::cout << std::endl;
 	std::cout << "c:  Calibrate load cell" << std::endl;
+	std::cout << "l:  Read load cell" << std::endl;
 	std::cout << "q:  Quit" << std::endl;
 	std::cout << std::endl;
 }
@@ -28,7 +29,7 @@ void printMenu()
 int main(int argc, char** argv)
 {
 	std::cout << nUtils::CLEAR_CONSOLE << std::flush;
-
+	
 	std::cout << "Opening serial port to communicate with PIC..." << std::endl;
 
 	cPicComm picSerial;
@@ -41,6 +42,11 @@ int main(int argc, char** argv)
 	std::cout << "Serial port opened and ready!" << std::endl;
 	std::cout << std::endl;
 
+	std::cout << "Constructing load cell instance" << std::endl;
+	cLoadCell loadCell(&picSerial);
+
+	std::cout << "Ready to begin!" << std::endl;
+
 
 	// --- Main State Machine --- //
 	
@@ -51,7 +57,12 @@ int main(int argc, char** argv)
 		switch(nUtils::GetMenuSelection())
 		{
 		case 'c':
-			calibrateLoadCell(picSerial);
+			// calibrateLoadCell(picSerial);
+			loadCell.RunCalibrationRoutine();
+			break;
+
+		case 'l':
+			std::cout << "Current load cell reading:  " << loadCell.ReadLoadCell_grams() << std::endl;
 			break;
 
 		case 'q':
