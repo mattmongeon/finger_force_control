@@ -1,9 +1,6 @@
 #include "NU32.h"
 #include "adc.h"
-#include "utils.h"
-#include "i2c_master_int.h"
 #include "i2c.h"
-#include <i2c/plib_i2c.h>
 
 
 #define ADC_ADDRESS   (0x2A << 1)
@@ -33,8 +30,6 @@ static int read_adc()
 
 void __ISR(_EXTERNAL_2_VECTOR, IPL5SOFT) adc_auto_read()
 {
-	// PORTEbits.RE9
-    // Read from the ADC
 	if( PORTEbits.RE9 )
 	{
 		adc_value_timestamp = _CP0_GET_COUNT();
@@ -78,9 +73,6 @@ int init_adc()
 
 	// It is powered up and ready.  Now do the rest of the initialization.
 	i2c_write(ADC_ADDRESS, PU_CTRL_ADDR, 0x3E);
-	// i2c_write_byte(I2C_CONTROL_ADDR, 0x80);
-	/* i2c_write_byte(CTRL2_ADDR, 0x30); */
-	/* i2c_write_byte(ADC_REGISTERS_ADDR, 0x30); */
 
 	return 0;
 }
