@@ -71,11 +71,21 @@ int cPicComm::ReadRawLoadCellValue()
 
 	std::cout << "Reading from PIC...  ";
 	unsigned char buffer[4];
-	ReadFromPic(buffer, 3);
-	buffer[3] = 0;
+	ReadFromPic(buffer, 4);
 
 	int retVal = reinterpret_cast<int&>(buffer);
 	std::cout << retVal << std::endl; 
+	return retVal;
+}
+
+int cPicComm::ReadLoadCellValue_grams()
+{
+	WriteCommandToPic(nUtils::READ_LOAD_CELL);
+	unsigned char buffer[4];
+	ReadFromPic(buffer, 4);
+
+	int retVal = reinterpret_cast<int&>(buffer);
+	std::cout << retVal << std::endl;
 	return retVal;
 }
 

@@ -25,9 +25,9 @@ public:
 
 	// Reads the raw ADC value that represents the load cell's output voltage.
 	int ReadRawLoadCellValue();
-	
-	sPicData ReadPicData();
 
+	int ReadLoadCellValue_grams();
+	
 	
 private:
 
