@@ -2,11 +2,27 @@
 #include "LCD.h"
 #include "adc.h"
 #include "utils.h"
-#include "i2c_master_int.h"
 
 
 extern volatile int adc_data_ready;
 extern volatile int adc_value;
+
+
+static int uart1_send_int(int val)
+{
+	unsigned char* p = (unsigned char*)(&val);
+	int i = 0;
+	for( ; i < 4; ++i )
+	{
+		while(U1STAbits.UTXBF)
+		{
+			;  // Wait until TX buffer is not full.
+		}
+
+		U1TXREG = *p;
+		++p;
+	}
+}
 
 
 int main()
@@ -66,19 +82,15 @@ int main()
 		{
 		case 'l':
 		{
-			LCD_WriteString("Raw Load Cell");
-
+			LCD_WriteString("Load Cell");
+			uart1_send_int( read_load_cell_grams() );
+			break;
+		}
 			
-			// Send the value
-			int toSend = get_adc_value();
-			memset(buffer, 0, sizeof(buffer));
-			memcpy(&(buffer[0]), &toSend, 4);
-			NU32_WriteUART1(buffer);
-
-			LCD_Clear();
-			sprintf(buffer, "%d", toSend);
-			LCD_WriteString(buffer);
-
+		case 'r':
+		{
+			LCD_WriteString("Raw Load Cell");
+			uart1_send_int( get_adc_value() );
 			break;
 		}
 
