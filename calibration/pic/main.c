@@ -1,7 +1,7 @@
 #include "NU32.h"  // config bits, constants, funcs for startup and UART
 #include "LCD.h"
-#include "adc.h"
 #include "utils.h"
+#include "load_cell.h"
 
 
 extern volatile int adc_data_ready;
@@ -40,7 +40,7 @@ int main()
 	
 	__builtin_disable_interrupts();
 	
-	int init_retVal = init_adc();
+	int init_retVal = load_cell_init();
 	LCD_Setup();
 	isense_init();
 	motor_init();
@@ -83,14 +83,14 @@ int main()
 		case 'l':
 		{
 			LCD_WriteString("Load Cell");
-			uart1_send_int( read_load_cell_grams() );
+			uart1_send_int( load_cell_read_grams() );
 			break;
 		}
 			
 		case 'r':
 		{
 			LCD_WriteString("Raw Load Cell");
-			uart1_send_int( get_adc_value() );
+			uart1_send_int( load_cell_raw_value() );
 			break;
 		}
 
