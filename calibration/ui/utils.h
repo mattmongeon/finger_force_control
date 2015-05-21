@@ -15,7 +15,8 @@ namespace nUtils
 
 	// --- PIC Commands --- //
 
-	const std::string READ_RAW_LOAD_CELL = "l\n";
+	const std::string READ_RAW_LOAD_CELL = "r\n";
+	const std::string READ_LOAD_CELL = "l\n";
 
 
 	// --- Terminal Helper Functions --- //
