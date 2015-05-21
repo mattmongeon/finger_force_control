@@ -2,7 +2,7 @@
 #define INCLUDED_CALIBRATION_H
 
 
-class cPicComm;
+class cPicSerial;
 
 
 class cLoadCell
@@ -13,7 +13,7 @@ public:
 	//----------------------  CONSTRUCTION / DESTRUCTION  ----------------------//
 	//--------------------------------------------------------------------------//
 	
-	cLoadCell(const cPicComm* picComm);
+	cLoadCell(const cPicSerial* picComm);
 
 	~cLoadCell();
 
@@ -42,7 +42,7 @@ private:
 	//--------------------------------------------------------------------------//
 	
 	// The object used for communication with the PIC.
-	const cPicComm* mpPicComm;
+	const cPicSerial* mpPicSerial;
 	
 };
 

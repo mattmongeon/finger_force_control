@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
-#include "pic_comm.h"
-#include "load_cell_cal.h"
+#include "pic_serial.h"
+#include "load_cell.h"
 #include "utils.h"
 
 
@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 	
 	std::cout << "Opening serial port to communicate with PIC..." << std::endl;
 
-	cPicComm picSerial;
+	cPicSerial picSerial;
 	if( !picSerial.OpenSerialPort() )
 	{
 		std::cout << "Error opening serial port!" << std::endl;
@@ -57,7 +57,6 @@ int main(int argc, char** argv)
 		switch(nUtils::GetMenuSelection())
 		{
 		case 'c':
-			// calibrateLoadCell(picSerial);
 			loadCell.RunCalibrationRoutine();
 			break;
 
@@ -70,8 +69,6 @@ int main(int argc, char** argv)
 			keepGoing = false;
 			break;
 		}
-
-		std::cout << nUtils::CLEAR_CONSOLE << std::flush;
 	}
 
 	
