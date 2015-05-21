@@ -1,3 +1,5 @@
+#ifdef ASDF
+
 #include "NU32.h"
 #include "adc.h"
 #include "i2c.h"
@@ -99,3 +101,5 @@ int get_adc_value()
 	
 	return retVal;
 }
+
+#endif
