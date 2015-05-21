@@ -21,6 +21,7 @@ void printMenu()
 	std::cout << std::endl;
 	std::cout << "c:  Calibrate load cell" << std::endl;
 	std::cout << "l:  Read load cell" << std::endl;
+	std::cout << "p:  Set motor PWM duty cycle" << std::endl;
 	std::cout << "q:  Quit" << std::endl;
 	std::cout << std::endl;
 }
@@ -57,17 +58,33 @@ int main(int argc, char** argv)
 		switch(nUtils::GetMenuSelection())
 		{
 		case 'c':
+		{
 			loadCell.RunCalibrationRoutine();
 			break;
+		}
 
 		case 'l':
+		{
 			std::cout << "Current load cell reading:  " << loadCell.ReadLoadCell_grams() << std::endl;
 			break;
+		}
+
+		case 'p':
+		{
+			std::cout << "PWM value as integer percentage:  " << std::flush;
+			int pwm = 0;
+			std::cin >> pwm;
+			picSerial.WriteValueToPic<char>(nUtils::SET_PWM, static_cast<char>(pwm));
+			std::cout << "Sent!" << std::endl;
+			break;
+		}
 
 		case 'q':
+		{
 			std::cout << "Exiting..." << std::endl;
 			keepGoing = false;
 			break;
+		}
 		}
 	}
 

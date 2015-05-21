@@ -4,6 +4,7 @@
 #include <string>
 #include <termios.h>
 #include <iostream>
+#include <string.h>
 
 
 // This class handles communicating with the PIC32 (NU32) over a serial connection.
@@ -52,6 +53,17 @@ public:
 		T retVal = reinterpret_cast<T&>(buffer);
 		return retVal;
 	}
+
+	template<typename T>
+	void WriteValueToPic(const std::string& cmd, T value) const
+	{
+		WriteCommandToPic(cmd);
+
+		unsigned char buffer[sizeof(T)+1];
+		memcpy(buffer, &value, sizeof(T));
+		buffer[sizeof(T)] = '\n';
+		WriteToPic(buffer, sizeof(T)+1);
+	}
 	
 	
 private:
@@ -68,6 +80,9 @@ private:
 	//
 	// Return - true if sent successfully over serial, false otherwise.
 	bool WriteCommandToPic(const std::string& cmd) const;
+
+
+	bool WriteToPic(unsigned char* buffer, int numBytes) const;
 
 	
 	// Reads data from the PIC over the serial connection.

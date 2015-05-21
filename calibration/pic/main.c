@@ -2,6 +2,7 @@
 #include "LCD.h"
 #include "utils.h"
 #include "load_cell.h"
+#include "motor.h"
 
 
 extern volatile int adc_data_ready;
@@ -86,17 +87,26 @@ int main()
 			uart1_send_int( load_cell_read_grams() );
 			break;
 		}
-			
+
+		case 'p':
+		{
+			NU32_ReadUART1(buffer, 20);
+			char pwm = buffer[0];
+			motor_state_set(PWM);
+			motor_duty_cycle_pct_set(pwm);
+			break;
+		}
+		
+		case 'q':
+		{
+			LCD_WriteString("Quit!");
+			break;
+		}
+
 		case 'r':
 		{
 			LCD_WriteString("Raw Load Cell");
 			uart1_send_int( load_cell_raw_value() );
-			break;
-		}
-
-		case 'q':
-		{
-			LCD_WriteString("Quit!");
 			break;
 		}
 
