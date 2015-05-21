@@ -7,7 +7,7 @@
 
 
 // This class handles communicating with the PIC32 (NU32) over a serial connection.
-class cPicComm
+class cPicSerial
 {
 public:
 
@@ -15,8 +15,8 @@ public:
 	//----------------------  CONSTRUCTION / DESTRUCTION  ----------------------//
 	//--------------------------------------------------------------------------//
 	
-	cPicComm();
-	~cPicComm();
+	cPicSerial();
+	~cPicSerial();
 
 	//--------------------------------------------------------------------------//
 	//--------------------------  INTERFACE FUNCTIONS  -------------------------//

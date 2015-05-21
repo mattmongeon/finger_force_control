@@ -1,7 +1,7 @@
 PROG=biotac_cal
 CC=g++
 CPPFLAGS=-c -Wall
-SOURCES=main.cpp pic_comm.cpp load_cell_cal.cpp utils.cpp
+SOURCES=main.cpp pic_serial.cpp load_cell.cpp utils.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 
 $(PROG): $(OBJECTS)

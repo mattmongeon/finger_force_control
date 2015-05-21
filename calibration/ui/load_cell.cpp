@@ -1,6 +1,6 @@
-#include "load_cell_cal.h"
+#include "load_cell.h"
 #include "utils.h"
-#include "pic_comm.h"
+#include "pic_serial.h"
 #include <vector>
 #include <utility>
 #include <iostream>
@@ -10,8 +10,8 @@
 //  Construction / Destruction
 ////////////////////////////////////////////////////////////////////////////////
 
-cLoadCell::cLoadCell(const cPicComm* picComm)
-	: mpPicComm( picComm )
+cLoadCell::cLoadCell(const cPicSerial* picSerial)
+	: mpPicSerial( picSerial )
 {
 	
 }
@@ -20,7 +20,7 @@ cLoadCell::cLoadCell(const cPicComm* picComm)
 
 cLoadCell::~cLoadCell()
 {
-	mpPicComm = 0;
+	mpPicSerial = 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -57,7 +57,7 @@ void cLoadCell::RunCalibrationRoutine()
 			int raw = 0;
 			for( int i = 0; i < 20; ++i )
 			{
-				raw += mpPicComm->ReadValueFromPic<int>(nUtils::READ_RAW_LOAD_CELL);
+				raw += mpPicSerial->ReadValueFromPic<int>(nUtils::READ_RAW_LOAD_CELL);
 			}
 			raw /= 20;
 			std::cout << "Avg value:  " << raw << std::endl;
@@ -92,6 +92,6 @@ void cLoadCell::RunCalibrationRoutine()
 
 int cLoadCell::ReadLoadCell_grams()
 {
-	return mpPicComm->ReadValueFromPic<int>(nUtils::READ_LOAD_CELL);
+	return mpPicSerial->ReadValueFromPic<int>(nUtils::READ_LOAD_CELL);
 }
 

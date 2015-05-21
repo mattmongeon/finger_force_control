@@ -1,4 +1,4 @@
-#include "pic_comm.h"
+#include "pic_serial.h"
 #include "utils.h"
 #include <stdio.h>
 #include <string.h>
@@ -8,18 +8,18 @@
 #include <iostream>
 
 
-cPicComm::cPicComm()
+cPicSerial::cPicSerial()
 {
 	mPortHandle = -1;
 }
 
-cPicComm::~cPicComm()
+cPicSerial::~cPicSerial()
 {
 	if( mPortHandle != -1 )
 		CloseSerialPort();
 }
 
-bool cPicComm::OpenSerialPort()
+bool cPicSerial::OpenSerialPort()
 {
 	termios tio;
 	memset(&tio, 0, sizeof(tio));
@@ -56,7 +56,7 @@ bool cPicComm::OpenSerialPort()
 	return true;
 }
 
-void cPicComm::CloseSerialPort()
+void cPicSerial::CloseSerialPort()
 {
 	if( mPortHandle != -1 )
 	{
@@ -65,13 +65,13 @@ void cPicComm::CloseSerialPort()
 	}
 }
 
-bool cPicComm::WriteCommandToPic(const std::string& cmd) const
+bool cPicSerial::WriteCommandToPic(const std::string& cmd) const
 {
 	write(mPortHandle, cmd.data(), 2);
 	return 1;
 }
 
-bool cPicComm::ReadFromPic(unsigned char* buffer, int numBytes) const
+bool cPicSerial::ReadFromPic(unsigned char* buffer, int numBytes) const
 {
 	int numRead = 0;
 	while( numRead < numBytes )
