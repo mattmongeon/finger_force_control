@@ -65,37 +65,13 @@ void cPicComm::CloseSerialPort()
 	}
 }
 
-int cPicComm::ReadRawLoadCellValue()
-{
-	WriteCommandToPic(nUtils::READ_RAW_LOAD_CELL);
-
-	std::cout << "Reading from PIC...  ";
-	unsigned char buffer[4];
-	ReadFromPic(buffer, 4);
-
-	int retVal = reinterpret_cast<int&>(buffer);
-	std::cout << retVal << std::endl; 
-	return retVal;
-}
-
-int cPicComm::ReadLoadCellValue_grams()
-{
-	WriteCommandToPic(nUtils::READ_LOAD_CELL);
-	unsigned char buffer[4];
-	ReadFromPic(buffer, 4);
-
-	int retVal = reinterpret_cast<int&>(buffer);
-	std::cout << retVal << std::endl;
-	return retVal;
-}
-
-bool cPicComm::WriteCommandToPic(const std::string& cmd)
+bool cPicComm::WriteCommandToPic(const std::string& cmd) const
 {
 	write(mPortHandle, cmd.data(), 2);
 	return 1;
 }
 
-bool cPicComm::ReadFromPic(unsigned char* buffer, int numBytes)
+bool cPicComm::ReadFromPic(unsigned char* buffer, int numBytes) const
 {
 	int numRead = 0;
 	while( numRead < numBytes )
