@@ -6,7 +6,28 @@
 #include <iostream>
 
 
-void calibrateLoadCell(cPicComm& picComm)
+////////////////////////////////////////////////////////////////////////////////
+//  Construction / Destruction
+////////////////////////////////////////////////////////////////////////////////
+
+cLoadCell::cLoadCell(const cPicComm* picComm)
+	: mpPicComm( picComm )
+{
+	
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+cLoadCell::~cLoadCell()
+{
+	mpPicComm = 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Interface Functions
+////////////////////////////////////////////////////////////////////////////////
+
+void cLoadCell::RunCalibrationRoutine()
 {
 	std::cout << nUtils::CLEAR_CONSOLE << std::flush;
 	std::cout << "Load cell calibration" << std::endl;
@@ -36,7 +57,7 @@ void calibrateLoadCell(cPicComm& picComm)
 			int raw = 0;
 			for( int i = 0; i < 20; ++i )
 			{
-				raw += picComm.ReadRawLoadCellValue();
+				raw += mpPicComm->ReadValueFromPic<int>(nUtils::READ_RAW_LOAD_CELL);
 			}
 			raw /= 20;
 			std::cout << "Avg value:  " << raw << std::endl;
@@ -56,8 +77,7 @@ void calibrateLoadCell(cPicComm& picComm)
 			}
 			std::cout << std::endl;
 			std::cout << "Press ENTER to continue" << std::endl;
-			std::string dummy;
-			std::cin >> dummy;
+			std::cin.get();
 			keepGoing = false;
 			break;
 		}
@@ -66,5 +86,12 @@ void calibrateLoadCell(cPicComm& picComm)
 			break;
 		}
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+int cLoadCell::ReadLoadCell_grams()
+{
+	return mpPicComm->ReadValueFromPic<int>(nUtils::READ_LOAD_CELL);
 }
 
