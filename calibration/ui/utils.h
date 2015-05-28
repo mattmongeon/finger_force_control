@@ -18,6 +18,7 @@ namespace nUtils
 	const std::string READ_RAW_LOAD_CELL = "r\n";
 	const std::string READ_LOAD_CELL = "l\n";
 	const std::string SET_PWM = "p\n";
+	const std::string READ_BIOTAC = "b\n";
 
 
 	// --- Terminal Helper Functions --- //
