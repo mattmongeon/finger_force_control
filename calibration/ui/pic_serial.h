@@ -50,7 +50,8 @@ public:
 		unsigned char buffer[sizeof(T)];
 		ReadFromPic(buffer, sizeof(T));
 
-		T retVal = reinterpret_cast<T&>(buffer);
+		T retVal;
+		memcpy(&retVal, &(buffer[0]), sizeof(T));
 		return retVal;
 	}
 
