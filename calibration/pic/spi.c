@@ -4,16 +4,16 @@
 
 void spi_init()
 {
-	SPI1CON = 0;
-	SPI1BRG = 39;   // 1 MHz
-	SPI1STATbits.SPIROV = 0; // Clear overflow flag
+	SPI4CON = 0;
+	SPI4BRG = 39;   // 1 MHz
+	SPI4STATbits.SPIROV = 0; // Clear overflow flag
 
-	SPI1CONbits.MODE32 = 0;  // 16-bit mode
-	SPI1CONbits.CKP = 0;     // Clock is active high, idle low
-	SPI1CONbits.CKE = 0;     // Serial data changes on idle to low
-	SPI1CONbits.MSTEN = 1;   // Enable Master Mode
-	SPI1CONbits.SMP = 1;
-	SPI1CONbits.ON = 1;
+	SPI4CONbits.MODE16 = 1;  // 16-bit mode
+	SPI4CONbits.CKP = 0;     // Clock is active high, idle low
+	SPI4CONbits.CKE = 1;     // Serial output changes on active to idle transition (falling edge)
+	SPI4CONbits.MSTEN = 1;   // Enable Master Mode
+	SPI4CONbits.SMP = 1;
+	SPI4CONbits.ON = 1;
 
 	TRISACLR = 0x0001;
 }
@@ -25,14 +25,14 @@ void spi_comm_enable(int enabled)
 }
 
 
-unsigned short spi(unsigned short out)
+unsigned short spi_comm(unsigned short out)
 {
-	SPI1BUF = out;
-	while(!SPI1STATbits.SPIRBF)
+	SPI4BUF = out;
+	while(!SPI4STATbits.SPIRBF)
 	{
 		;
 	}
 	
-	return SPI1BUF;
+	return SPI4BUF;
 }
 
