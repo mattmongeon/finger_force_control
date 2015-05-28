@@ -19,12 +19,43 @@ void printMenu()
 	std::cout << "Function Menu" << std::endl;
 	std::cout << "-------------" << std::endl;
 	std::cout << std::endl;
+	std::cout << "b:  Single read from BioTac" << std::endl;
 	std::cout << "c:  Calibrate load cell" << std::endl;
 	std::cout << "l:  Read load cell" << std::endl;
 	std::cout << "p:  Set motor PWM duty cycle" << std::endl;
 	std::cout << "q:  Quit" << std::endl;
 	std::cout << std::endl;
 }
+
+
+struct sBioTacData
+{
+	unsigned short e1;
+	unsigned short e2;
+	unsigned short e3;
+	unsigned short e4;
+	unsigned short e5;
+	unsigned short e6;
+	unsigned short e7;
+	unsigned short e8;
+	unsigned short e9;
+	unsigned short e10;
+	unsigned short e11;
+	unsigned short e12;
+	unsigned short e13;
+	unsigned short e14;
+	unsigned short e15;
+	unsigned short e16;
+	unsigned short e17;
+	unsigned short e18;
+	unsigned short e19;
+
+	unsigned short pac;
+	unsigned short pdc;
+
+	unsigned short tac;
+	unsigned short tdc;
+};
 
 
 int main(int argc, char** argv)
@@ -57,6 +88,19 @@ int main(int argc, char** argv)
 		printMenu();
 		switch(nUtils::GetMenuSelection())
 		{
+		case 'b':
+		{
+			std::cout << "Read from BioTac (e1):  " << std::flush;
+			sBioTacData d = picSerial.ReadValueFromPic<sBioTacData>(nUtils::READ_BIOTAC);
+			std::cout << "E1:  " << d.e1 << std::endl;
+			std::cout << "PAC:  " << d.pac << std::endl;
+			std::cout << "PDC:  " << d.pdc << std::endl;
+			std::cout << "TAC:  " << d.tac << std::endl;
+			std::cout << "TDC:  " << d.tdc << std::endl;
+			std::cout << std::endl;
+			break;
+		}
+			
 		case 'c':
 		{
 			loadCell.RunCalibrationRoutine();
