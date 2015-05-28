@@ -3,25 +3,25 @@
 #include "utils.h"
 #include "load_cell.h"
 #include "motor.h"
+#include "biotac.h"
 
 
 extern volatile int adc_data_ready;
 extern volatile int adc_value;
 
 
-static int uart1_send_int(int val)
+static int uart1_send_packet(unsigned char* pData, int numBytes)
 {
-	unsigned char* p = (unsigned char*)(&val);
 	int i = 0;
-	for( ; i < 4; ++i )
+	for( ; i < numBytes; ++i )
 	{
 		while(U1STAbits.UTXBF)
 		{
 			;  // Wait until TX buffer is not full.
 		}
 
-		U1TXREG = *p;
-		++p;
+		U1TXREG = *pData;
+		++pData;
 	}
 }
 
@@ -45,6 +45,7 @@ int main()
 	LCD_Setup();
 	isense_init();
 	motor_init();
+	biotac_init();
 	
 	__builtin_enable_interrupts();
 
@@ -69,8 +70,8 @@ int main()
 	
 	_CP0_SET_COUNT(0);
 
-	int i = 0;
-	char buffer[20];
+	char buffer[50];
+	biotac_data biotac;
 	while(1)
 	{
 		NU32_ReadUART1(buffer, 20);
@@ -81,16 +82,28 @@ int main()
 
 		switch(buffer[0])
 		{
+		case 'b':
+		{
+			LCD_WriteString("Read BioTac");
+			read_biotac(&biotac);
+			LCD_Move(1,0);
+			sprintf(buffer, "%d", biotac.e1);
+			LCD_WriteString(&(buffer[0]));
+			uart1_send_packet( (unsigned char*)(&biotac), sizeof(biotac_data) );
+			break;
+		}
+			
 		case 'l':
 		{
 			LCD_WriteString("Load Cell");
-			uart1_send_int( load_cell_read_grams() );
+			int load_cell_g = load_cell_read_grams();
+			uart1_send_packet( (unsigned char*)(&load_cell_g), 4 );
 			break;
 		}
 
 		case 'p':
 		{
-			NU32_ReadUART1(buffer, 20);
+			NU32_ReadUART1(buffer, 50);
 			char pwm = buffer[0];
 			motor_state_set(PWM);
 			motor_duty_cycle_pct_set(pwm);
@@ -106,7 +119,8 @@ int main()
 		case 'r':
 		{
 			LCD_WriteString("Raw Load Cell");
-			uart1_send_int( load_cell_raw_value() );
+			int load_cell_raw = load_cell_raw_value();
+			uart1_send_packet( (unsigned char*)(&load_cell_raw), 4 );
 			break;
 		}
 
