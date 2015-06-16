@@ -1,11 +1,13 @@
 PROG=biotac_cal
 CC=g++
 CPPFLAGS=-c -Wall
-SOURCES=main.cpp pic_serial.cpp load_cell.cpp utils.cpp
+SOURCES=main.cpp pic_serial.cpp load_cell.cpp utils.cpp stopwatch.cpp
+LFLAGS=-lpthread
+LINKDIR=-Lusr/lib/x86_64-linux-gnu
 OBJECTS=$(SOURCES:.cpp=.o)
 
 $(PROG): $(OBJECTS)
-	$(CC) -o $(PROG) $(OBJECTS) $(LDFLAGS)
+	$(CC) -o $(PROG) $(OBJECTS) $(LFLAGS) $(LINKDIR)
 
 %.o: %.cpp
 	$(CC) $(CPPFLAGS) -o $@ $<
