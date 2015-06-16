@@ -51,7 +51,7 @@
 	spi_comm_enable(0);								 \
 													 \
 	/* The data seems to be big-endian */			 \
-	(var) = ((var) >> 11) + (((var) & 0x00FF) >> 1); \
+	(var) = ((var) >> 9) + (((var) & 0x00FF) >> 3);	 \
 													 \
 	wait_usec(10);
 
