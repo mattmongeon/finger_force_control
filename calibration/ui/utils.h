@@ -24,6 +24,11 @@ namespace nUtils
 	// --- Terminal Helper Functions --- //
 
 	char GetMenuSelection();
+
+
+	// --- Time Helper Functions --- //
+
+	double GetSysTime_ms();
 }
 
 #endif  // INCLUDED_UTILS_H
