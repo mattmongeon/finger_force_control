@@ -198,10 +198,16 @@ int main()
 				;
 			}
 
+			LCD_Clear();
+			LCD_WriteString("Done tuning force");
+			
 			// Send the recorded data to the PC.
 			unsigned char* pBuff = torque_control_get_raw_tune_buffer();
 			uart1_send_packet( pBuff, sizeof(torque_tune_data)*100 );
 
+			LCD_Clear();
+			LCD_WriteString("Tuning data sent");
+			
 			break;
 		}
 
