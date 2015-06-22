@@ -35,7 +35,7 @@ public:
 	void CloseSerialPort();
 
 	
-	// Template function for reading a particular type of data from the PIC.
+	// Helper template function for reading a particular type of data from the PIC.
 	//
 	// Params:
 	// cmd - the string command used for requesting data from the PIC.  Needs to
@@ -55,6 +55,13 @@ public:
 		return retVal;
 	}
 
+	
+	// Simple helper template function for writing a single value to the PIC.
+	//
+	// Parms:
+	// cmd - the string command sent to the PIC.  Needs to be a single
+	//       character followed by '\n'.
+	// value - the value to be written to the PIC.
 	template<typename T>
 	void WriteValueToPic(const std::string& cmd, T value) const
 	{
@@ -65,14 +72,8 @@ public:
 		buffer[sizeof(T)] = '\n';
 		WriteToPic(buffer, sizeof(T)+1);
 	}
-	
-	
-private:
 
-	//--------------------------------------------------------------------------//
-	//---------------------------  HELPER FUNCTIONS  ---------------------------//
-	//--------------------------------------------------------------------------//
-
+	
 	// Sends the parameter command to the PIC.
 	//
 	// Params:
@@ -83,6 +84,13 @@ private:
 	bool WriteCommandToPic(const std::string& cmd) const;
 
 
+	// Writes the parameter buffer of data to the PIC over serial.
+	//
+	// Params:
+	// buffer - the buffer of bytes to be written.
+	// numBytes - the number of data bytes to be transmitted.
+	//
+	// Return - true if sent successfully, false otherwise.
 	bool WriteToPic(unsigned char* buffer, int numBytes) const;
 
 	
@@ -95,6 +103,8 @@ private:
 	// Return - true if serial communication was successful, false otherwise.
 	bool ReadFromPic(unsigned char* buffer, int numBytes) const;
 
+
+private:	
 
 	//--------------------------------------------------------------------------//
 	//-----------------------------  DATA MEMBERS  -----------------------------//
