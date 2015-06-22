@@ -12,12 +12,10 @@
 
 // --- Protected Variables --- //
 
-static volatile state_t state = IDLE;
-
 static volatile int current_ref_mA = 0;
 
-static volatile float kp = 8.25;
-static volatile float ki = 1.25;
+static volatile float kp = 6.0;
+static volatile float ki = 1.0;
 static volatile int max_error_int = 0;
 static volatile int error_int = 0;
 
@@ -62,7 +60,7 @@ void __ISR(_TIMER_2_VECTOR, IPL5SOFT) current_controller()
 	
 	// --- State Machine --- //
 
-	switch(motor_state_get())
+	switch(system_get_state())
 	{
 	case IDLE:
 		error_int = 0;
@@ -71,13 +69,13 @@ void __ISR(_TIMER_2_VECTOR, IPL5SOFT) current_controller()
 		break;
 
 		
-	case PWM:
+	case DIRECT_PWM:
 		error_int = 0;
 		square_wave_timer = 0;
 		break;
 
 		
-	case TUNE:
+	case TUNE_CURRENT_GAINS:
 	{
 		// --- Update the Tuning Reference --- //
 
@@ -107,8 +105,11 @@ void __ISR(_TIMER_2_VECTOR, IPL5SOFT) current_controller()
 		
 		break;
 	}
-		
-	case TRACK:
+
+	case TUNE_TORQUE_GAINS:
+	case TRACK_CURRENT:
+	case TRACK_FORCE_TRAJECTORY:
+	case HOLD_FORCE:
 		square_wave_timer = 0;
 		
 		// follow the current reference set by motor_amps_set
@@ -190,7 +191,7 @@ void motor_duty_cycle_pct_set(int duty_pct)
 
 void motor_pwm_set(int pwm_new)
 {
-	if( motor_state_get() != IDLE )
+	if( system_get_state() != IDLE )
 	{
 		int motorPWM = pwm_new;
 		if( motorPWM >= 0 )
@@ -255,19 +256,4 @@ void motor_gains_write()
 	sprintf(buffer, "%f %f\r\n", kp, ki);
 	NU32_WriteUART1(buffer);
 }
-
-state_t motor_state_get()
-{
-	return state;
-}
-
-void motor_state_set(state_t s)
-{
-	__builtin_disable_interrupts();
-
-	state = s;
-
-	__builtin_enable_interrupts();
-}
-
 
