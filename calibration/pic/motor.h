@@ -2,18 +2,10 @@
 #define INCLUDED_MOTOR_H
 
 
+#include "system.h"
+
+
 #define MAX_CURRENT_MA 449
-
-
-// --- State Enum --- //
-
-typedef enum
-{
-	IDLE = 0,
-	PWM,
-	TUNE,
-	TRACK
-} state_t;  // the various states
 
 
 // --- Function Declarations --- //
