@@ -1,10 +1,12 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #include "pic_serial.h"
 #include "load_cell.h"
 #include "utils.h"
 #include "stopwatch.h"
 #include <pthread.h>
+#include <plplot/plplot.h>
 
 
 static bool detectEnterPress = false;
@@ -345,6 +347,29 @@ int main(int argc, char** argv)
 			}
 
 			std::cout << std::endl;
+
+
+			// --- Plot Results --- //
+
+			plinit();
+			plenv(0, 100, 0, 300, 0, 0);
+			pllab("Measurement", "Force (g)", "Trial results");
+			
+			std::vector<PLFLT> x;
+			for( int i = 0; i < 100; ++i )
+			{
+				x.push_back(i);
+			}
+
+			std::vector<PLFLT> y;
+			for( int i = 0; i < 100; ++i )
+			{
+				y.push_back(tuneData[i].mLoadCell_g);
+			}
+
+			plline(100, &(x[0]), &(y[0]));
+
+			plend();
 			
 			break;
 		}
