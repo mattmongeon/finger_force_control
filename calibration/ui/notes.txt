@@ -1,0 +1,19 @@
+Notes about plplot:
+------------------
+PLplot is the library being used for generating any plots of any results.  The library's website is:  plplot.sourceforge.net.
+
+To install PLplot, go to the file download site (sourceforge.net/projects/plplot/files/plplot) and download the proper library.  This code is using version 5.11, so that is the one that should be downloaded unless backward compatibility is not going to be a problem with later releases.  Untar and unzip the files to be able to build and install everything properly.
+
+Installation instructions are found on the wiki (http://sourceforge.net/p/plplot/wiki/Home/).  Click on the link "Generic instructions for the CMake-based build system" to see the instructions for building and installing the library.  A few things should be noted before following the instructions verbatim.  First, there are really only two steps that need to be followed:  the few lines at the top of the "cmake invocation" section and the few lines at the top of the "Build and install" section.  Second, there are a couple of things to note with the "cmake invocation" section.  The Makefile for this project assumes that the files are installed in the standard location (i.e. in /usr).  Therefore, use the following instructions for building/installing:
+
+- In a terminal, browse to the directory that contains the tarball and the unpacked files.  For example, if the tarball is located in ~/Downloads/plplot, browse to that directory
+- mkdir build_dir
+- cd build_dir
+- cmake -DCMAKE_INSTALL_PREFIX=/usr ../plplot-5.11.0 >& cmake.out
+- make VERBOSE=1 >& make.out
+- make VERBOSE=1 install >& make_install.out
+
+At this point everthing should be built and installed in /usr/include, /usr/lib, and /usr/bin.  To verify, browse to /usr/include and check to see there is a plplot directory.  Then browse to /usr/lib and verify there are several libraries starting with libplplot and that there is a directory plplot5.11.0.  If these things are not in place, browse back to where the build_dir is, use rm -rf build_dir to delete that directory and its contents, and then go through the process again.  For some reason I had a problem where I had to run it twice to work.  If it still doesn't work, use rm -rf build_dir to remove everything again, and then go through the whole process again except use the sudo command in front of the cmake and make commands.  It could be a permissions problem.
+
+The last thing to note is to not get confused by the little snippet at the bottom of the "cmake invocation" section talking about rm -rf /*.  If you create the build_dir fresh with the mkdir command as above, there should be nothing to worry about because it will be empty in the first place.  I'm not sure why this is in here.
+
