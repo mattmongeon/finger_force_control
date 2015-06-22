@@ -15,6 +15,7 @@
 
 static volatile unsigned long adc_value_timestamp = 0;
 static volatile int adc_value = 0;
+static int sample_rate_hz = 20;
 
 
 static int read_adc()
@@ -72,6 +73,7 @@ int load_cell_init()
 
 	// It is powered up and ready.  Now do the rest of the initialization.
 	i2c_write(ADC_ADDRESS, PU_CTRL_ADDR, 0x3E);
+	i2c_write(ADC_ADDRESS, CTRL2_ADDR, 0x10);  // 20 samples per second
 
 	return 0;
 }
@@ -79,9 +81,13 @@ int load_cell_init()
 
 int load_cell_read_grams()
 {
-	float retVal = 1289.34 - (0.000178688 * load_cell_raw_value());
+	float f = 1289.34 - (0.000178688 * load_cell_raw_value());
 
-	return (int)retVal;
+	int retVal = (int)f;
+	if( retVal >= 0 )
+		return retVal;
+	else
+		return 0;
 }
 
 
@@ -106,3 +112,9 @@ int load_cell_raw_value()
 	
 	return retVal;
 }
+
+int load_cell_sample_rate_hz()
+{
+	return sample_rate_hz;
+}
+
