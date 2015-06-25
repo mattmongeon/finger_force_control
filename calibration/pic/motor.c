@@ -223,10 +223,12 @@ void motor_pwm_set(int pwm_new)
 void motor_mA_set(int mA)
 {
 	current_ref_mA = mA;
+	/*
 	if( current_ref_mA > MAX_CURRENT_MA )
 		current_ref_mA = MAX_CURRENT_MA;
 	else if( current_ref_mA < -MAX_CURRENT_MA )
 		current_ref_mA = -MAX_CURRENT_MA;
+	*/
 }
 
 void motor_gains_read()
