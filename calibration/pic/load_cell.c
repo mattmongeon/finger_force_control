@@ -15,7 +15,7 @@
 
 static volatile unsigned long adc_value_timestamp = 0;
 static volatile int adc_value = 0;
-static int sample_rate_hz = 20;
+static int sample_rate_hz = 320;
 
 
 static int read_adc()
@@ -32,7 +32,7 @@ void __ISR(_EXTERNAL_2_VECTOR, IPL6SRS) adc_auto_read()
 {
 	if( PORTEbits.RE9 )
 	{
-		// adc_value_timestamp = _CP0_GET_COUNT();
+		adc_value_timestamp = _CP0_GET_COUNT();
 		adc_value = read_adc();
 	}
 
@@ -93,24 +93,23 @@ int load_cell_read_grams()
 
 int load_cell_raw_value()
 {
-	/* static unsigned long last_timestamp = 0; */
+	static unsigned long last_timestamp = 0;
 
-	/* // Wait for a unique value. */
-	/* while(last_timestamp == adc_value_timestamp) */
-	/* { */
-	/* 	; */
-	/* } */
-
-	
-	/* __builtin_disable_interrupts(); */
-	
-	/* int retVal = adc_value; */
-	/* last_timestamp = adc_value_timestamp; */
-
-	/* __builtin_enable_interrupts(); */
+	// Wait for a unique value.
+	while(last_timestamp == adc_value_timestamp)
+	{
+		;
+	}
 
 	
-	return adc_value;
+	__builtin_disable_interrupts();
+	
+	int retVal = adc_value;
+	last_timestamp = adc_value_timestamp;
+
+	__builtin_enable_interrupts();
+
+	return retVal;
 }
 
 int load_cell_sample_rate_hz()
