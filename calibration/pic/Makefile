@@ -73,7 +73,7 @@ LINKSCRIPT = "NU32bootloaded.ld"
 OBJS := $(patsubst %.c, %.o,$(wildcard *.c))
 HDRS := $(wildcard *.h)
 PROC = 32MX795F512L
-CFLAGS=-g -x c
+CFLAGS=-g -x c -O1
 TARGET = out
 
 #if on windows use a different RM
