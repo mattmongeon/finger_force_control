@@ -23,7 +23,7 @@ static volatile int ki_num = 1500;
 static int error_int = 0;
 
 static int holdTorqueTuneIndex = 0;
-static torque_tune_data holdTorqueTuneBuffer[100];
+static torque_tune_data holdTorqueTuneBuffer[200];
 
 
 // --- Control Loop Function --- //
@@ -80,7 +80,7 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) torque_controller()
 		
 		++holdTorqueTuneIndex;
 
-		if( holdTorqueTuneIndex >= 100 )
+		if( holdTorqueTuneIndex >= 200 )
 		{
 			system_set_state(IDLE);
 			motor_mA_set(0);

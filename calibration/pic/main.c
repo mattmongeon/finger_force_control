@@ -211,7 +211,7 @@ int main()
 			unsigned char* pBuff = torque_control_get_raw_tune_buffer();
 
 			unsigned long start = _CP0_GET_COUNT();
-			uart1_send_packet( pBuff, sizeof(torque_tune_data)*100 );
+			uart1_send_packet( pBuff, sizeof(torque_tune_data)*200 );
 			unsigned long end = _CP0_GET_COUNT();
 
 			float t = end - start;
