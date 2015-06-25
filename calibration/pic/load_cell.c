@@ -28,11 +28,11 @@ static int read_adc()
 }
 
 
-static void __ISR(_EXTERNAL_2_VECTOR, IPL5SOFT) adc_auto_read()
+void __ISR(_EXTERNAL_2_VECTOR, IPL6SRS) adc_auto_read()
 {
 	if( PORTEbits.RE9 )
 	{
-		adc_value_timestamp = _CP0_GET_COUNT();
+		// adc_value_timestamp = _CP0_GET_COUNT();
 		adc_value = read_adc();
 	}
 
@@ -46,7 +46,7 @@ int load_cell_init()
 	
 	// Take in the notification pin
 	INTCONSET = 0x4;       // step 3: INT2 triggers on rising edge
-	IPC2SET = 0x17 << 24;  // step 4: Set priority to 5, subpriority to 3
+	IPC2SET = 0x19 << 24;  // step 4: Set priority to 6, subpriority to 1
 	IFS0CLR = 0x800;       // step 5: clear the interrupt flag.
 	IEC0SET = 0x800;       // step 6: enable INT2 interrupt
 	
@@ -73,7 +73,7 @@ int load_cell_init()
 
 	// It is powered up and ready.  Now do the rest of the initialization.
 	i2c_write(ADC_ADDRESS, PU_CTRL_ADDR, 0x3E);
-	i2c_write(ADC_ADDRESS, CTRL2_ADDR, 0x10);  // 20 samples per second
+	i2c_write(ADC_ADDRESS, CTRL2_ADDR, 0x70);  // 320 samples per second
 
 	return 0;
 }
@@ -81,7 +81,7 @@ int load_cell_init()
 
 int load_cell_read_grams()
 {
-	float f = 1289.34 - (0.000178688 * load_cell_raw_value());
+	float f = 1279.82 - (0.000176655 * load_cell_raw_value());
 
 	int retVal = (int)f;
 	if( retVal >= 0 )
@@ -93,24 +93,24 @@ int load_cell_read_grams()
 
 int load_cell_raw_value()
 {
-	static unsigned long last_timestamp = 0;
+	/* static unsigned long last_timestamp = 0; */
 
-	// Wait for a unique value.
-	while(last_timestamp == adc_value_timestamp)
-	{
-		;
-	}
-
-	
-	__builtin_disable_interrupts();
-	
-	int retVal = adc_value;
-	last_timestamp = adc_value_timestamp;
-
-	__builtin_enable_interrupts();
+	/* // Wait for a unique value. */
+	/* while(last_timestamp == adc_value_timestamp) */
+	/* { */
+	/* 	; */
+	/* } */
 
 	
-	return retVal;
+	/* __builtin_disable_interrupts(); */
+	
+	/* int retVal = adc_value; */
+	/* last_timestamp = adc_value_timestamp; */
+
+	/* __builtin_enable_interrupts(); */
+
+	
+	return adc_value;
 }
 
 int load_cell_sample_rate_hz()
