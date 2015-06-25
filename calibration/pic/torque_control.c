@@ -83,6 +83,7 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) torque_controller()
 		if( holdTorqueTuneIndex >= 100 )
 		{
 			system_set_state(IDLE);
+			motor_mA_set(0);
 		}		
 		
 		break;
@@ -109,9 +110,8 @@ void torque_control_init()
 {
 	// --- Set Up Timer 4 For Current Controller ISR --- //
 
-	// Timer rate needs to be set based on the ADC sampling rate.  The default is
-	// 10 Hz, although it can be configured differently.
 	PR4 = ((NU32_SYS_FREQ / LOOP_RATE_HZ) / LOOP_TIMER_PRESCALAR) - 1;
+	T4CON = 0x0040;
 	TMR4 = 0;
 
 
