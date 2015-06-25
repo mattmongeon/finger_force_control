@@ -98,7 +98,30 @@ struct sTorqueTuneData
 	int mLoadCell_g;
 	int mError;
 	int mErrorInt;
+	int mCurrent_mA;
 	unsigned int mTimeStamp;
+	float mLoopExeTime_ms;
+};
+
+
+enum enumPLplotColor
+{
+	enumPLplotColor_BLACK = 0,
+	enumPLplotColor_RED,
+	enumPLplotColor_YELLOW,
+	enumPLplotColor_GREEN,
+	enumPLplotColor_AQUAMARINE,
+	enumPLplotColor_PINK,
+	enumPLplotColor_WHEAT,
+	enumPLplotColor_GREY,
+	enumPLplotColor_BROWN,
+	enumPLplotColor_BLUE,
+	enumPLplotColor_BLUE_VIOLET,
+	enumPLplotColor_CYAN,
+	enumPLplotColor_TURQUOISE,
+	enumPLplotColor_MAGENTA,
+	enumPLplotColor_SALMON,
+	enumPLplotColor_WHITE
 };
 
 
@@ -201,16 +224,13 @@ int main(int argc, char** argv)
 
 		case 'g':
 		{
-			float k[3];
+			float k[2];
 			
 			std::cout << "Enter Kp:  ";
 			std::cin >> k[0];
 
 			std::cout << "Enter Ki:  ";
 			std::cin >> k[1];
-
-			std::cout << "Enter Kd:  ";
-			std::cin >> k[2];
 
 			picSerial.WriteCommandToPic(nUtils::SET_TORQUE_CTRL_GAINS);
 			picSerial.WriteToPic(reinterpret_cast<unsigned char*>(&k), sizeof(k));
@@ -221,12 +241,11 @@ int main(int argc, char** argv)
 			picSerial.WriteCommandToPic(nUtils::GET_TORQUE_CTRL_GAINS);
 			
 			unsigned char buffer[20];
-			picSerial.ReadFromPic(buffer, 12);
+			picSerial.ReadFromPic(buffer, 8);
 
 			float* pF = reinterpret_cast<float*>(&buffer);
 			std::cout << "Kp:  " << pF[0] << std::endl;
 			std::cout << "Ki:  " << pF[1] << std::endl;
-			std::cout << "kd:  " << pF[2] << std::endl;
 			std::cout << std::endl;
 			
 			break;
@@ -336,14 +355,14 @@ int main(int argc, char** argv)
 
 			std::cout << "Waiting for tuning results..." << std::endl;
 
-			sTorqueTuneData tuneData[100];
-			picSerial.ReadFromPic( reinterpret_cast<unsigned char*>(&tuneData), sizeof(sTorqueTuneData)*100 );
+			sTorqueTuneData tuneData[200];
+			picSerial.ReadFromPic( reinterpret_cast<unsigned char*>(&tuneData), sizeof(sTorqueTuneData)*200 );
 
 			std::cout << "Tuning results received!" << std::endl;
-			std::cout << "Load Cell\t\tError\t\tError Integral\t\tTimestamp" << std::endl;
-			for( int i = 0; i < 100; ++i )
+			std::cout << "Load Cell\tError\t\tError Integral\t\tCurrent (mA)\t\tTimestamp\t\tExe Time (ms)" << std::endl;
+			for( int i = 0; i < 200; ++i )
 			{
-				std::cout << tuneData[i].mLoadCell_g << "\t\t" << tuneData[i].mError << "\t\t" << tuneData[i].mErrorInt << "\t\t" << tuneData[i].mTimeStamp << std::endl;
+				std::cout << tuneData[i].mLoadCell_g << "\t\t" << tuneData[i].mError << "\t\t" << tuneData[i].mErrorInt << "\t\t" << tuneData[i].mCurrent_mA << "\t\t" << tuneData[i].mTimeStamp << "\t\t" << tuneData[i].mLoopExeTime_ms << std::endl;
 			}
 
 			std::cout << std::endl;
@@ -351,23 +370,32 @@ int main(int argc, char** argv)
 
 			// --- Plot Results --- //
 
-			plinit();
-			plenv(0, 100, 0, 300, 0, 0);
-			pllab("Measurement", "Force (g)", "Trial results");
-			
 			std::vector<PLFLT> x;
-			for( int i = 0; i < 100; ++i )
+			for( int i = 0; i < 200; ++i )
 			{
 				x.push_back(i);
 			}
 
+			PLFLT yMax = -1000000.0;
+			PLFLT yMin = 1000000.0;
 			std::vector<PLFLT> y;
-			for( int i = 0; i < 100; ++i )
+			for( int i = 0; i < 200; ++i )
 			{
+				yMax = std::max<PLFLT>(yMax, tuneData[i].mLoadCell_g);
+				yMin = std::min<PLFLT>(yMin, tuneData[i].mLoadCell_g);
 				y.push_back(tuneData[i].mLoadCell_g);
 			}
 
-			plline(100, &(x[0]), &(y[0]));
+			plscolbg(255, 255, 255);
+			plinit();
+
+			plscolbg(0,0,0);  // The first call to plscolbg() edits the value stored for color index 0.  Set it back to black.
+			plcol0(enumPLplotColor_BLACK);
+			plenv(0, 200, yMin, yMax, 0, 0);
+			pllab("Measurement", "Force (g)", "Trial results");
+
+			plcol0(enumPLplotColor_BLUE);
+			plline(200, &(x[0]), &(y[0]));
 
 			plend();
 			
