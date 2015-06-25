@@ -6,17 +6,21 @@
 #include "utils.h"
 
 
+#define MAX_ERROR_INT 1000
+#define LOOP_RATE_HZ 200
+#define LOOP_TIMER_PRESCALAR 16
+
+#define K_DENOM 1000
+
+
 // --- Private Variables --- //
 
 static volatile int desired_force_g = 0;
 
-static volatile float kp = 2.0;
-static volatile float ki = 1.5;
-static volatile float kd = -1.0;
+static volatile int kp_num = 2000;
+static volatile int ki_num = 1500;
 
-static int max_error_int = 1000;
 static int error_int = 0;
-static int prev_error = 0;
 
 static int holdTorqueTuneIndex = 0;
 static torque_tune_data holdTorqueTuneBuffer[100];
@@ -24,35 +28,25 @@ static torque_tune_data holdTorqueTuneBuffer[100];
 
 // --- Control Loop Function --- //
 
-//static int torque_control_loop(int force_sensor_g)
-static int torque_control_loop(torque_tune_data* pData)
+static int torque_control_loop(int load_cell_g)
 {
-	int error = desired_force_g - pData->load_cell_g;
+	int error = desired_force_g - load_cell_g;
 
 	error_int += error;
-	if( error_int > max_error_int )
-		error_int = max_error_int;
-	else if( error_int < -max_error_int )
-		error_int = -max_error_int;
+	if( error_int > MAX_ERROR_INT )
+		error_int = MAX_ERROR_INT;
+	else if( error_int < -MAX_ERROR_INT )
+		error_int = -MAX_ERROR_INT;
 
-	int u_new = (kp*error) + (ki*error_int) + (kd*(error-prev_error));
+	int u_new = ((kp_num*error)/K_DENOM) + ((ki_num*error_int)/K_DENOM);
 
-	// We are outputting a current value.  Limit it at the maximum current.
-	/*
-	if( u_new > MAX_CURRENT_MA )
-		u_new = MAX_CURRENT_MA;
-
-	if( u_new < -MAX_CURRENT_MA )
-		u_new = -MAX_CURRENT_MA;
-	*/
-	
 	motor_mA_set(u_new);
 	
-	pData->error = error;
-	pData->error_int = error_int;
+	holdTorqueTuneBuffer[holdTorqueTuneIndex].load_cell_g = load_cell_g;
+	holdTorqueTuneBuffer[holdTorqueTuneIndex].error = error;
+	holdTorqueTuneBuffer[holdTorqueTuneIndex].error_int = error_int;
+	holdTorqueTuneBuffer[holdTorqueTuneIndex].current_mA = u_new;
 
-	prev_error = error;
-	
 	return u_new;
 }
 
@@ -69,21 +63,27 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) torque_controller()
 	case TRACK_CURRENT:
 		holdTorqueTuneIndex = 0;
 		error_int = 0;
-		prev_error = 0;
 		break;
 
 	case TUNE_TORQUE_GAINS:
 	{
-		holdTorqueTuneBuffer[holdTorqueTuneIndex].load_cell_g = load_cell_read_grams();
+		unsigned int start = _CP0_GET_COUNT();
 
-		torque_control_loop(&(holdTorqueTuneBuffer[holdTorqueTuneIndex]));
-		holdTorqueTuneBuffer[holdTorqueTuneIndex].timestamp = _CP0_GET_COUNT();
+		torque_control_loop(load_cell_read_grams());
+
+		unsigned int end = _CP0_GET_COUNT();
+		
+		holdTorqueTuneBuffer[holdTorqueTuneIndex].loop_exe_time_ms =  end - start;
+		holdTorqueTuneBuffer[holdTorqueTuneIndex].loop_exe_time_ms *= 25.0;
+		holdTorqueTuneBuffer[holdTorqueTuneIndex].loop_exe_time_ms /= 1000000.0;  // Put it in ms
+		holdTorqueTuneBuffer[holdTorqueTuneIndex].timestamp = start;
 		
 		++holdTorqueTuneIndex;
+
 		if( holdTorqueTuneIndex >= 100 )
 		{
 			system_set_state(IDLE);
-		}
+		}		
 		
 		break;
 	}
@@ -109,33 +109,9 @@ void torque_control_init()
 {
 	// --- Set Up Timer 4 For Current Controller ISR --- //
 
-	int prescalar = 1;
-	switch(load_cell_sample_rate_hz())
-	{
-	case 320:
-	case 80:
-		prescalar = 16;
-		T4CON = 0x0040;
-		break;
-
-	case 40:
-	case 20:
-		prescalar = 64;
-		T4CON = 0x0060;
-		break;
-
-	case 10:
-		prescalar = 256;
-		T4CON = 0x0070;
-		break;
-
-	default:
-		break;
-	}
-
 	// Timer rate needs to be set based on the ADC sampling rate.  The default is
 	// 10 Hz, although it can be configured differently.
-	PR4 = ((NU32_SYS_FREQ / load_cell_sample_rate_hz()) / prescalar) - 1;
+	PR4 = ((NU32_SYS_FREQ / LOOP_RATE_HZ) / LOOP_TIMER_PRESCALAR) - 1;
 	TMR4 = 0;
 
 
@@ -156,22 +132,23 @@ void torque_control_set_desired_force(int force_g)
 	desired_force_g = force_g;
 }
 
-void torque_control_set_gains(float kp_new, float ki_new, float kd_new)
+void torque_control_set_gains(float kp_new, float ki_new)
 {
+	int new_kp_num = (int)(kp_new * (float)(K_DENOM));
+	int new_ki_num = (int)(ki_new * (float)(K_DENOM));
+	
 	__builtin_disable_interrupts();
 
-	kp = kp_new;
-	ki = ki_new;
-	kd = kd_new;
+	kp_num = new_kp_num;
+	ki_num = new_ki_num;
 	
 	__builtin_enable_interrupts();
 }
 
-void torque_control_get_gains(float* p, float* i, float* d)
+void torque_control_get_gains(float* p, float* i)
 {
-	*p = kp;
-	*i = ki;
-	*d = kd;
+	*p = ((float)(kp_num) / (float)(K_DENOM));
+	*i = ((float)(ki_num) / (float)(K_DENOM));
 }
 
 unsigned char* torque_control_get_raw_tune_buffer()
