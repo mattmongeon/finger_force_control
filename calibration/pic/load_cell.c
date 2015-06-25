@@ -28,7 +28,7 @@ static int read_adc()
 }
 
 
-void __ISR(_EXTERNAL_2_VECTOR, IPL6SRS) adc_auto_read()
+void __ISR(_EXTERNAL_2_VECTOR, IPL6SOFT) adc_auto_read()
 {
 	if( PORTEbits.RE9 )
 	{
@@ -93,23 +93,25 @@ int load_cell_read_grams()
 
 int load_cell_raw_value()
 {
-	static unsigned long last_timestamp = 0;
+	/* static unsigned long last_timestamp = 0; */
 
-	// Wait for a unique value.
-	while(last_timestamp == adc_value_timestamp)
-	{
-		;
-	}
+	/* // Wait for a unique value. */
+	/* while(last_timestamp == adc_value_timestamp) */
+	/* { */
+	/* 	; */
+	/* } */
 
 	
-	__builtin_disable_interrupts();
+	/* __builtin_disable_interrupts(); */
 	
-	int retVal = adc_value;
-	last_timestamp = adc_value_timestamp;
+	/* int retVal = adc_value; */
+	/* last_timestamp = adc_value_timestamp; */
 
-	__builtin_enable_interrupts();
+	/* __builtin_enable_interrupts(); */
 
-	return retVal;
+	/* return retVal; */
+
+	return adc_value;
 }
 
 int load_cell_sample_rate_hz()
