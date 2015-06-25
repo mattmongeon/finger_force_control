@@ -131,16 +131,16 @@ int main()
 		
 		case 'g':
 		{
-			float k[3];
+			float k[2];
 			uart1_read_packet( (unsigned char*)(&k), sizeof(k) );
-			torque_control_set_gains(k[0], k[1], k[2]);
+			torque_control_set_gains(k[0], k[1]);
 			break;
 		}
 
 		case 'h':
 		{
-			float k[3];
-			torque_control_get_gains(&(k[0]), &(k[1]), &(k[2]));
+			float k[2];
+			torque_control_get_gains(&(k[0]), &(k[1]));
 			uart1_send_packet( (unsigned char*)(&k), sizeof(k) );
 			break;
 		}
@@ -186,6 +186,10 @@ int main()
 		case 't':
 		{
 			// --- Hold Commanded Tuning Force --- //
+
+			LCD_Clear();
+			LCD_WriteString("Tuning force...");
+			
 			int force;
 			uart1_read_packet( (unsigned char*)(&force), sizeof(int) );
 			torque_control_set_desired_force(force);
