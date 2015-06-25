@@ -53,11 +53,13 @@ int main()
 	NU32_LED1 = 1;
 	NU32_LED2 = 0;
 
+	wait_usec(500000);
+	
 	
 	__builtin_disable_interrupts();
 	
+	LCD_Setup();	
 	int init_retVal = load_cell_init();
-	LCD_Setup();
 	isense_init();
 	motor_init();
 	biotac_init();
@@ -207,9 +209,21 @@ int main()
 			
 			// Send the recorded data to the PC.
 			unsigned char* pBuff = torque_control_get_raw_tune_buffer();
-			uart1_send_packet( pBuff, sizeof(torque_tune_data)*100 );
 
-			LCD_Clear();
+			unsigned long start = _CP0_GET_COUNT();
+			uart1_send_packet( pBuff, sizeof(torque_tune_data)*100 );
+			unsigned long end = _CP0_GET_COUNT();
+
+			float t = end - start;
+			t *= 25.0;
+			t /= 1000000.0;
+			char b[20];
+			sprintf(b, "Tx: %f", t);
+			LCD_Move(1,0);
+			LCD_WriteString(b);
+			LCD_Move(0,0);
+
+			// LCD_Clear();
 			LCD_WriteString("Tuning data sent");
 			
 			break;
