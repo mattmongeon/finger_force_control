@@ -386,6 +386,7 @@ int main(int argc, char** argv)
 				y.push_back(tuneData[i].mLoadCell_g);
 			}
 
+			plsdev("xcairo");
 			plscolbg(255, 255, 255);
 			plinit();
 
