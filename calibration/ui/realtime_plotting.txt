@@ -1,0 +1,8 @@
+Things to look into:
+-------------------
+* What is the difference between plend(), plend1(), and plspause()?
+* What is plsstrm()?
+* What is plflush()?
+* Look at:  http://sourceforge.net/p/plplot/mailman/message/32228559/
+
+* Find a better font
