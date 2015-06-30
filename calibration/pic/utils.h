@@ -35,6 +35,9 @@
 
 void wait_usec(unsigned long time_usec);
 
+// This timer has 25 nanoseconds resolution.
+void wait_nsec(unsigned long time_nsec);
+
 
 #endif // INCLUDED_UTILS_H
 

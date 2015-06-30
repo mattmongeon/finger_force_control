@@ -11,3 +11,12 @@ void wait_usec(unsigned long time_usec)
 		;
 	}
 }
+
+void wait_nsec(unsigned long time_nsec)
+{
+	unsigned long start = _CP0_GET_COUNT();
+	while((_CP0_GET_COUNT() - start) < time_nsec)
+	{
+		;
+	}
+}
