@@ -2,13 +2,13 @@
 #define INCLUDED_LOAD_CELL_H
 
 
-int load_cell_init();
+void load_cell_init();
 
 int load_cell_read_grams();
 
 int load_cell_raw_value();
 
-int load_cell_sample_rate_hz();
+void load_cell_continuous_raw(int enable);
 
 
 #endif // INCLUDED_LOAD_CELL_H
