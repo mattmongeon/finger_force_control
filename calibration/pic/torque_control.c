@@ -5,7 +5,7 @@
 #include "NU32.h"
 
 
-#define MAX_ERROR_INT 1000
+#define MAX_ERROR_INT 10000
 #define LOOP_RATE_HZ 200
 #define LOOP_TIMER_PRESCALAR 16
 
@@ -16,8 +16,8 @@
 
 static volatile int desired_force_g = 0;
 
-static volatile int kp_num = 1850;
-static volatile int ki_num = 850;
+static volatile int kp_num = 2000;
+static volatile int ki_num = 1500;
 
 static int error_int = 0;
 
