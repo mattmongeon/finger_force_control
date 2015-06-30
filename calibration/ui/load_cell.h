@@ -1,5 +1,5 @@
-#ifndef INCLUDED_CALIBRATION_H
-#define INCLUDED_CALIBRATION_H
+#ifndef INCLUDED_LOAD_CELL_H
+#define INCLUDED_LOAD_CELL_H
 
 
 class cPicSerial;
@@ -13,7 +13,7 @@ public:
 	//----------------------  CONSTRUCTION / DESTRUCTION  ----------------------//
 	//--------------------------------------------------------------------------//
 	
-	cLoadCell(const cPicSerial* picComm);
+	cLoadCell(const cPicSerial* picSerial);
 
 	~cLoadCell();
 
@@ -34,8 +34,25 @@ public:
 	// Return - the calibrated load cell reading in grams.
 	int ReadLoadCell_grams();
 
+
+	void TuneForceHolding();
 	
 private:
+
+	//--------------------------------------------------------------------------//
+	//-----------------------------  NESTED STRUCT  ----------------------------//
+	//--------------------------------------------------------------------------//
+
+	struct sTorqueTuneData
+	{
+		int mLoadCell_g;
+		int mError;
+		int mErrorInt;
+		int mCurrent_mA;
+		unsigned int mTimeStamp;
+		float mLoopExeTime_ms;
+	};
+
 
 	//--------------------------------------------------------------------------//
 	//-----------------------------  DATA MEMBERS  -----------------------------//
@@ -47,5 +64,5 @@ private:
 };
 
 
-#endif  // INCLUDED_CALIBRATION_H
+#endif  // INCLUDED_LOAD_CELL_H
 
