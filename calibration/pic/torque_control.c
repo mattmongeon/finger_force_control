@@ -65,25 +65,31 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) torque_controller()
 		break;
 
 	case TUNE_TORQUE_GAINS:
+	case BIOTAC_CAL_SINGLE:
 	{
 		unsigned int start = _CP0_GET_COUNT();
 
 		torque_control_loop(load_cell_read_grams());
 
 		unsigned int end = _CP0_GET_COUNT();
-		
-		holdTorqueTuneBuffer[holdTorqueTuneIndex].loop_exe_time_ms =  end - start;
-		holdTorqueTuneBuffer[holdTorqueTuneIndex].loop_exe_time_ms *= 25.0;
-		holdTorqueTuneBuffer[holdTorqueTuneIndex].loop_exe_time_ms /= 1000000.0;  // Put it in ms
-		holdTorqueTuneBuffer[holdTorqueTuneIndex].timestamp = start;
-		
-		++holdTorqueTuneIndex;
 
-		if( holdTorqueTuneIndex >= 200 )
+		if( system_get_state() == TUNE_TORQUE_GAINS )
 		{
-			system_set_state(IDLE);
-			motor_mA_set(0);
-		}		
+			// Only do this part if we are specifically tuning torque gains.  Otherwise
+			// the BioTac portion is actually in charge.
+			holdTorqueTuneBuffer[holdTorqueTuneIndex].loop_exe_time_ms =  end - start;
+			holdTorqueTuneBuffer[holdTorqueTuneIndex].loop_exe_time_ms *= 25.0;
+			holdTorqueTuneBuffer[holdTorqueTuneIndex].loop_exe_time_ms /= 1000000.0;  // Put it in ms
+			holdTorqueTuneBuffer[holdTorqueTuneIndex].timestamp = start;
+		
+			++holdTorqueTuneIndex;
+
+			if( holdTorqueTuneIndex >= 200 )
+			{
+				system_set_state(IDLE);
+				motor_mA_set(0);
+			}
+		}
 		
 		break;
 	}

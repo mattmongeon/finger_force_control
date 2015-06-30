@@ -1,7 +1,17 @@
 #include "biotac.h"
+#include "system.h"
 #include "spi.h"
 #include "utils.h"
+#include "uart.h"
+#include "load_cell.h"
 #include "NU32.h"
+
+
+#define LOOP_RATE_HZ 100
+#define LOOP_TIMER_PRESCALAR 16
+
+
+static int numCalibrationSamples = 0;
 
 
 // --- BioTac Sampling Commands --- //
@@ -56,9 +66,68 @@
 	wait_usec(10);
 
 
+void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_reader_int()
+{
+	static biotac_data data;
+	
+	switch(system_get_state())
+	{
+	case BIOTAC_CAL_SINGLE:
+	{
+		// Read a single BioTac reading and associated load cell reading
+		// and transmit it.
+		unsigned long time_stamp = _CP0_GET_COUNT();
+		read_biotac(&data);
+		int load_cell = load_cell_read_grams();
+
+		uart1_send_packet((unsigned char*)(&time_stamp), sizeof(unsigned long));
+		uart1_send_packet((unsigned char*)(&data), sizeof(biotac_data));
+		uart1_send_packet((unsigned char*)(&load_cell), sizeof(int));
+
+		++numCalibrationSamples;
+		if( numCalibrationSamples > 200 )
+		{
+			// Signal end of data stream to the UI.
+			
+			memset(&time_stamp, 0x00, sizeof(unsigned long));
+			uart1_send_packet((unsigned char*)(&time_stamp), sizeof(unsigned long));
+
+			memset(&data, 0x00, sizeof(biotac_data));
+			uart1_send_packet((unsigned char*)(&data), sizeof(biotac_data));
+
+			memset(&load_cell, 0x00, sizeof(int));
+			uart1_send_packet((unsigned char*)(&load_cell), sizeof(int));
+			
+			system_set_state(IDLE);
+		}
+		
+		break;
+	}
+
+	default:
+		numCalibrationSamples = 0;
+		break;
+	}
+	
+	IFS0CLR = 1 << 20;
+}
+
 void biotac_init()
 {
 	spi_init();
+
+	
+	// --- Set Up Timer 3 Interrupt --- //
+
+	PR5 = ((NU32_SYS_FREQ / LOOP_RATE_HZ) / LOOP_TIMER_PRESCALAR) - 1;
+	T5CON = 0x0040;
+	TMR5 = 0;
+
+	IPC5SET = 0x11;     // priority 4, subpriority 1
+	IFS0CLR = 1 << 20;  // Clear the interrupt flag
+	IEC0SET = 1 << 20;  // Enable the interrupt
+
+	T5CONSET = 0x8000;
 }
 
 

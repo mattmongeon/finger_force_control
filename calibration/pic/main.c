@@ -5,40 +5,11 @@
 #include "motor.h"
 #include "biotac.h"
 #include "torque_control.h"
+#include "uart.h"
 
 
 extern volatile int adc_data_ready;
 extern volatile int adc_value;
-
-
-static int uart1_send_packet(unsigned char* pData, int numBytes)
-{
-	int i = 0;
-	for( ; i < numBytes; ++i )
-	{
-		while(U1STAbits.UTXBF)
-		{
-			;  // Wait until TX buffer is not full.
-		}
-
-		U1TXREG = *pData;
-		++pData;
-	}
-}
-
-
-static int uart1_read_packet(unsigned char* pData, int numBytes)
-{
-	int i = 0;
-	while(numBytes-i > 0)
-	{
-		if(U1STAbits.URXDA)
-		{
-			pData[i] = U1RXREG;
-			++i;
-		}
-	}
-}
 
 
 int main()
@@ -85,8 +56,26 @@ int main()
 		
 		switch(buffer[0])
 		{
+		case 'a':
+		{
+			// --- BioTac Calibration --- //
+
+			int force;
+			uart1_read_packet( (unsigned char*)(&force), sizeof(int) );
+			torque_control_set_desired_force(force);
+			
+			system_set_state(BIOTAC_CAL_SINGLE);
+			
+			while(system_get_state() == BIOTAC_CAL_SINGLE)
+			{
+				;
+			}
+		}
+
 		case 'b':
 		{
+			// --- Read BioTac Data --- //
+			
 			read_biotac(&biotac);
 			uart1_send_packet( (unsigned char*)(&biotac), sizeof(biotac_data) );
 			break;
@@ -116,6 +105,8 @@ int main()
 		
 		case 'g':
 		{
+			// --- Set Gains --- //
+			
 			float k[2];
 			uart1_read_packet( (unsigned char*)(&k), sizeof(k) );
 			torque_control_set_gains(k[0], k[1]);
@@ -124,6 +115,8 @@ int main()
 
 		case 'h':
 		{
+			// --- Get Gains --- //
+			
 			float k[2];
 			torque_control_get_gains(&(k[0]), &(k[1]));
 			uart1_send_packet( (unsigned char*)(&k), sizeof(k) );
@@ -132,6 +125,8 @@ int main()
 			
 		case 'l':
 		{
+			// --- Read Load Cell -- //
+			
 			int load_cell_g = load_cell_read_grams();
 			uart1_send_packet( (unsigned char*)(&load_cell_g), 4 );
 			break;
@@ -139,6 +134,8 @@ int main()
 
 		case 'p':
 		{
+			// --- Set PWM Directly --- //
+			
 			NU32_ReadUART1(buffer, 50);
 			char pwm = buffer[0];
 			if( pwm != 0 )
@@ -163,6 +160,8 @@ int main()
 
 		case 'r':
 		{
+			// --- Read Raw (Uncalibrated) Load Cell --- //
+			
 			int load_cell_raw = load_cell_raw_value();
 			uart1_send_packet( (unsigned char*)(&load_cell_raw), 4 );
 			break;
