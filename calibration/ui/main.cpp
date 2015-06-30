@@ -60,6 +60,7 @@ void printMenu()
 	std::cout << "s:  Continuously read from load cell" << std::endl;
 	std::cout << "t:  Tune torque gains" << std::endl;
 	std::cout << "q:  Quit" << std::endl;
+	std::cout << "z:  Continuous raw load cell" << std::endl;
 	std::cout << std::endl;
 }
 
@@ -165,7 +166,7 @@ int main(int argc, char** argv)
 	std::cout << std::endl;
 	std::cout << std::endl;
 
-
+	
 	bool keepGoing = true;
 	while(keepGoing)
 	{
@@ -407,6 +408,54 @@ int main(int argc, char** argv)
 		{
 			std::cout << "Exiting..." << std::endl;
 			keepGoing = false;
+			break;
+		}
+
+		case 'z':
+		{
+			picSerial.WriteCommandToPic(nUtils::WILDCARD);
+			
+			stopLoop = false;
+			detectEnterPress = true;
+
+			std::cout << nUtils::CLEAR_CONSOLE << std::flush;
+			std::cout << "Read continuously from load cell\r\n";
+			std::cout << "Enter q+ENTER to quit\r\n";
+			std::cout << "\r\n";
+			std::cout << "Waiting for start...\r\n";
+			std::cout << "Waiting for loop frequency...\r\n";
+			std::cout << "Waiting for ticks...\r\n";
+			std::cout << "Waiting for exe time...\r\n";
+			std::cout << "Waiting for possible frequency...\r\n";
+			std::cout << "Waiting for ADC...\r\n";
+			std::cout << std::flush;
+
+			uint32_t prevStart = 0;
+			while(!stopLoop)
+			{
+				std::cout << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE;
+
+				int adc_value = 0;
+				uint32_t ticks = 0;
+				uint32_t start = 0;
+				picSerial.ReadFromPic( reinterpret_cast<unsigned char*>(&start), sizeof(uint32_t) );
+				picSerial.ReadFromPic( reinterpret_cast<unsigned char*>(&ticks), sizeof(uint32_t) );
+				picSerial.ReadFromPic( reinterpret_cast<unsigned char*>(&adc_value), sizeof(int) );
+				
+				float exe_time_ms = (ticks * 25.0) / 1000000.0;
+				float loopFreq_hz = ((start - prevStart) * 25.0) / 1000000000.0;
+				loopFreq_hz = 1.0 / loopFreq_hz;
+				std::cout << nUtils::CLEAR_LINE << "Start: " << start << "\r\n";
+				std::cout << nUtils::CLEAR_LINE << "Loop Freq: " << loopFreq_hz << " Hz\r\n";
+				std::cout << nUtils::CLEAR_LINE << "Ticks:  " << ticks << "\r\n";
+				std::cout << nUtils::CLEAR_LINE << "Exe Time:  " << exe_time_ms  << " ms\r\n";
+				std::cout << nUtils::CLEAR_LINE << "Possible Freq:  " << 1.0 / (exe_time_ms / 1000.0) << " Hz\r\n";
+				std::cout << nUtils::CLEAR_LINE << "ADC:  " << adc_value << "\r\n";
+				std::cout << std::flush;
+
+				prevStart = start;
+			}
+
 			break;
 		}
 		}
