@@ -16,6 +16,7 @@ namespace nUtils
 
 	// --- PIC Commands --- //
 
+	const std::string BIOTAC_CAL_SINGLE = "a\n";
 	const std::string READ_BIOTAC = "b\n";
 	const std::string HOLD_FORCE = "f\n";
 	const std::string SET_TORQUE_CTRL_GAINS = "g\n";
@@ -27,6 +28,28 @@ namespace nUtils
 
 	const std::string WILDCARD = "z\n";
 
+	// --- Color Enum for PLplot --- //
+	
+	enum enumPLplotColor
+	{
+		enumPLplotColor_BLACK = 0,
+		enumPLplotColor_RED,
+		enumPLplotColor_YELLOW,
+		enumPLplotColor_GREEN,
+		enumPLplotColor_AQUAMARINE,
+		enumPLplotColor_PINK,
+		enumPLplotColor_WHEAT,
+		enumPLplotColor_GREY,
+		enumPLplotColor_BROWN,
+		enumPLplotColor_BLUE,
+		enumPLplotColor_BLUE_VIOLET,
+		enumPLplotColor_CYAN,
+		enumPLplotColor_TURQUOISE,
+		enumPLplotColor_MAGENTA,
+		enumPLplotColor_SALMON,
+		enumPLplotColor_WHITE
+	};
+	
 
 	// --- Terminal Helper Functions --- //
 
