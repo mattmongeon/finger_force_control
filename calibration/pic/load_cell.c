@@ -1,6 +1,7 @@
 #include "NU32.h"
 #include "load_cell.h"
 #include "utils.h"
+#include "uart.h"
 
 
 static volatile unsigned long adc_value_timestamp = 0;
@@ -10,36 +11,6 @@ static volatile int enable_continuous = 0;
 
 #define LOOP_RATE_HZ  320
 #define LOOP_TIMER_PRESCALAR  16
-
-
-static int uart1_send_packet(unsigned char* pData, int numBytes)
-{
-	int i = 0;
-	for( ; i < numBytes; ++i )
-	{
-		while(U1STAbits.UTXBF)
-		{
-			;  // Wait until TX buffer is not full.
-		}
-
-		U1TXREG = *pData;
-		++pData;
-	}
-}
-
-
-static int uart1_read_packet(unsigned char* pData, int numBytes)
-{
-	int i = 0;
-	while(numBytes-i > 0)
-	{
-		if(U1STAbits.URXDA)
-		{
-			pData[i] = U1RXREG;
-			++i;
-		}
-	}
-}
 
 
 /*
