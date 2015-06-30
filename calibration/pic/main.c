@@ -48,18 +48,10 @@ int main()
 	NU32_LED1 = 1;
 	NU32_LED2 = 1;
 	
-	wait_usec(500000);
-
-	NU32_LED1 = 1;
-	NU32_LED2 = 0;
-
-	wait_usec(500000);
-	
-	
 	__builtin_disable_interrupts();
 	
 	LCD_Setup();	
-	int init_retVal = load_cell_init();
+	load_cell_init();
 	isense_init();
 	motor_init();
 	biotac_init();
@@ -71,17 +63,8 @@ int main()
 	LCD_Clear();
 	LCD_WriteString("Initialized!");
 
-	wait_usec(500000);
-
 	NU32_LED1 = 0;
 	NU32_LED2 = 0;
-
-	wait_usec(500000);
-	
-
-	int errorLEDs = (init_retVal != 0);
-	NU32_LED1 = 0;
-	NU32_LED2 = (errorLEDs != 0);
 
 
 	char buffer[50];
@@ -225,6 +208,13 @@ int main()
 
 			// LCD_Clear();
 			LCD_WriteString("Tuning data sent");
+			
+			break;
+		}
+
+		case 'z':
+		{
+			load_cell_continuous_raw(1);
 			
 			break;
 		}
