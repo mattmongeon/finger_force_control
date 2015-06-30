@@ -170,13 +170,61 @@ int main(int argc, char** argv)
 			cStopwatch stopwatch;
 			keyboardThread.StartDetection();
 			stopwatch.Start();
+
+			std::cout << nUtils::CLEAR_CONSOLE << std::flush;
+			std::cout << "Read continuously from BioTac\r\n";
+			std::cout << "Enter q + ENTER to quit\r\n";
+			std::cout << "\r\n";
+			std::cout << "Waiting for E1...\r\n"; 
+			std::cout << "Waiting for E2...\r\n"; 
+			std::cout << "Waiting for E3...\r\n"; 
+			std::cout << "Waiting for E4...\r\n"; 
+			std::cout << "Waiting for E5...\r\n"; 
+			std::cout << "Waiting for E6...\r\n"; 
+			std::cout << "Waiting for E7...\r\n"; 
+			std::cout << "Waiting for E8...\r\n"; 
+			std::cout << "Waiting for E9...\r\n"; 
+			std::cout << "Waiting for E10...\r\n";
+			std::cout << "Waiting for E11...\r\n";
+			std::cout << "Waiting for E12...\r\n";
+			std::cout << "Waiting for E13...\r\n";
+			std::cout << "Waiting for E14...\r\n";
+			std::cout << "Waiting for E15...\r\n";
+			std::cout << "Waiting for E16...\r\n";
+			std::cout << "Waiting for E17...\r\n";
+			std::cout << "Waiting for E18...\r\n";
+			std::cout << "Waiting for E19...\r\n";
+			std::cout << "Waiting for PAC...\r\n";
+			std::cout << "Waiting for PDC...\r\n";
+			std::cout << "Waiting for TAC...\r\n";
+			std::cout << "Waiting for TDC...\r\n";
 			
 			while(true)
 			{
-				std::cout << nUtils::CLEAR_CONSOLE << std::flush;
-				std::cout << "Read continuously from BioTac\r\n";
-				std::cout << "Enter q + ENTER to quit\r\n";
-				std::cout << "\r\n";
+				std::cout << nUtils::PREV_LINE << nUtils::CLEAR_LINE
+						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
+						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
+						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
+						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
+						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
+						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
+						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
+						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
+						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
+						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
+						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
+						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
+						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
+						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
+						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
+						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
+						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
+						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
+						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
+						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
+						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
+						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE;
+				
 				biotac.ReadSingle();
 
 				stopwatch.Reset();
@@ -198,14 +246,17 @@ int main(int argc, char** argv)
 			keyboardThread.StartDetection();
 			stopwatch.Start();
 
+			std::cout << nUtils::CLEAR_CONSOLE << std::flush;
+			std::cout << "Read continuously from load cell\r\n";
+			std::cout << "Enter q+ENTER to quit\r\n";
+			std::cout << "\r\n";
+			std::cout << "Waiting for force...\r\n";
+			
+
 			while(true)
 			{
-				std::cout << nUtils::CLEAR_CONSOLE << std::flush;
-				std::cout << "Read continuously from load cell\r\n";
-				std::cout << "Enter q+ENTER to quit\r\n";
-				std::cout << "\r\n";
-				std::cout << "Force:  " << loadCell.ReadLoadCell_grams() << " g\r\n";
-				std::cout << std::endl;
+				std::cout << nUtils::PREV_LINE << nUtils::CLEAR_LINE << "Force:  " << loadCell.ReadLoadCell_grams() << " g\r\n";
+				std::cout << std::flush;
 
 				stopwatch.Reset();
 				while(stopwatch.GetElapsedTime_ms() < 100.0)
