@@ -3,6 +3,7 @@
 #include <vector>
 #include "pic_serial.h"
 #include "load_cell.h"
+#include "biotac.h"
 #include "utils.h"
 #include "stopwatch.h"
 #include "keyboard_thread.h"
@@ -24,6 +25,7 @@ void printMenu()
 	std::cout << "Function Menu" << std::endl;
 	std::cout << "-------------" << std::endl;
 	std::cout << std::endl;
+	std::cout << "a:  Calibrate BioTac" << std::endl;
 	std::cout << "b:  Single read from BioTac" << std::endl;
 	std::cout << "c:  Calibrate load cell" << std::endl;
 	std::cout << "f:  Hold force" << std::endl;
@@ -39,35 +41,6 @@ void printMenu()
 	std::cout << std::endl;
 }
 
-
-struct sBioTacData
-{
-	unsigned short e1;
-	unsigned short e2;
-	unsigned short e3;
-	unsigned short e4;
-	unsigned short e5;
-	unsigned short e6;
-	unsigned short e7;
-	unsigned short e8;
-	unsigned short e9;
-	unsigned short e10;
-	unsigned short e11;
-	unsigned short e12;
-	unsigned short e13;
-	unsigned short e14;
-	unsigned short e15;
-	unsigned short e16;
-	unsigned short e17;
-	unsigned short e18;
-	unsigned short e19;
-
-	unsigned short pac;
-	unsigned short pdc;
-
-	unsigned short tac;
-	unsigned short tdc;
-};
 
 int main(int argc, char** argv)
 {
@@ -91,9 +64,10 @@ int main(int argc, char** argv)
 
 	// --- Devices --- //
 	
-	std::cout << "Constructing load cell instance" << std::endl;
+	std::cout << "Constructing device instances" << std::endl;
 	cLoadCell loadCell(&picSerial);
-
+	cBioTac biotac(&picSerial);
+	
 
 	// --- Miscellaneous --- //
 	
@@ -123,32 +97,7 @@ int main(int argc, char** argv)
 		
 		case 'b':
 		{
-			std::cout << "Read from BioTac (e1):" << std::endl;
-			sBioTacData d = picSerial.ReadValueFromPic<sBioTacData>(nUtils::READ_BIOTAC);
-			std::cout << "E1:  " << d.e1 << "\r\n";
-			std::cout << "E2:  " << d.e2 << "\r\n";
-			std::cout << "E3:  " << d.e3 << "\r\n";
-			std::cout << "E4:  " << d.e4 << "\r\n";
-			std::cout << "E5:  " << d.e5 << "\r\n";
-			std::cout << "E6:  " << d.e6 << "\r\n";
-			std::cout << "E7:  " << d.e7 << "\r\n";
-			std::cout << "E8:  " << d.e8 << "\r\n";
-			std::cout << "E9:  " << d.e9 << "\r\n";
-			std::cout << "E10:  " << d.e10 << "\r\n";
-			std::cout << "E11:  " << d.e11 << "\r\n";
-			std::cout << "E12:  " << d.e12 << "\r\n";
-			std::cout << "E13:  " << d.e13 << "\r\n";
-			std::cout << "E14:  " << d.e14 << "\r\n";
-			std::cout << "E15:  " << d.e15 << "\r\n";
-			std::cout << "E16:  " << d.e16 << "\r\n";
-			std::cout << "E17:  " << d.e17 << "\r\n";
-			std::cout << "E18:  " << d.e18 << "\r\n";
-			std::cout << "E19:  " << d.e19 << "\r\n";
-			std::cout << "PAC:  " << d.pac << "\r\n";
-			std::cout << "PDC:  " << d.pdc << "\r\n";
-			std::cout << "TAC:  " << d.tac << "\r\n";
-			std::cout << "TDC:  " << d.tdc << "\r\n";
-			std::cout << std::endl;
+			biotac.ReadSingle();
 			break;
 		}
 			
@@ -228,31 +177,7 @@ int main(int argc, char** argv)
 				std::cout << "Read continuously from BioTac\r\n";
 				std::cout << "Enter q + ENTER to quit\r\n";
 				std::cout << "\r\n";
-				sBioTacData d = picSerial.ReadValueFromPic<sBioTacData>(nUtils::READ_BIOTAC);
-				std::cout << "E1:  " << d.e1 << "\r\n";
-				std::cout << "E2:  " << d.e2 << "\r\n";
-				std::cout << "E3:  " << d.e3 << "\r\n";
-				std::cout << "E4:  " << d.e4 << "\r\n";
-				std::cout << "E5:  " << d.e5 << "\r\n";
-				std::cout << "E6:  " << d.e6 << "\r\n";
-				std::cout << "E7:  " << d.e7 << "\r\n";
-				std::cout << "E8:  " << d.e8 << "\r\n";
-				std::cout << "E9:  " << d.e9 << "\r\n";
-				std::cout << "E10:  " << d.e10 << "\r\n";
-				std::cout << "E11:  " << d.e11 << "\r\n";
-				std::cout << "E12:  " << d.e12 << "\r\n";
-				std::cout << "E13:  " << d.e13 << "\r\n";
-				std::cout << "E14:  " << d.e14 << "\r\n";
-				std::cout << "E15:  " << d.e15 << "\r\n";
-				std::cout << "E16:  " << d.e16 << "\r\n";
-				std::cout << "E17:  " << d.e17 << "\r\n";
-				std::cout << "E18:  " << d.e18 << "\r\n";
-				std::cout << "E19:  " << d.e19 << "\r\n";
-				std::cout << "PAC:  " << d.pac << "\r\n";
-				std::cout << "PDC:  " << d.pdc << "\r\n";
-				std::cout << "TAC:  " << d.tac << "\r\n";
-				std::cout << "TDC:  " << d.tdc << "\r\n";
-				std::cout << std::endl;
+				biotac.ReadSingle();
 
 				stopwatch.Reset();
 				while(stopwatch.GetElapsedTime_ms() < 100.0)
