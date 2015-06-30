@@ -10,6 +10,7 @@ namespace nUtils
     // --- Linux-Specific Console Commands --- //
 
 	const std::string PREV_LINE = "\e[A";
+	const std::string CLEAR_LINE = "\e[K";
 	const std::string CLEAR_CONSOLE = "\033[2J\033[1;1H";
 
 
@@ -23,6 +24,8 @@ namespace nUtils
 	const std::string SET_PWM = "p\n";
 	const std::string READ_RAW_LOAD_CELL = "r\n";
 	const std::string TUNE_TORQUE_GAINS = "t\n";
+
+	const std::string WILDCARD = "z\n";
 
 
 	// --- Terminal Helper Functions --- //
