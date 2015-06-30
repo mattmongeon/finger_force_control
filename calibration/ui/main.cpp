@@ -5,34 +5,9 @@
 #include "load_cell.h"
 #include "utils.h"
 #include "stopwatch.h"
+#include "keyboard_thread.h"
 #include <pthread.h>
 #include <plplot/plplot.h>
-
-
-static bool detectEnterPress = false;
-static bool stopLoop = false;
-static bool stopThread = false;
-
-
-void* keyboardThread(void* pIn)
-{
-	while(!stopThread)
-	{
-		if( detectEnterPress )
-		{
-			// Just wait for the user to press q+ENTER.
-			std::string input;
-			std::cin >> input;
-			if( input == "q" )
-			{
-				stopLoop = true;
-				detectEnterPress = false;
-			}
-		}
-	}
-
-	return NULL;
-}
 
 
 void printValues( double loadCellForce, double biotacForce, int sampleNum )
@@ -155,9 +130,7 @@ int main(int argc, char** argv)
 	// --- Miscellaneous --- //
 	
 	std::cout << "Setting up thread for keyboard input" << std::endl;
-
-	pthread_t keyboardThreadHandle;
-	pthread_create(&keyboardThreadHandle, NULL, keyboardThread, NULL);
+	cKeyboardThread keyboardThread;
 	
 
 	// --- Main State Machine --- //
@@ -166,7 +139,7 @@ int main(int argc, char** argv)
 	std::cout << std::endl;
 	std::cout << std::endl;
 
-	
+
 	bool keepGoing = true;
 	while(keepGoing)
 	{
@@ -271,11 +244,10 @@ int main(int argc, char** argv)
 		case 'r':
 		{
 			cStopwatch stopwatch;
-			stopLoop = false;
-			detectEnterPress = true;
+			keyboardThread.StartDetection();
 			stopwatch.Start();
 			
-			while(!stopLoop)
+			while(true)
 			{
 				std::cout << nUtils::CLEAR_CONSOLE << std::flush;
 				std::cout << "Read continuously from BioTac\r\n";
@@ -312,6 +284,9 @@ int main(int argc, char** argv)
 				{
 					;
 				}
+
+				if(keyboardThread.QuitRequested())
+					break;
 			}
 
 			break;
@@ -320,11 +295,10 @@ int main(int argc, char** argv)
 		case 's':
 		{
 			cStopwatch stopwatch;
-			stopLoop = false;
-			detectEnterPress = true;
+			keyboardThread.StartDetection();
 			stopwatch.Start();
 
-			while(!stopLoop)
+			while(true)
 			{
 				std::cout << nUtils::CLEAR_CONSOLE << std::flush;
 				std::cout << "Read continuously from load cell\r\n";
@@ -338,6 +312,9 @@ int main(int argc, char** argv)
 				{
 					;
 				}
+
+				if(keyboardThread.QuitRequested())
+					break;
 			}
 
 			break;
@@ -415,8 +392,7 @@ int main(int argc, char** argv)
 		{
 			picSerial.WriteCommandToPic(nUtils::WILDCARD);
 			
-			stopLoop = false;
-			detectEnterPress = true;
+			keyboardThread.StartDetection();
 
 			std::cout << nUtils::CLEAR_CONSOLE << std::flush;
 			std::cout << "Read continuously from load cell\r\n";
@@ -431,7 +407,7 @@ int main(int argc, char** argv)
 			std::cout << std::flush;
 
 			uint32_t prevStart = 0;
-			while(!stopLoop)
+			while(true)
 			{
 				std::cout << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE;
 
@@ -454,6 +430,9 @@ int main(int argc, char** argv)
 				std::cout << std::flush;
 
 				prevStart = start;
+
+				if(keyboardThread.QuitRequested())
+					break;
 			}
 
 			break;
@@ -466,9 +445,6 @@ int main(int argc, char** argv)
 
 	std::cout << "Releasing resources..." << std::endl;
 	picSerial.CloseSerialPort();
-
-	stopThread = true;
-	pthread_join(keyboardThreadHandle, NULL);
 
 
 	// --- Finished --- //
