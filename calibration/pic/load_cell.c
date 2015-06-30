@@ -1,87 +1,149 @@
 #include "NU32.h"
 #include "load_cell.h"
-#include "i2c.h"
-
-#define ADC_ADDRESS   (0x2A << 1)
-#define ADC_I2C_BUS   I2C_ID_1
-#define ADC_I2C_BAUD  50000
-
-#define PU_CTRL_ADDR  0x00
-#define CTRL2_ADDR    0x02
-#define ADC_REGISTERS_ADDR 0x15
-#define I2C_CONTROL_ADDR 0x11
-#define ADCO_B2_ADDR  0x12
+#include "utils.h"
 
 
 static volatile unsigned long adc_value_timestamp = 0;
 static volatile int adc_value = 0;
-static int sample_rate_hz = 320;
+static volatile int enable_continuous = 0;
 
 
-static int read_adc()
+#define LOOP_RATE_HZ  320
+#define LOOP_TIMER_PRESCALAR  16
+
+
+static int uart1_send_packet(unsigned char* pData, int numBytes)
 {
-	char value1 = 0, value2 = 0, value3 = 0;
-	i2c_read(ADC_ADDRESS, ADCO_B2_ADDR, &value1);
-	i2c_read(ADC_ADDRESS, ADCO_B2_ADDR + 1, &value2);
-	i2c_read(ADC_ADDRESS, ADCO_B2_ADDR + 2, &value3);
-	return (value1<<16) + (value2<<8) + (value3);
+	int i = 0;
+	for( ; i < numBytes; ++i )
+	{
+		while(U1STAbits.UTXBF)
+		{
+			;  // Wait until TX buffer is not full.
+		}
+
+		U1TXREG = *pData;
+		++pData;
+	}
 }
 
 
-void __ISR(_EXTERNAL_2_VECTOR, IPL6SOFT) adc_auto_read()
+static int uart1_read_packet(unsigned char* pData, int numBytes)
 {
-	if( PORTEbits.RE9 )
+	int i = 0;
+	while(numBytes-i > 0)
 	{
-		adc_value_timestamp = _CP0_GET_COUNT();
-		adc_value = read_adc();
+		if(U1STAbits.URXDA)
+		{
+			pData[i] = U1RXREG;
+			++i;
+		}
+	}
+}
+
+
+/*
+Notes:
+- Re-calibrate the load cell with the PIC ADC.
+  o Try doing everything at a lower frequency to make sure everything is ok.
+  o Go back to transmitting the calibrated value.
+- Time the ADC interrupt execution and print it to the LCD.
+  o Ensure the time is below the period.  Do it at full sampling frequency.
+- Transmit a timestamp for the beginning of the ADC loop
+  o In the UI take the difference between timestamps during gain tuning to ensure
+    the loop really is running regularly.
+  o Update the execution time of each loop in the console.
+  o Update the time between ADC loop ticks.
+- Check the noise of the ADC while reading from the load cell continuously.
+  o Determine if averaging the signal needs to be done.
+- Try increasing the frequency of the timer if possible, up to 400 or more.
+  o Make sure to run everything (load cell, motor, etc.) while using the gain tune feature.
+  o Check the noise of the ADC.
+  o Check the execution time of each loop iteration, transmit it to the UI and update the console.
+- Try doing the full BioTac calibration functionality.
+- Figure out why my loop is triggering faster than I think I have it set for.
+  o The ticks tell me it is triggering at 512 Hz even though my numbers say 320.
+- Debug why the loop is getting stuck
+  o Most likely it is due to the UART Tx buffer loop.  When the UI is constantly receiving, it
+    never gets stuck.  This tells me sometimes the Tx buffer gets stuck.
+*/
+
+
+void __ISR(_TIMER_1_VECTOR, IPL5SOFT) adc_timer_interrupt()
+{
+	unsigned long start = _CP0_GET_COUNT();
+	
+	AD1CHSbits.CH0SA = 2;  // Sample AN0
+	AD1CON1bits.SAMP = 1;
+
+	// Wait enough time for sampling.
+	wait_nsec(250);
+
+	// Turn off the sampling bit.
+	AD1CON1bits.SAMP = 0;
+
+	// Start the conversion process.  The PIC will tell us when it is done
+	// by setting the DONE bit to 1.
+	while( !AD1CON1bits.DONE )
+	{
+		;
 	}
 
-    IFS0CLR = 0x800;
+	// Read in the ADC value.
+	adc_value = ADC1BUF0;
+
+	unsigned long end = _CP0_GET_COUNT();
+
+	unsigned long time = end - start;
+
+	if( enable_continuous )
+	{
+		LCD_Clear();
+		char b[20];
+		sprintf(b, "Ticks: %d", time);
+		LCD_WriteString(b);
+
+		uart1_send_packet( (unsigned char*)(&start), sizeof(unsigned long) );
+		uart1_send_packet( (unsigned char*)(&time), sizeof(unsigned long) );
+		uart1_send_packet( (unsigned char*)(&adc_value), sizeof(int) );
+	}
+
+	IFS0CLR = 0x10;
 }
 
 
-int load_cell_init()
+void load_cell_init()
 {
-	// --- Initialize Notification Pin --- //
+	// --- Configure ADC --- //
+
+	AD1PCFGbits.PCFG2 = 0;  // Use AN2
+	AD1CON3bits.ADCS = 2;
+	AD1CON1bits.ADON = 1;
 	
-	// Take in the notification pin
-	INTCONSET = 0x4;       // step 3: INT2 triggers on rising edge
-	IPC2SET = 0x19 << 24;  // step 4: Set priority to 6, subpriority to 1
-	IFS0CLR = 0x800;       // step 5: clear the interrupt flag.
-	IEC0SET = 0x800;       // step 6: enable INT2 interrupt
 	
+	// --- Configure Timer 1 --- //
 
-	// --- Initialize I2C --- //
+	PR1 = ((NU32_SYS_FREQ / LOOP_RATE_HZ) / LOOP_TIMER_PRESCALAR) - 1;
+	T1CON = 0x0040;
+	TMR1 = 0;
 	
-	i2c_initialize(90);
 	
-
-	// --- Initialize The ADC --- //
-
-	i2c_write(ADC_ADDRESS, PU_CTRL_ADDR, 0x01);
-	i2c_write(ADC_ADDRESS, PU_CTRL_ADDR, 0x02);
+	// --- Set Up Timer 1 Interrupt --- //
 	
-	// The documentation says to wait about 200 microseconds, but we will wait for 400
-	// just to be safe.
-	wait_usec(400);
+	IPC1SET = 0x14;     // priority 5, subpriority 0
+	IFS0CLR = 0x10;  // clear the interrupt flag
+	IEC0SET = 0x10;  // Enable the interrupt
 
-	// Check the PUR bit
-	unsigned char readMe = 0;
-	i2c_read(ADC_ADDRESS, PU_CTRL_ADDR, &readMe);
-	if( !(readMe & 0x08) )
-		return -1;
+	
+	// --- Start Controller Timer --- //
 
-	// It is powered up and ready.  Now do the rest of the initialization.
-	i2c_write(ADC_ADDRESS, PU_CTRL_ADDR, 0x3E);
-	i2c_write(ADC_ADDRESS, CTRL2_ADDR, 0x70);  // 320 samples per second
-
-	return 0;
+	T1CONSET = 0x8000;
 }
 
 
 int load_cell_read_grams()
 {
-	float f = 1279.82 - (0.000176655 * load_cell_raw_value());
+	float f = 1301.1 - (1.938 * load_cell_raw_value());
 
 	int retVal = (int)f;
 	if( retVal >= 0 )
@@ -93,29 +155,11 @@ int load_cell_read_grams()
 
 int load_cell_raw_value()
 {
-	/* static unsigned long last_timestamp = 0; */
-
-	/* // Wait for a unique value. */
-	/* while(last_timestamp == adc_value_timestamp) */
-	/* { */
-	/* 	; */
-	/* } */
-
-	
-	/* __builtin_disable_interrupts(); */
-	
-	/* int retVal = adc_value; */
-	/* last_timestamp = adc_value_timestamp; */
-
-	/* __builtin_enable_interrupts(); */
-
-	/* return retVal; */
-
 	return adc_value;
 }
 
-int load_cell_sample_rate_hz()
+void load_cell_continuous_raw(int enable)
 {
-	return sample_rate_hz;
+	enable_continuous = enable;
 }
 
