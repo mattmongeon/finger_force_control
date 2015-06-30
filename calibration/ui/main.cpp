@@ -69,38 +69,6 @@ struct sBioTacData
 	unsigned short tdc;
 };
 
-struct sTorqueTuneData
-{
-	int mLoadCell_g;
-	int mError;
-	int mErrorInt;
-	int mCurrent_mA;
-	unsigned int mTimeStamp;
-	float mLoopExeTime_ms;
-};
-
-
-enum enumPLplotColor
-{
-	enumPLplotColor_BLACK = 0,
-	enumPLplotColor_RED,
-	enumPLplotColor_YELLOW,
-	enumPLplotColor_GREEN,
-	enumPLplotColor_AQUAMARINE,
-	enumPLplotColor_PINK,
-	enumPLplotColor_WHEAT,
-	enumPLplotColor_GREY,
-	enumPLplotColor_BROWN,
-	enumPLplotColor_BLUE,
-	enumPLplotColor_BLUE_VIOLET,
-	enumPLplotColor_CYAN,
-	enumPLplotColor_TURQUOISE,
-	enumPLplotColor_MAGENTA,
-	enumPLplotColor_SALMON,
-	enumPLplotColor_WHITE
-};
-
-
 int main(int argc, char** argv)
 {
 	std::cout << nUtils::CLEAR_CONSOLE << std::flush;
@@ -146,6 +114,13 @@ int main(int argc, char** argv)
 		printMenu();
 		switch(nUtils::GetMenuSelection())
 		{
+		case 'a':
+		{
+			
+			
+			break;
+		}
+		
 		case 'b':
 		{
 			std::cout << "Read from BioTac (e1):" << std::endl;
@@ -322,62 +297,7 @@ int main(int argc, char** argv)
 
 		case 't':
 		{
-			picSerial.WriteCommandToPic(nUtils::TUNE_TORQUE_GAINS);
-
-			std::cout << "Enter force to hold (g):  ";
-
-			int force;
-			std::cin >> force;
-
-			picSerial.WriteToPic( reinterpret_cast<unsigned char*>(&force), sizeof(int) );
-
-			std::cout << "Waiting for tuning results..." << std::endl;
-
-			sTorqueTuneData tuneData[200];
-			picSerial.ReadFromPic( reinterpret_cast<unsigned char*>(&tuneData), sizeof(sTorqueTuneData)*200 );
-
-			std::cout << "Tuning results received!" << std::endl;
-			std::cout << "Load Cell\tError\t\tError Integral\t\tCurrent (mA)\t\tTimestamp\t\tExe Time (ms)" << std::endl;
-			for( int i = 0; i < 200; ++i )
-			{
-				std::cout << tuneData[i].mLoadCell_g << "\t\t" << tuneData[i].mError << "\t\t" << tuneData[i].mErrorInt << "\t\t" << tuneData[i].mCurrent_mA << "\t\t" << tuneData[i].mTimeStamp << "\t\t" << tuneData[i].mLoopExeTime_ms << std::endl;
-			}
-
-			std::cout << std::endl;
-
-
-			// --- Plot Results --- //
-
-			std::vector<PLFLT> x;
-			for( int i = 0; i < 200; ++i )
-			{
-				x.push_back(i);
-			}
-
-			PLFLT yMax = -1000000.0;
-			PLFLT yMin = 1000000.0;
-			std::vector<PLFLT> y;
-			for( int i = 0; i < 200; ++i )
-			{
-				yMax = std::max<PLFLT>(yMax, tuneData[i].mLoadCell_g);
-				yMin = std::min<PLFLT>(yMin, tuneData[i].mLoadCell_g);
-				y.push_back(tuneData[i].mLoadCell_g);
-			}
-
-			plsdev("xcairo");
-			plscolbg(255, 255, 255);
-			plinit();
-
-			plscolbg(0,0,0);  // The first call to plscolbg() edits the value stored for color index 0.  Set it back to black.
-			plcol0(enumPLplotColor_BLACK);
-			plenv(0, 200, yMin, yMax, 0, 0);
-			pllab("Measurement", "Force (g)", "Trial results");
-
-			plcol0(enumPLplotColor_BLUE);
-			plline(200, &(x[0]), &(y[0]));
-
-			plend();
-			
+			loadCell.TuneForceHolding();
 			break;
 		}
 
