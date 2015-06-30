@@ -44,25 +44,19 @@ static int uart1_read_packet(unsigned char* pData, int numBytes)
 
 /*
 Notes:
-- Re-calibrate the load cell with the PIC ADC.
-  o Try doing everything at a lower frequency to make sure everything is ok.
-  o Go back to transmitting the calibrated value.
-- Time the ADC interrupt execution and print it to the LCD.
-  o Ensure the time is below the period.  Do it at full sampling frequency.
 - Transmit a timestamp for the beginning of the ADC loop
   o In the UI take the difference between timestamps during gain tuning to ensure
     the loop really is running regularly.
   o Update the execution time of each loop in the console.
   o Update the time between ADC loop ticks.
-- Check the noise of the ADC while reading from the load cell continuously.
-  o Determine if averaging the signal needs to be done.
-- Try increasing the frequency of the timer if possible, up to 400 or more.
-  o Make sure to run everything (load cell, motor, etc.) while using the gain tune feature.
-  o Check the noise of the ADC.
-  o Check the execution time of each loop iteration, transmit it to the UI and update the console.
 - Try doing the full BioTac calibration functionality.
+
 - Figure out why my loop is triggering faster than I think I have it set for.
-  o The ticks tell me it is triggering at 512 Hz even though my numbers say 320.
+  o The ticks tell me it is triggering at 512 Hz even though my numbers say 320.  
+- Fix the slight ADC noise.
+  o Average the ADC value over a few readings internal to the loop.
+  o Double-check all of the loop frequency and execution stuff to ensure we are still ok.
+  o Make sure to test it all during gain tuning since that is currently most intensive.
 - Debug why the loop is getting stuck
   o Most likely it is due to the UART Tx buffer loop.  When the UI is constantly receiving, it
     never gets stuck.  This tells me sometimes the Tx buffer gets stuck.
