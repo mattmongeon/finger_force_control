@@ -16,8 +16,8 @@
 
 static volatile int desired_force_g = 0;
 
-static volatile int kp_num = 2000;
-static volatile int ki_num = 1500;
+static volatile int kp_num = 300;
+static volatile int ki_num = 250;
 
 static int error_int = 0;
 
