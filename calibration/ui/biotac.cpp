@@ -53,7 +53,7 @@ void cBioTac::ReadSingle() const
 	std::cout << "PDC:  " << d.pdc << "\r\n";
 	std::cout << "TAC:  " << d.tac << "\r\n";
 	std::cout << "TDC:  " << d.tdc << "\r\n";
-	std::cout << std::endl;
+	std::cout << std::flush;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
