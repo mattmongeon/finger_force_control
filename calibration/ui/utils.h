@@ -10,7 +10,7 @@ namespace nUtils
     // --- Linux-Specific Console Commands --- //
 
 	const std::string PREV_LINE = "\e[A";
-	const std::string CLEAR_LINE = "\e[K";
+	const std::string CLEAR_LINE = "\e[2K";
 	const std::string CLEAR_CONSOLE = "\033[2J\033[1;1H";
 
 
