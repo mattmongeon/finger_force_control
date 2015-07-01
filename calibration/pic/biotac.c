@@ -14,6 +14,17 @@
 static int numCalibrationSamples = 0;
 
 
+/*
+Notes:
+- Send both the raw values and the decoded values to the UI
+  o Print the decoded values followed by the decoded binary value
+- Try swapping byte order of the sampling commands
+- Try swapping byte order of the received data
+- Try using 00 instead of 01 as the additional byte.
+  o The sample code does this.
+*/
+
+
 // --- BioTac Sampling Commands --- //
 
 #define BIOTAC_SAMPLE_PAC (unsigned short)(0x8001)
@@ -46,23 +57,24 @@ static int numCalibrationSamples = 0;
 #define BIOTAC_DUMMY_DATA (unsigned short)(0x0100)
 
 
-#define READ_BIOTAC_SAMPLE(cmd, var)				 \
-	/* Request data */								 \
-	spi_comm_enable(1);								 \
-	spi_comm((cmd));								 \
-	spi_comm_enable(0);								 \
-													 \
-	/* Let the BioTac fill in its data buffer */	 \
-	wait_usec(50);									 \
-													 \
-	/* Read data from BioTac */						 \
-	spi_comm_enable(1);								 \
-	(var) = spi_comm(BIOTAC_DUMMY_DATA);			 \
-	spi_comm_enable(0);								 \
-													 \
-	/* The data seems to be big-endian */			 \
-	(var) = ((var) >> 9) + (((var) & 0x00FF) >> 3);	 \
-													 \
+
+
+#define READ_BIOTAC_SAMPLE(cmd, var)							\
+	/* Request data */											\
+	spi_comm_enable(1);											\
+	spi_comm((cmd));											\
+	spi_comm_enable(0);											\
+																\
+	/* Let the BioTac fill in its data buffer */				\
+	wait_usec(50);												\
+																\
+	/* Read data from BioTac */									\
+	spi_comm_enable(1);											\
+	(var) = spi_comm(BIOTAC_DUMMY_DATA);						\
+	spi_comm_enable(0);											\
+																\
+	(var) = (((var) & 0x00FF) >> 3) | (((var) & 0xFE00) >> 4);	\
+																\
 	wait_usec(10);
 
 
