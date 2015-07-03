@@ -7,8 +7,11 @@
 #include "utils.h"
 #include "stopwatch.h"
 #include "keyboard_thread.h"
+#include "real_time_plot.h"
 #include <pthread.h>
 #include <plplot/plplot.h>
+#include <plplot/plstream.h>
+#include <cmath>
 
 
 void printValues( double loadCellForce, double biotacForce, int sampleNum )
@@ -223,6 +226,7 @@ int main(int argc, char** argv)
 						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
 						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
 						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
+						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
 						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE;
 				
 				biotac.ReadSingle();
@@ -286,6 +290,55 @@ int main(int argc, char** argv)
 
 		case 'z':
 		{
+			// --- Set Up Plotting --- //
+			
+			plstream pls(1, 1, 255, 255, 255, "xcairo");
+
+			PLFLT ymin = 0.0, ymax = 10.0;
+			PLFLT xmin = 0.0, xmax = 100.0, xjump_pct = 0.25;
+
+			PLINT colbox = 1, collab = 3;
+
+			PLINT styline[4], colline[4];
+			// Line styles - solid
+			styline[0] = 1;
+			styline[1] = 1;
+			styline[2] = 1;
+			styline[3] = 1;
+
+			// Pen colors
+			colline[0] = nUtils::enumPLplotColor_RED;
+			colline[1] = nUtils::enumPLplotColor_RED;
+			colline[2] = nUtils::enumPLplotColor_RED;
+			colline[3] = nUtils::enumPLplotColor_RED;
+			
+			const char* legline[4];
+			legline[0] = "ADC";
+			legline[1] = "";
+			legline[2] = "";
+			legline[3] = "";
+
+			PLFLT xlab = 0.0, ylab = 0.25;
+
+			bool autoy = true, acc = true;
+
+			pls.init();
+
+			pls.adv(0);
+			pls.vsta();
+
+			PLINT id;
+			pls.stripc( &id, "bcnst", "bcnstv",
+						xmin, xmax, xjump_pct, ymin, ymax,
+						xlab, ylab,
+						autoy, acc,
+						colbox, collab,
+						colline, styline, legline,
+						"Sample", "Force (g)", "Load Cell" );
+
+
+			// --- Start Gathering Data --- //
+			
 			picSerial.WriteCommandToPic(nUtils::WILDCARD);
 			
 			keyboardThread.StartDetection();
@@ -303,9 +356,13 @@ int main(int argc, char** argv)
 			std::cout << std::flush;
 
 			uint32_t prevStart = 0;
+			int count = 0;
+			cStopwatch timer;
 			while(true)
 			{
 				std::cout << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE;
+				timer.Reset();
+				timer.Start();
 
 				int adc_value = 0;
 				uint32_t ticks = 0;
@@ -313,26 +370,134 @@ int main(int argc, char** argv)
 				picSerial.ReadFromPic( reinterpret_cast<unsigned char*>(&start), sizeof(uint32_t) );
 				picSerial.ReadFromPic( reinterpret_cast<unsigned char*>(&ticks), sizeof(uint32_t) );
 				picSerial.ReadFromPic( reinterpret_cast<unsigned char*>(&adc_value), sizeof(int) );
+
+				// pls.stripa( id, 0, count, adc_value );
+				// pls.stripa( id, 1, count, adc_value );
+				// pls.stripa( id, 2, count, adc_value );
+				// pls.stripa( id, 3, count, adc_value );
+				// ++count;
 				
 				float exe_time_ms = (ticks * 25.0) / 1000000.0;
 				float loopFreq_hz = ((start - prevStart) * 25.0) / 1000000000.0;
 				loopFreq_hz = 1.0 / loopFreq_hz;
 				std::cout << nUtils::CLEAR_LINE << "Start: " << start << "\r\n";
 				std::cout << nUtils::CLEAR_LINE << "Loop Freq: " << loopFreq_hz << " Hz\r\n";
-				std::cout << nUtils::CLEAR_LINE << "Ticks:  " << ticks << "\r\n";
-				std::cout << nUtils::CLEAR_LINE << "Exe Time:  " << exe_time_ms  << " ms\r\n";
-				std::cout << nUtils::CLEAR_LINE << "Possible Freq:  " << 1.0 / (exe_time_ms / 1000.0) << " Hz\r\n";
-				std::cout << nUtils::CLEAR_LINE << "ADC:  " << adc_value << "\r\n";
+				std::cout << nUtils::CLEAR_LINE << "Ticks:	" << ticks << "\r\n";
+				std::cout << nUtils::CLEAR_LINE << "Exe Time:  " << exe_time_ms	<< " ms\r\n";
+				std::cout << nUtils::CLEAR_LINE << "Possible Freq:	" << 1.0 / (exe_time_ms / 1000.0) << " Hz\r\n";
+				std::cout << nUtils::CLEAR_LINE << "ADC:	 " << adc_value << "\r\n";
 				std::cout << std::flush;
+
+				std::cout << "end while:  " << timer.GetElapsedTime_ms() << std::endl;
 
 				prevStart = start;
 
 				if(keyboardThread.QuitRequested())
+				{
+					picSerial.WriteCommandToPic(nUtils::STOP_ACTIVITY);
+					picSerial.ReadFromPic( reinterpret_cast<unsigned char*>(&start), sizeof(uint32_t) );
+					picSerial.ReadFromPic( reinterpret_cast<unsigned char*>(&ticks), sizeof(uint32_t) );
+					picSerial.ReadFromPic( reinterpret_cast<unsigned char*>(&adc_value), sizeof(int) );
 					break;
+				}
 			}
+
+			pls.stripd( id );
 
 			break;
 		}
+
+		case '1':
+		{
+			// --- Set Up Plotting --- //
+			
+			plstream pls(1, 1, 255, 255, 255, "xcairo");
+
+			PLFLT ymin = 0.0, ymax = 10.0;
+			PLFLT xmin = 0.0, xmax = 10.0, xjump_pct = 0.1;
+
+			PLINT colbox = 1, collab = 3;
+
+			PLINT styline[4], colline[4];
+			// Line styles - solid
+			styline[0] = 1;
+			styline[1] = 1;
+			styline[2] = 1;
+			styline[3] = 1;
+
+			// Pen colors
+			colline[0] = 2;
+			colline[1] = 2;
+			colline[2] = 2;
+			colline[3] = 2;
+			
+			const char* legline[4];
+			legline[0] = "Load Cell (g)";
+			legline[1] = "";
+			legline[2] = "";
+			legline[3] = "";
+
+			PLFLT xlab = 0.0, ylab = 0.25;
+
+			bool autoy = true, acc = true;
+
+			pls.init();
+
+			pls.adv(0);
+			pls.vsta();
+
+			PLINT id;
+			pls.stripc( &id, "bcnst", "bcnstv",
+						xmin, xmax, xjump_pct, ymin, ymax,
+						xlab, ylab,
+						autoy, acc,
+						colbox, collab,
+						colline, styline, legline,
+						"Sample", "Force (g)", "Load Cell" );
+
+
+			// --- Plot Data --- //
+
+			struct timespec ts;
+			ts.tv_sec = 0;
+			ts.tv_nsec = 1953125;
+
+			PLFLT dt = 1.953125;
+			double t = 0;
+
+			cStopwatch timer;
+			
+			for( int n = 0; n < 100; ++n )
+			{
+				// Wait about 2 ms, which corresponds to 512 Hz.
+				nanosleep( &ts, NULL );
+
+				timer.Start();
+
+				t = n * dt;
+				double noise = pls.randd() - 0.5;
+
+				double newY = sin( t * 3.14 / 18 ) + noise;
+
+				pls.stripa( id, 0, n, newY );
+				pls.stripa( id, 1, n, newY );
+				pls.stripa( id, 2, n, newY );
+				pls.stripa( id, 3, n, newY );
+				std::cout << timer.GetElapsedTime_ms() << std::endl;
+				timer.StopAndReset();
+			}
+			
+			
+
+			// --- Clean Up --- //
+
+			pls.stripd( id );
+			
+			break;
+		}
+
+		default:
+			break;
 		}
 	}
 
