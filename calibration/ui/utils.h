@@ -28,6 +28,9 @@ namespace nUtils
 
 	const std::string WILDCARD = "z\n";
 
+	const std::string STOP_ACTIVITY = "q\n";
+	
+
 	// --- Color Enum for PLplot --- //
 	
 	enum enumPLplotColor
