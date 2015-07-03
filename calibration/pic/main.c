@@ -152,12 +152,6 @@ int main()
 			break;
 		}
 		
-		case 'q':
-		{
-			LCD_WriteString("Quit!");
-			break;
-		}
-
 		case 'r':
 		{
 			// --- Read Raw (Uncalibrated) Load Cell --- //
@@ -214,6 +208,16 @@ int main()
 		case 'z':
 		{
 			load_cell_continuous_raw(1);
+
+			while(1)
+			{
+				NU32_ReadUART1(buffer, 20);
+				if( buffer[0] == 'q' )
+				{
+					load_cell_continuous_raw(0);
+					break;
+				}
+			}
 			
 			break;
 		}
