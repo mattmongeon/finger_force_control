@@ -9,6 +9,9 @@
 #include <string>
 
 
+// Performs real-time plotting of up to four plots.  Performance becomes an issue as
+// the number of plots increases.  Beware that at times the plotting may be too slow
+// to keep up with the data being sent to it, so it might be lagging behind the system.
 class cRealTimePlot
 {
 public:
@@ -67,6 +70,20 @@ public:
 private:
 
 	//--------------------------------------------------------------------------//
+	//-----------------------------  NESTED STRUCT  ----------------------------//
+	//--------------------------------------------------------------------------//
+
+	// Contains the data to be plotted as the next data point.
+	struct sDataPoint
+	{
+		PLFLT mPoint1;
+		PLFLT mPoint2;
+		PLFLT mPoint3;
+		PLFLT mPoint4;
+	};
+
+
+	//--------------------------------------------------------------------------//
 	//---------------------------  HELPER FUNCTIONS  ---------------------------//
 	//--------------------------------------------------------------------------//
 
@@ -78,7 +95,16 @@ private:
 	// p3 - The data point for the third plot line.
 	// p4 - The data point for the fourth plot line.
 	void EnqueueDataPoint(double p1, double p2, double p3, double p4);
-	
+
+	// Does the work of plotting a data point.  Takes the number of data points into
+	// account to try to make plotting more efficient when dealing with fewer plots.
+	//
+	// Params:
+	// p - The data point to be plotted.
+	// pointNum - Identifies the x-coordinate of the point.
+	// numPlots - The number of plots being tracked in this plot.
+	void PlotPoints( const sDataPoint& p, int pointNum, int numPlots );
+
 	
 	//--------------------------------------------------------------------------//
 	//--------------------------  THREADED FUNCTIONS  --------------------------//
@@ -88,19 +114,6 @@ private:
 	// be a pointer to the instance of this class.
 	static void* ThreadFunc(void* pIn);
 
-
-	//--------------------------------------------------------------------------//
-	//-----------------------------  NESTED STRUCT  ----------------------------//
-	//--------------------------------------------------------------------------//
-
-	struct sDataPoint
-	{
-		PLFLT mPoint1;
-		PLFLT mPoint2;
-		PLFLT mPoint3;
-		PLFLT mPoint4;
-	};
-	
 
 	//--------------------------------------------------------------------------//
 	//-----------------------------  DATA MEMBERS  -----------------------------//
