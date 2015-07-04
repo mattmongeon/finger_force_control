@@ -3,8 +3,20 @@
 #include <iostream>
 
 
-cKeyboardThread* cKeyboardThread::mpThis = NULL;
+cKeyboardThread* cKeyboardThread::mpInstance = 0;
 
+
+////////////////////////////////////////////////////////////////////////////////
+//  Singleton Functions
+////////////////////////////////////////////////////////////////////////////////
+
+cKeyboardThread* cKeyboardThread::Instance()
+{
+	if( mpInstance == 0 )
+		mpInstance = new cKeyboardThread();
+
+	return mpInstance;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //  Construction / Destruction
@@ -15,7 +27,6 @@ cKeyboardThread::cKeyboardThread()
 	mQuitRequested(false),
 	mLoopRunning(true)
 {
-	mpThis = this;
 	pthread_create(&mKeyboardThreadHandle, NULL, ThreadFunc, NULL);
 }
 
@@ -55,17 +66,17 @@ bool cKeyboardThread::QuitRequested()
 
 void* cKeyboardThread::ThreadFunc(void* pIn)
 {
-	while(mpThis->mLoopRunning)
+	while(mpInstance->mLoopRunning)
 	{
-		if( mpThis->mDetectEnterPress )
+		if( mpInstance->mDetectEnterPress )
 		{
 			// Just wait for the user to press q+ENTER.
 			std::string input;
 			std::cin >> input;
 			if( input == "q" )
 			{
-				mpThis->mQuitRequested = true;
-				mpThis->mDetectEnterPress = false;
+				mpInstance->mQuitRequested = true;
+				mpInstance->mDetectEnterPress = false;
 			}
 		}
 	}
