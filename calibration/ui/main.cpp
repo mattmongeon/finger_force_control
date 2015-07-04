@@ -410,51 +410,9 @@ int main(int argc, char** argv)
 		case '1':
 		{
 			// --- Set Up Plotting --- //
+
+			cRealTimePlot plotter("Load Cell", "Force (g)", "Sample", "Load Cell (g)");
 			
-			plstream pls(1, 1, 255, 255, 255, "xcairo");
-
-			PLFLT ymin = 0.0, ymax = 10.0;
-			PLFLT xmin = 0.0, xmax = 10.0, xjump_pct = 0.1;
-
-			PLINT colbox = 1, collab = 3;
-
-			PLINT styline[4], colline[4];
-			// Line styles - solid
-			styline[0] = 1;
-			styline[1] = 1;
-			styline[2] = 1;
-			styline[3] = 1;
-
-			// Pen colors
-			colline[0] = 2;
-			colline[1] = 2;
-			colline[2] = 2;
-			colline[3] = 2;
-			
-			const char* legline[4];
-			legline[0] = "Load Cell (g)";
-			legline[1] = "";
-			legline[2] = "";
-			legline[3] = "";
-
-			PLFLT xlab = 0.0, ylab = 0.25;
-
-			bool autoy = true, acc = true;
-
-			pls.init();
-
-			pls.adv(0);
-			pls.vsta();
-
-			PLINT id;
-			pls.stripc( &id, "bcnst", "bcnstv",
-						xmin, xmax, xjump_pct, ymin, ymax,
-						xlab, ylab,
-						autoy, acc,
-						colbox, collab,
-						colline, styline, legline,
-						"Sample", "Force (g)", "Load Cell" );
-
 
 			// --- Plot Data --- //
 
@@ -467,7 +425,7 @@ int main(int argc, char** argv)
 
 			cStopwatch timer;
 			
-			for( int n = 0; n < 100; ++n )
+			for( int n = 0; n < 1000; ++n )
 			{
 				// Wait about 2 ms, which corresponds to 512 Hz.
 				nanosleep( &ts, NULL );
@@ -475,23 +433,17 @@ int main(int argc, char** argv)
 				timer.Start();
 
 				t = n * dt;
-				double noise = pls.randd() - 0.5;
+				double newY = sin( t * 3.14 / 18 );
 
-				double newY = sin( t * 3.14 / 18 ) + noise;
+				plotter.AddDataPoint(newY);
 
-				pls.stripa( id, 0, n, newY );
-				pls.stripa( id, 1, n, newY );
-				pls.stripa( id, 2, n, newY );
-				pls.stripa( id, 3, n, newY );
-				std::cout << timer.GetElapsedTime_ms() << std::endl;
+				// double time_ms = timer.GetElapsedTime_ms();
+				// std::cout << "Number:  " << n << std::endl;
+				// std::cout << "Exe Time (ms):  " << time_ms << std::endl;
+				// std::cout << "Frequency (Hz):  " << 1/(time_ms / 1000.0) << std::endl;
+				// std::cout << std::endl;
 				timer.StopAndReset();
 			}
-			
-			
-
-			// --- Clean Up --- //
-
-			pls.stripd( id );
 			
 			break;
 		}
