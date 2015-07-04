@@ -8,14 +8,15 @@
 
 cRealTimePlot::cRealTimePlot(const std::string& title, const std::string& xAxisLabel,
 							 const std::string& yAxisLabel,
-							 const std::string& line1Legend, const std::string& line2Legend = "",
-							 const std::string& line3Legend = "", const std::string& line4Legend = "")
-	: mPlotStream( 1, 1, 255, 255, 255, "xcairo" )
+							 const std::string& line1Legend, const std::string& line2Legend,
+							 const std::string& line3Legend, const std::string& line4Legend)
+	: mPlotStream( 1, 1, 255, 255, 255, "xcairo" ),
+	  mNumActivePlots( 1 )
 {
 	// --- Set Up Plotting --- //
 	
 	PLFLT ymin = 0.0, ymax = 1.0;
-	PLFLT xmin = 0.0, xmax = 200.0, xjump_pct = 0.1;
+	PLFLT xmin = 0.0, xmax = 500.0, xjump_pct = 0.5;
 
 	PLINT colbox = 1, collab = 3;
 
@@ -29,35 +30,18 @@ cRealTimePlot::cRealTimePlot(const std::string& title, const std::string& xAxisL
 	// Pen colors
 	PLINT colline[4];
 	colline[0] = nUtils::enumPLplotColor_RED;
+	colline[1] = nUtils::enumPLplotColor_GREEN;
+	colline[2] = nUtils::enumPLplotColor_BLUE;
+	colline[3] = nUtils::enumPLplotColor_MAGENTA;
+		
 	if( !line2Legend.empty() )
-	{
 		++mNumActivePlots;
-		colline[1] = nUtils::enumPLplotColor_GREEN;
-	}
-	else
-	{
-		colline[1] = nUtils::enumPLplotColor_WHITE;
-	}
 
 	if( !line3Legend.empty() )
-	{
 		++mNumActivePlots;
-		colline[2] = nUtils::enumPLplotColor_BLUE;
-	}
-	else
-	{
-		colline[2] = nUtils::enumPLplotColor_WHITE;
-	}
 
 	if( !line4Legend.empty() )
-	{
 		++mNumActivePlots;
-		colline[3] = nUtils::enumPLplotColor_MAGENTA;
-	}
-	else
-	{
-		colline[4] = nUtils::enumPLplotColor_WHITE;
-	}
 
 	// Strings for plot legend
 	const char* legline[4];
@@ -66,22 +50,23 @@ cRealTimePlot::cRealTimePlot(const std::string& title, const std::string& xAxisL
 	legline[2] = line3Legend.c_str();
 	legline[3] = line4Legend.c_str();
 
-	PLFLT xlab = 0.0, ylab = 0.25;
+	PLFLT xlab = 0.0;
+	PLFLT ylab = 1.0;
 
-	bool autoy = true, acc = false;
+	bool autoy = true, acc = true;
 
-	pls.init();
+	mPlotStream.init();
 
-	pls.adv(0);
-	pls.vsta();
+	mPlotStream.adv(0);
+	mPlotStream.vsta();
 
-	pls.stripc( &mPlotId, "bcnst", "bcnstv",
-				xmin, xmax, xjump_pct, ymin, ymax,
-				xlab, ylab,
-				autoy, acc,
-				colbox, collab,
-				colline, styline, legline,
-				xAxisLabel.c_str(), yAxisLabel.c_str(), title.c_str() );
+	mPlotStream.stripc( &mPlotId, "bcnst", "bcnstv",
+						xmin, xmax, xjump_pct, ymin, ymax,
+						xlab, ylab,
+						autoy, acc,
+						colbox, collab,
+						colline, styline, legline,
+						xAxisLabel.c_str(), yAxisLabel.c_str(), title.c_str() );
 
 
 	// --- Set Up Thread-Related Stuff --- //
@@ -96,6 +81,12 @@ cRealTimePlot::cRealTimePlot(const std::string& title, const std::string& xAxisL
 
 cRealTimePlot::~cRealTimePlot()
 {
+	// It is possible that 
+	while(!mBufferedPoints.empty())
+	{
+		;
+	}
+	
 	mContinuePlotting = false;
 	pthread_join(mPlottingThreadHandle, NULL);
 	pthread_mutex_destroy(&mDataMutex);
@@ -151,6 +142,40 @@ void cRealTimePlot::EnqueueDataPoint(double p1, double p2, double p3, double p4)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+
+void cRealTimePlot::PlotPoints( const sDataPoint& p, int pointNum, int numPlots )
+{
+	switch(numPlots)
+	{
+	case 1:
+		mPlotStream.stripa( mPlotId, 0, pointNum, p.mPoint1 );
+		break;
+
+	case 2:
+		mPlotStream.stripa( mPlotId, 0, pointNum, p.mPoint1 );
+		mPlotStream.stripa( mPlotId, 1, pointNum, p.mPoint2 );
+		break;
+
+	case 3:
+		mPlotStream.stripa( mPlotId, 0, pointNum, p.mPoint1 );
+		mPlotStream.stripa( mPlotId, 1, pointNum, p.mPoint2 );
+		mPlotStream.stripa( mPlotId, 2, pointNum, p.mPoint3 );
+		break;
+
+	case 4:
+		mPlotStream.stripa( mPlotId, 0, pointNum, p.mPoint1 );
+		mPlotStream.stripa( mPlotId, 1, pointNum, p.mPoint2 );
+		mPlotStream.stripa( mPlotId, 2, pointNum, p.mPoint3 );
+		mPlotStream.stripa( mPlotId, 3, pointNum, p.mPoint4 );
+		break;
+
+	default:
+		break;
+	}
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
 //  Threaded Functions
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -161,27 +186,26 @@ void* cRealTimePlot::ThreadFunc(void* pIn)
 	sDataPoint p;
 	bool plot = false;
 	int pointNum = 0;
-	while(mContinuePlotting)
+	while(pThis->mContinuePlotting)
 	{
 		// Try to grab the point.
-		pthread_mutex_lock(&mDataMutex);
-		if( !mBufferedPoints.empty() )
+		pthread_mutex_lock(&(pThis->mDataMutex));
+		if( !pThis->mBufferedPoints.empty() )
 		{
-			p = mBufferedPoints.front();
-			mBufferedPoints.pop_front();
+			p = pThis->mBufferedPoints.front();
+			pThis->mBufferedPoints.pop_front();
 			plot = true;
 		}
-		pthread_mutex_unlock(&mDataMutex);
+		pthread_mutex_unlock(&(pThis->mDataMutex));
 
 		// Plot it.
 		if( plot )
 		{
-			pThis->mPlotStream.stripa( mPlotId, 0, pointNum, p.mPoint1 );
-			pThis->mPlotStream.stripa( mPlotId, 1, pointNum, p.mPoint2 );
-			pThis->mPlotStream.stripa( mPlotId, 2, pointNum, p.mPoint3 );
-			pThis->mPlotStream.stripa( mPlotId, 3, pointNum, p.mPoint4 );
+			pThis->PlotPoints( p, pointNum, pThis->mNumActivePlots );
 			++pointNum;
 			plot = false;
 		}
 	}
+
+	return NULL;
 }
