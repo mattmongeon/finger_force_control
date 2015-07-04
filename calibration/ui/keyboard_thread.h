@@ -13,16 +13,15 @@ class cKeyboardThread
 public:
 
 	//--------------------------------------------------------------------------//
-	//----------------------  CONSTRUCTION / DESTRUCTION  ----------------------//
+	//--------------------------  SINGLETON FUNCTIONS  -------------------------//
 	//--------------------------------------------------------------------------//
 
-	// Constructor.  Starts the keyboard monitoring thread.
-	cKeyboardThread();
+	// Returns the only possible instance to this class.
+	//
+	// Return - A pointer to the only existing instance of this class.
+	static cKeyboardThread* Instance();
 
-	// Destructor.  Stops and cleans up the keyboard monitoring thread.
-	~cKeyboardThread();
-
-
+	
 	//--------------------------------------------------------------------------//
 	//--------------------------  INTERFACE FUNCTIONS  -------------------------//
 	//--------------------------------------------------------------------------//
@@ -42,6 +41,17 @@ public:
 private:
 
 	//--------------------------------------------------------------------------//
+	//----------------------  CONSTRUCTION / DESTRUCTION  ----------------------//
+	//--------------------------------------------------------------------------//
+
+	// Constructor.  Starts the keyboard monitoring thread.
+	cKeyboardThread();
+
+	// Destructor.  Stops and cleans up the keyboard monitoring thread.
+	~cKeyboardThread();
+
+
+	//--------------------------------------------------------------------------//
 	//--------------------------  THREADED FUNCTIONS  --------------------------//
 	//--------------------------------------------------------------------------//
 
@@ -54,6 +64,9 @@ private:
 	//-----------------------------  DATA MEMBERS  -----------------------------//
 	//--------------------------------------------------------------------------//
 
+	// The pointer to the instance used by this singleton.
+	static cKeyboardThread* mpInstance;
+	
 	// Set to true to detect when q+ENTER is pressed.
 	bool mDetectEnterPress;
 	
@@ -65,9 +78,6 @@ private:
 
 	// The handle to the POSIX thread.
 	pthread_t mKeyboardThreadHandle;
-
-	// Pointer to this so it can be used in the threaded function.
-	static cKeyboardThread* mpThis;
 };
 
 

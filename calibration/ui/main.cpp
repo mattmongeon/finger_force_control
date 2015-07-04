@@ -55,11 +55,11 @@ int main(int argc, char** argv)
 	std::cout << "Opening serial port to communicate with PIC..." << std::endl;
 
 	cPicSerial picSerial;
-	if( !picSerial.OpenSerialPort() )
-	{
-		std::cout << "Error opening serial port!" << std::endl;
-		return 0;
-	}
+	// if( !picSerial.OpenSerialPort() )
+	// {
+	// 	std::cout << "Error opening serial port!" << std::endl;
+	// 	return 0;
+	// }
 
 	std::cout << "Serial port opened and ready!" << std::endl;
 	std::cout << std::endl;
@@ -75,7 +75,7 @@ int main(int argc, char** argv)
 	// --- Miscellaneous --- //
 	
 	std::cout << "Setting up thread for keyboard input" << std::endl;
-	cKeyboardThread keyboardThread;
+	cKeyboardThread::Instance();
 	
 
 	// --- Main State Machine --- //
@@ -171,7 +171,7 @@ int main(int argc, char** argv)
 		case 'r':
 		{
 			cStopwatch stopwatch;
-			keyboardThread.StartDetection();
+			cKeyboardThread::Instance()->StartDetection();
 			stopwatch.Start();
 
 			std::cout << nUtils::CLEAR_CONSOLE << std::flush;
@@ -237,7 +237,7 @@ int main(int argc, char** argv)
 					;
 				}
 
-				if(keyboardThread.QuitRequested())
+				if(cKeyboardThread::Instance()->QuitRequested())
 					break;
 			}
 
@@ -247,8 +247,9 @@ int main(int argc, char** argv)
 		case 's':
 		{
 			cStopwatch stopwatch;
-			keyboardThread.StartDetection();
+			cKeyboardThread::Instance()->StartDetection();
 			stopwatch.Start();
+			cRealTimePlot plotter("Load Cell", "Force (g)", "Sample", "Load Cell (g)");
 
 			std::cout << nUtils::CLEAR_CONSOLE << std::flush;
 			std::cout << "Read continuously from load cell\r\n";
@@ -259,8 +260,11 @@ int main(int argc, char** argv)
 
 			while(true)
 			{
-				std::cout << nUtils::PREV_LINE << nUtils::CLEAR_LINE << "Force:  " << loadCell.ReadLoadCell_grams() << " g\r\n";
+				double loadCell_g = loadCell.ReadLoadCell_grams();
+				std::cout << nUtils::PREV_LINE << nUtils::CLEAR_LINE << "Force:  " << loadCell_g << " g\r\n";
 				std::cout << std::flush;
+
+				plotter.AddDataPoint( loadCell_g );
 
 				stopwatch.Reset();
 				while(stopwatch.GetElapsedTime_ms() < 100.0)
@@ -268,7 +272,7 @@ int main(int argc, char** argv)
 					;
 				}
 
-				if(keyboardThread.QuitRequested())
+				if(cKeyboardThread::Instance()->QuitRequested())
 					break;
 			}
 
@@ -341,7 +345,7 @@ int main(int argc, char** argv)
 			
 			picSerial.WriteCommandToPic(nUtils::WILDCARD);
 			
-			keyboardThread.StartDetection();
+			cKeyboardThread::Instance()->StartDetection();
 
 			std::cout << nUtils::CLEAR_CONSOLE << std::flush;
 			std::cout << "Read continuously from load cell\r\n";
@@ -356,7 +360,6 @@ int main(int argc, char** argv)
 			std::cout << std::flush;
 
 			uint32_t prevStart = 0;
-			int count = 0;
 			cStopwatch timer;
 			while(true)
 			{
@@ -371,12 +374,6 @@ int main(int argc, char** argv)
 				picSerial.ReadFromPic( reinterpret_cast<unsigned char*>(&ticks), sizeof(uint32_t) );
 				picSerial.ReadFromPic( reinterpret_cast<unsigned char*>(&adc_value), sizeof(int) );
 
-				// pls.stripa( id, 0, count, adc_value );
-				// pls.stripa( id, 1, count, adc_value );
-				// pls.stripa( id, 2, count, adc_value );
-				// pls.stripa( id, 3, count, adc_value );
-				// ++count;
-				
 				float exe_time_ms = (ticks * 25.0) / 1000000.0;
 				float loopFreq_hz = ((start - prevStart) * 25.0) / 1000000000.0;
 				loopFreq_hz = 1.0 / loopFreq_hz;
@@ -392,7 +389,7 @@ int main(int argc, char** argv)
 
 				prevStart = start;
 
-				if(keyboardThread.QuitRequested())
+				if(cKeyboardThread::Instance()->QuitRequested())
 				{
 					picSerial.WriteCommandToPic(nUtils::STOP_ACTIVITY);
 					picSerial.ReadFromPic( reinterpret_cast<unsigned char*>(&start), sizeof(uint32_t) );
@@ -409,23 +406,19 @@ int main(int argc, char** argv)
 
 		case '1':
 		{
-			// --- Set Up Plotting --- //
-
-			cRealTimePlot plotter("Load Cell", "Force (g)", "Sample", "Load Cell (g)");
+			cKeyboardThread::Instance()->StartDetection();
 			
-
-			// --- Plot Data --- //
-
 			struct timespec ts;
 			ts.tv_sec = 0;
 			ts.tv_nsec = 1953125;
 
-			PLFLT dt = 1.953125;
+			double dt = 1.953125;
 			double t = 0;
 
 			cStopwatch timer;
-			
-			for( int n = 0; n < 1000; ++n )
+
+			int n = 0;
+			while(true)
 			{
 				// Wait about 2 ms, which corresponds to 512 Hz.
 				nanosleep( &ts, NULL );
@@ -435,14 +428,17 @@ int main(int argc, char** argv)
 				t = n * dt;
 				double newY = sin( t * 3.14 / 18 );
 
-				plotter.AddDataPoint(newY);
-
-				// double time_ms = timer.GetElapsedTime_ms();
-				// std::cout << "Number:  " << n << std::endl;
-				// std::cout << "Exe Time (ms):  " << time_ms << std::endl;
-				// std::cout << "Frequency (Hz):  " << 1/(time_ms / 1000.0) << std::endl;
-				// std::cout << std::endl;
+				double time_ms = timer.GetElapsedTime_ms();
+				std::cout << "New data:  " << newY << std::endl;
+				std::cout << "Number:  " << n << std::endl;
+				std::cout << "Exe Time (ms):  " << time_ms << std::endl;
+				std::cout << "Frequency (Hz):  " << 1/(time_ms / 1000.0) << std::endl;
+				std::cout << std::endl;
 				timer.StopAndReset();
+				++n;
+
+				if(cKeyboardThread::Instance()->QuitRequested())
+					break;
 			}
 			
 			break;
