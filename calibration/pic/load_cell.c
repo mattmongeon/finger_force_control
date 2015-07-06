@@ -108,7 +108,7 @@ void load_cell_init()
 
 int load_cell_read_grams()
 {
-	float f = 1301.1 - (1.938 * load_cell_raw_value());
+	float f = 8.56463 + (1.03208 * load_cell_raw_value());
 
 	int retVal = (int)f;
 	if( retVal >= 0 )
