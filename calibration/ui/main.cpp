@@ -12,14 +12,35 @@
 #include <plplot/plplot.h>
 #include <plplot/plstream.h>
 #include <cmath>
+#include <cstdio>
 
 
-void printValues( double loadCellForce, double biotacForce, int sampleNum )
+static bool noSerial = false;
+static bool help = false;
+
+
+void parseCommandLineOptions(int argc, char** argv)
 {
-	std::cout << nUtils::PREV_LINE << nUtils::PREV_LINE << "\r" << std::flush;
-	std::cout << "Sample " << sampleNum << std::endl;
-	std::cout << "Load Cell Force:  " << loadCellForce << " kg" << std::endl;
-	std::cout << "Biotac Force:  " << biotacForce << " kg" << std::flush;
+	for( int i = 1; i < argc; ++i )
+	{
+		if( strcmp("-N", argv[i]) == 0 )
+		{
+			noSerial = true;
+		}
+		else if( strcmp("-h", argv[i]) == 0 )
+		{
+			help = true;
+		}
+		else if( strcmp("--help", argv[i]) == 0 )
+		{
+			help = true;
+		}
+		else
+		{
+			std::cout << "Unknown command-line option \'" << argv[i] << "\'!  Exiting." << std::endl;
+			exit(0);
+		}
+	}
 }
 
 
@@ -49,20 +70,49 @@ int main(int argc, char** argv)
 {
 	std::cout << nUtils::CLEAR_CONSOLE << std::flush;
 
-
-	// --- Serial Communication --- //
 	
-	std::cout << "Opening serial port to communicate with PIC..." << std::endl;
+	// --- Read Options --- //
+	
+	parseCommandLineOptions(argc, argv);
+	
 
-	cPicSerial picSerial;
-	if( !picSerial.OpenSerialPort() )
+	// --- Check Help --- //
+
+	if( help )
 	{
-		std::cout << "Error opening serial port!" << std::endl;
+		std::cout << "Usage: biotac_cal [OPTION]" << std::endl;
+		std::cout << std::endl;
+		std::cout << "This is the user-interface portion of the setup used for calibrating the BioTac by Syntouch." << std::endl;
+		std::cout << std::endl;
+		std::cout << "Options:" << std::endl;
+		std::cout << "-h --help\tShow this information" << std::endl;
+		std::cout << "-N\t\tSkip opening serial connection" << std::endl;
+		
 		return 0;
 	}
 
-	std::cout << "Serial port opened and ready!" << std::endl;
-	std::cout << std::endl;
+	
+	// --- Serial Communication --- //
+	
+	cPicSerial picSerial;
+	if( !noSerial )
+	{
+		std::cout << "Opening serial port to communicate with PIC..." << std::endl;
+
+		if( !picSerial.OpenSerialPort() )
+		{
+			std::cout << "Error opening serial port!" << std::endl;
+			return 0;
+		}
+
+		std::cout << "Serial port opened and ready!" << std::endl;
+		std::cout << std::endl;
+	}
+	else
+	{
+		std::cout << "No serial mode set.  Skipping opening serial connection." << std::endl;
+		std::cout << std::endl;
+	}
 
 
 	// --- Devices --- //
