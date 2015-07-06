@@ -16,7 +16,7 @@ cRealTimePlot::cRealTimePlot(const std::string& title, const std::string& xAxisL
 {
 	// --- Set Up Plotting --- //
 	
-	PLFLT ymin = 1000000.0, ymax = 0.0;
+	PLFLT ymin = 1000000.0, ymax = 1.0;
 	PLFLT xmin = 0.0, xmax = 500.0, xjump_pct = 0.5;
 
 	PLINT colbox = 1, collab = 3;
