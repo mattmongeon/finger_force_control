@@ -89,17 +89,15 @@ int main()
 			uart1_read_packet( (unsigned char*)(&force), sizeof(int) );
 			torque_control_set_desired_force(force);
 
-			system_set_state(HOLD_FORCE);
-
-			// Let the motor try following the torque
-			while(system_get_state() == HOLD_FORCE)
+			if( force != 0 )
 			{
-				;
+				system_set_state(HOLD_FORCE);
+			}
+			else
+			{
+				system_set_state(IDLE);
 			}
 
-			// Send the recorded data to the PC.
-			
-			
 			break;
 		}
 		
@@ -132,6 +130,15 @@ int main()
 			break;
 		}
 
+		case 'm':
+		{
+			// --- Read Raw (Uncalibrated) Load Cell --- //
+			
+			int load_cell_raw = load_cell_raw_value();
+			uart1_send_packet( (unsigned char*)(&load_cell_raw), 4 );
+			break;
+		}
+
 		case 'p':
 		{
 			// --- Set PWM Directly --- //
@@ -151,16 +158,26 @@ int main()
 			
 			break;
 		}
-		
+
 		case 'r':
 		{
-			// --- Read Raw (Uncalibrated) Load Cell --- //
+			// --- Continuous Read From BioTac --- //
+
+			system_set_state(BIOTAC_CONTINUOUS_READ);
+
+			while(1)
+			{
+				NU32_ReadUART1(buffer, 20);
+				if( buffer[0] == 'q' )
+				{
+					system_set_state(IDLE);
+					break;
+				}
+			}
 			
-			int load_cell_raw = load_cell_raw_value();
-			uart1_send_packet( (unsigned char*)(&load_cell_raw), 4 );
 			break;
 		}
-
+		
 		case 't':
 		{
 			// --- Hold Commanded Tuning Force --- //

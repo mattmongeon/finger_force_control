@@ -78,40 +78,55 @@ Notes:
 	wait_usec(10);
 
 
-void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_reader_int()
+
+static void biotac_read_and_tx()
 {
 	static biotac_data data;
 	
+	unsigned long time_stamp = _CP0_GET_COUNT();
+	read_biotac(&data);
+	int load_cell = load_cell_read_grams();
+
+	uart1_send_packet((unsigned char*)(&time_stamp), sizeof(unsigned long));
+	uart1_send_packet((unsigned char*)(&data), sizeof(biotac_data));
+	uart1_send_packet((unsigned char*)(&load_cell), sizeof(int));
+}
+
+
+void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_reader_int()
+{
 	switch(system_get_state())
 	{
 	case BIOTAC_CAL_SINGLE:
 	{
 		// Read a single BioTac reading and associated load cell reading
 		// and transmit it.
-		unsigned long time_stamp = _CP0_GET_COUNT();
-		read_biotac(&data);
-		int load_cell = load_cell_read_grams();
-
-		uart1_send_packet((unsigned char*)(&time_stamp), sizeof(unsigned long));
-		uart1_send_packet((unsigned char*)(&data), sizeof(biotac_data));
-		uart1_send_packet((unsigned char*)(&load_cell), sizeof(int));
+		biotac_read_and_tx();
 
 		++numCalibrationSamples;
 		if( numCalibrationSamples > 200 )
 		{
 			// Signal end of data stream to the UI.
-			
-			memset(&time_stamp, 0x00, sizeof(unsigned long));
+
+			unsigned long time_stamp = 0;
 			uart1_send_packet((unsigned char*)(&time_stamp), sizeof(unsigned long));
 
+			biotac_data data;
 			memset(&data, 0x00, sizeof(biotac_data));
 			uart1_send_packet((unsigned char*)(&data), sizeof(biotac_data));
 
-			memset(&load_cell, 0x00, sizeof(int));
+			int load_cell = 0;
 			uart1_send_packet((unsigned char*)(&load_cell), sizeof(int));
 			
 			system_set_state(IDLE);
 		}
+		
+		break;
+	}
+
+	case BIOTAC_CONTINUOUS_READ:
+	{
+		biotac_read_and_tx();
 		
 		break;
 	}

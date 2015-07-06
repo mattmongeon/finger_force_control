@@ -1,6 +1,7 @@
 #include "biotac.h"
 #include "pic_serial.h"
 #include "utils.h"
+#include "keyboard_thread.h"
 #include <iostream>
 #include <vector>
 
@@ -54,6 +55,89 @@ void cBioTac::ReadSingle() const
 	std::cout << "TAC:  " << d.tac << "\r\n";
 	std::cout << "TDC:  " << d.tdc << "\r\n";
 	std::cout << std::flush;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void cBioTac::ReadContinuous() const
+{
+	mpPicSerial->WriteCommandToPic(nUtils::BIOTAC_READ_CONTINUOUS);
+
+	cKeyboardThread::Instance()->StartDetection();
+
+	std::cout << nUtils::CLEAR_CONSOLE << std::flush;
+	std::cout << "Read continuously from BioTac\r\n";
+	std::cout << "Enter q+ENTER to quit\r\n";
+	std::cout << "\r\n";
+	std::cout << "Waiting for E1...\r\n";
+	std::cout << "Waiting for E2...\r\n"; 	
+	std::cout << "Waiting for E3...\r\n"; 	
+	std::cout << "Waiting for E4...\r\n"; 	
+	std::cout << "Waiting for E5...\r\n"; 	
+	std::cout << "Waiting for E6...\r\n"; 	
+	std::cout << "Waiting for E7...\r\n"; 	
+	std::cout << "Waiting for E8...\r\n"; 	
+	std::cout << "Waiting for E9...\r\n"; 	
+	std::cout << "Waiting for E10...\r\n";
+	std::cout << "Waiting for E11...\r\n";
+	std::cout << "Waiting for E12...\r\n";
+	std::cout << "Waiting for E13...\r\n";
+	std::cout << "Waiting for E14...\r\n";
+	std::cout << "Waiting for E15...\r\n";
+	std::cout << "Waiting for E16...\r\n";
+	std::cout << "Waiting for E17...\r\n";
+	std::cout << "Waiting for E18...\r\n";
+	std::cout << "Waiting for E19...\r\n";
+	std::cout << "Waiting for PAC...\r\n";
+	std::cout << "Waiting for PDC...\r\n";
+	std::cout << "Waiting for TAC...\r\n";
+	std::cout << "Waiting for TDC...\r\n";
+	std::cout << std::flush;
+	
+	while(true)
+	{
+		std::cout << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE
+				  << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE
+				  << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE
+				  << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE
+				  << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE
+				  << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE;
+
+		sBioTacTuneData data;
+		mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&data), sizeof(sBioTacTuneData) );
+
+		std::cout << nUtils::CLEAR_LINE << "E1:   " << data.mData.e1 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E2:   " << data.mData.e2 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E3:   " << data.mData.e3 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E4:   " << data.mData.e4 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E5:   " << data.mData.e5 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E6:   " << data.mData.e6 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E7:   " << data.mData.e7 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E8:   " << data.mData.e8 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E9:   " << data.mData.e9 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E10:  " << data.mData.e10 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E11:  " << data.mData.e11 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E12:  " << data.mData.e12 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E13:  " << data.mData.e13 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E14:  " << data.mData.e14 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E15:  " << data.mData.e15 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E16:  " << data.mData.e16 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E17:  " << data.mData.e17 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E18:  " << data.mData.e18 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E19:  " << data.mData.e19 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "PAC:  " << data.mData.pac << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "PDC:  " << data.mData.pdc << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "TAC:  " << data.mData.tac << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "TDC:  " << data.mData.tdc << "\r\n";
+		std::cout << std::flush;
+		
+		if(cKeyboardThread::Instance()->QuitRequested())
+		{
+			mpPicSerial->WriteCommandToPic(nUtils::STOP_ACTIVITY);
+			mpPicSerial->DiscardIncomingData();
+			break;
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
