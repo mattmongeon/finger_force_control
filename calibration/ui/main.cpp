@@ -19,6 +19,11 @@ static bool noSerial = false;
 static bool help = false;
 
 
+// Takes in the command line options given to main and parses them to appropriately configure the program.
+//
+// Params:
+// argc - The number of command-line arguments including the program name.
+// argv - The vector of command-line argument strings including the program name at index 0.
 void parseCommandLineOptions(int argc, char** argv)
 {
 	for( int i = 1; i < argc; ++i )
@@ -44,6 +49,7 @@ void parseCommandLineOptions(int argc, char** argv)
 }
 
 
+// Prints the main menu of possible functions for this program.
 void printMenu()
 {
 	std::cout << "Function Menu" << std::endl;
