@@ -55,11 +55,11 @@ int main(int argc, char** argv)
 	std::cout << "Opening serial port to communicate with PIC..." << std::endl;
 
 	cPicSerial picSerial;
-	// if( !picSerial.OpenSerialPort() )
-	// {
-	// 	std::cout << "Error opening serial port!" << std::endl;
-	// 	return 0;
-	// }
+	if( !picSerial.OpenSerialPort() )
+	{
+		std::cout << "Error opening serial port!" << std::endl;
+		return 0;
+	}
 
 	std::cout << "Serial port opened and ready!" << std::endl;
 	std::cout << std::endl;
@@ -294,51 +294,7 @@ int main(int argc, char** argv)
 
 		case 'z':
 		{
-			// --- Set Up Plotting --- //
-			
-			plstream pls(1, 1, 255, 255, 255, "xcairo");
-
-			PLFLT ymin = 0.0, ymax = 10.0;
-			PLFLT xmin = 0.0, xmax = 100.0, xjump_pct = 0.25;
-
-			PLINT colbox = 1, collab = 3;
-
-			PLINT styline[4], colline[4];
-			// Line styles - solid
-			styline[0] = 1;
-			styline[1] = 1;
-			styline[2] = 1;
-			styline[3] = 1;
-
-			// Pen colors
-			colline[0] = nUtils::enumPLplotColor_RED;
-			colline[1] = nUtils::enumPLplotColor_RED;
-			colline[2] = nUtils::enumPLplotColor_RED;
-			colline[3] = nUtils::enumPLplotColor_RED;
-			
-			const char* legline[4];
-			legline[0] = "ADC";
-			legline[1] = "";
-			legline[2] = "";
-			legline[3] = "";
-
-			PLFLT xlab = 0.0, ylab = 0.25;
-
-			bool autoy = true, acc = true;
-
-			pls.init();
-
-			pls.adv(0);
-			pls.vsta();
-
-			PLINT id;
-			pls.stripc( &id, "bcnst", "bcnstv",
-						xmin, xmax, xjump_pct, ymin, ymax,
-						xlab, ylab,
-						autoy, acc,
-						colbox, collab,
-						colline, styline, legline,
-						"Sample", "Force (g)", "Load Cell" );
+			cRealTimePlot plotter("ADC", "Sample", "Raw Ticks", "ADC Ticks");
 
 
 			// --- Start Gathering Data --- //
@@ -363,7 +319,10 @@ int main(int argc, char** argv)
 			cStopwatch timer;
 			while(true)
 			{
-				std::cout << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE;
+				std::cout << nUtils::PREV_LINE << nUtils::PREV_LINE
+						  << nUtils::PREV_LINE << nUtils::PREV_LINE
+						  << nUtils::PREV_LINE << nUtils::PREV_LINE
+						  << nUtils::PREV_LINE;
 				timer.Reset();
 				timer.Start();
 
@@ -374,6 +333,8 @@ int main(int argc, char** argv)
 				picSerial.ReadFromPic( reinterpret_cast<unsigned char*>(&ticks), sizeof(uint32_t) );
 				picSerial.ReadFromPic( reinterpret_cast<unsigned char*>(&adc_value), sizeof(int) );
 
+				plotter.AddDataPoint(adc_value);
+				
 				float exe_time_ms = (ticks * 25.0) / 1000000.0;
 				float loopFreq_hz = ((start - prevStart) * 25.0) / 1000000000.0;
 				loopFreq_hz = 1.0 / loopFreq_hz;
@@ -392,14 +353,10 @@ int main(int argc, char** argv)
 				if(cKeyboardThread::Instance()->QuitRequested())
 				{
 					picSerial.WriteCommandToPic(nUtils::STOP_ACTIVITY);
-					picSerial.ReadFromPic( reinterpret_cast<unsigned char*>(&start), sizeof(uint32_t) );
-					picSerial.ReadFromPic( reinterpret_cast<unsigned char*>(&ticks), sizeof(uint32_t) );
-					picSerial.ReadFromPic( reinterpret_cast<unsigned char*>(&adc_value), sizeof(int) );
+					picSerial.DiscardIncomingData(500);
 					break;
 				}
 			}
-
-			pls.stripd( id );
 
 			break;
 		}
