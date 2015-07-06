@@ -1,5 +1,6 @@
 #include "real_time_plot.h"
 #include "utils.h"
+#include <iostream>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +16,7 @@ cRealTimePlot::cRealTimePlot(const std::string& title, const std::string& xAxisL
 {
 	// --- Set Up Plotting --- //
 	
-	PLFLT ymin = 0.0, ymax = 1.0;
+	PLFLT ymin = 1000000.0, ymax = 0.0;
 	PLFLT xmin = 0.0, xmax = 500.0, xjump_pct = 0.5;
 
 	PLINT colbox = 1, collab = 3;
@@ -81,7 +82,8 @@ cRealTimePlot::cRealTimePlot(const std::string& title, const std::string& xAxisL
 
 cRealTimePlot::~cRealTimePlot()
 {
-	// It is possible that 
+	// It is possible that there are some points left to plot.  Wait until
+	// they are all plotted by the other thread.
 	while(!mBufferedPoints.empty())
 	{
 		;
@@ -90,7 +92,10 @@ cRealTimePlot::~cRealTimePlot()
 	mContinuePlotting = false;
 	pthread_join(mPlottingThreadHandle, NULL);
 	pthread_mutex_destroy(&mDataMutex);
-	
+
+	std::cout << std::endl;
+	std::cout << std::endl;
+	std::cout << "Showing data plot.  Right-click plot to close and continue." << std::endl;
 	mPlotStream.stripd( mPlotId );
 }
 
