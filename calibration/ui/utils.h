@@ -22,8 +22,9 @@ namespace nUtils
 	const std::string SET_TORQUE_CTRL_GAINS = "g\n";
 	const std::string GET_TORQUE_CTRL_GAINS = "h\n";
 	const std::string READ_LOAD_CELL = "l\n";
+	const std::string READ_RAW_LOAD_CELL = "m\n";
 	const std::string SET_PWM = "p\n";
-	const std::string READ_RAW_LOAD_CELL = "r\n";
+	const std::string BIOTAC_READ_CONTINUOUS = "r\n";
 	const std::string TUNE_TORQUE_GAINS = "t\n";
 
 	const std::string WILDCARD = "z\n";
