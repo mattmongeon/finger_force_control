@@ -214,6 +214,8 @@ int main()
 				NU32_ReadUART1(buffer, 20);
 				if( buffer[0] == 'q' )
 				{
+					LCD_Clear();
+					LCD_WriteString("Stopping");
 					load_cell_continuous_raw(0);
 					break;
 				}
