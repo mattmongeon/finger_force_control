@@ -111,7 +111,7 @@ public:
 	//
 	// Params:
 	// wait_ms - The number of milliseconds to wait before clearing the line.
-	void DiscardIncomingData(int wait_ms = 0);
+	void DiscardIncomingData(int wait_ms=500) const;
 
 
 private:	
