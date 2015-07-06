@@ -1,5 +1,6 @@
 #include "pic_serial.h"
 #include "utils.h"
+#include "stopwatch.h"
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -8,16 +9,25 @@
 #include <iostream>
 
 
+////////////////////////////////////////////////////////////////////////////////
+//  Construction / Destruction
+////////////////////////////////////////////////////////////////////////////////
+
 cPicSerial::cPicSerial()
 {
 	mPortHandle = -1;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 cPicSerial::~cPicSerial()
 {
-	if( mPortHandle != -1 )
-		CloseSerialPort();
+	CloseSerialPort();
 }
+
+////////////////////////////////////////////////////////////////////////////////
+//  Interface Functions
+////////////////////////////////////////////////////////////////////////////////
 
 bool cPicSerial::OpenSerialPort()
 {
@@ -42,7 +52,7 @@ bool cPicSerial::OpenSerialPort()
 	tio.c_cc[VINTR] = 021;  // Interrupt - set to CTRL+C
 	tio.c_cc[VQUIT] = 023;  // Interrupt - set to CTRL+Z
 	tio.c_cc[VMIN] = 1;     // Minimum read 1 character
-	tio.c_cc[VTIME] = 100; // Timeout of 10 seconds
+	tio.c_cc[VTIME] = 100;  // Timeout of 10 seconds
 	
 	mPortHandle = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
 	if( mPortHandle == -1 )
@@ -56,6 +66,8 @@ bool cPicSerial::OpenSerialPort()
 	return true;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 void cPicSerial::CloseSerialPort()
 {
 	if( mPortHandle != -1 )
@@ -65,16 +77,22 @@ void cPicSerial::CloseSerialPort()
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 bool cPicSerial::WriteCommandToPic(const std::string& cmd) const
 {
 	return WriteToPic((unsigned char*)(cmd.data()), 2);
 	// return write(mPortHandle, cmd.data(), 2) == 2;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 bool cPicSerial::WriteToPic(unsigned char* buffer, int numBytes) const
 {
 	return write(mPortHandle, buffer, numBytes) == numBytes;
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 bool cPicSerial::ReadFromPic(unsigned char* buffer, int numBytes) const
 {
@@ -89,4 +107,21 @@ bool cPicSerial::ReadFromPic(unsigned char* buffer, int numBytes) const
 	}
 
 	return (numRead == numBytes);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void cPicSerial::DiscardIncomingData(int wait_ms)
+{
+	if( wait_ms > 0 )
+	{
+		cStopwatch timer;
+		timer.Start();
+		while( timer.GetElapsedTime_ms() < wait_ms )
+		{
+			;
+		}
+	}
+
+	tcflush( mPortHandle, TCIFLUSH );
 }

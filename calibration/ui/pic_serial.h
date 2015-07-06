@@ -19,6 +19,7 @@ public:
 	cPicSerial();
 	~cPicSerial();
 
+	
 	//--------------------------------------------------------------------------//
 	//--------------------------  INTERFACE FUNCTIONS  -------------------------//
 	//--------------------------------------------------------------------------//
@@ -102,6 +103,15 @@ public:
 	//
 	// Return - true if serial communication was successful, false otherwise.
 	bool ReadFromPic(unsigned char* buffer, int numBytes) const;
+
+
+	// Waits the parameter number of milliseconds and then discards any data
+	// that might have been received on the serial line but not read yet.
+	// Leftover data can mess up subsequent read operations.
+	//
+	// Params:
+	// wait_ms - The number of milliseconds to wait before clearing the line.
+	void DiscardIncomingData(int wait_ms = 0);
 
 
 private:	
