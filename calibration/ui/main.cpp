@@ -62,6 +62,7 @@ void printMenu()
 	std::cout << "g:  Set torque controller gains" << std::endl;
 	std::cout << "h:  Get torque controller gains" << std::endl;
 	std::cout << "l:  Read load cell" << std::endl;
+	std::cout << "m:  Read uncalibrated load cell" << std::endl;
 	std::cout << "p:  Set motor PWM duty cycle" << std::endl;
 	std::cout << "r:  Continuously read from BioTac" << std::endl;
 	std::cout << "s:  Continuously read from load cell" << std::endl;
@@ -409,7 +410,7 @@ int main(int argc, char** argv)
 				if(cKeyboardThread::Instance()->QuitRequested())
 				{
 					picSerial.WriteCommandToPic(nUtils::STOP_ACTIVITY);
-					picSerial.DiscardIncomingData(500);
+					picSerial.DiscardIncomingData();
 					break;
 				}
 			}
