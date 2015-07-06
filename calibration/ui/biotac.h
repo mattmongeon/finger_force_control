@@ -5,6 +5,7 @@
 class cPicSerial;
 
 
+// This class represents the BioTac and handles communication with it.
 class cBioTac
 {
 public:
@@ -22,6 +23,7 @@ public:
 	//-----------------------------  NESTED STRUCT  ----------------------------//
 	//--------------------------------------------------------------------------//
 
+	// The struct containing all of the BioTac data from a single read.
 	struct sBioTacData
 	{
 		unsigned short e1;
@@ -64,10 +66,13 @@ public:
 	//--------------------------------------------------------------------------//
 
 	// Makes a single reading from the BioTac and returns the data.
-	//
-	// Return - the data struct containing all the data froma single reading.
 	void ReadSingle() const;
 
+
+	// Reads data continuously from the BioTac.
+	void ReadContinuous() const;
+
+	
 	// Performs a single calibration run with the BioTac
 	void CalibrationSingle();
 	
