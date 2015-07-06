@@ -111,7 +111,7 @@ bool cPicSerial::ReadFromPic(unsigned char* buffer, int numBytes) const
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void cPicSerial::DiscardIncomingData(int wait_ms)
+void cPicSerial::DiscardIncomingData(int wait_ms) const
 {
 	if( wait_ms > 0 )
 	{
