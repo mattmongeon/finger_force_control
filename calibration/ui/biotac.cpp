@@ -2,6 +2,7 @@
 #include "pic_serial.h"
 #include "utils.h"
 #include "keyboard_thread.h"
+#include "data_logger.h"
 #include <iostream>
 #include <vector>
 
@@ -159,6 +160,7 @@ void cBioTac::RecordCalibrationRun()
 	sBioTacTuneData stopCondition;
 	memset(&stopCondition, 0, sizeof(sBioTacTuneData));
 	std::vector<sBioTacTuneData> tuneData;
+	cDataLogger logger;
 
 	// Now start the process.
 	mpPicSerial->WriteToPic( reinterpret_cast<unsigned char*>(&force), sizeof(int) );
@@ -170,9 +172,14 @@ void cBioTac::RecordCalibrationRun()
 		mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&rxData), sizeof(sBioTacTuneData) );
 
 		if( memcmp(&rxData, &stopCondition, sizeof(sBioTacTuneData)) != 0 )
+		{
+			logger.LogDataBuffer(&rxData, sizeof(sBioTacTuneData));
 			tuneData.push_back(rxData);
+		}
 		else
+		{
 			break;
+		}
 	}
 
 

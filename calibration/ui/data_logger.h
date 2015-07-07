@@ -4,6 +4,7 @@
 #include <queue>
 #include <fstream>
 #include <pthread.h>
+#include <cstring>
 
 
 // Writes data to file in a binary format.  The file contains a header which gives
@@ -36,7 +37,17 @@ public:
 	// pData - A pointer to the data buffer.
 	// size - The number of bytes to write to file.
 	template<typename T>
-	void LogDataBuffer(T* pData, int size);
+	void LogDataBuffer(T* pData, int size)
+	{
+		sData data;
+		data.mpData = new unsigned char[size];
+		memcpy(data.mpData, reinterpret_cast<unsigned char*>(pData), size);
+		data.mNumBytes = size;
+
+		pthread_mutex_lock(&mDataMutex);
+		mOutputQueue.push(data);
+		pthread_mutex_unlock(&mDataMutex);
+	}
 
 
 	// Writes the paramter data to file.
@@ -44,7 +55,10 @@ public:
 	// Params:
 	// data - The data to be written.
 	template<typename T>
-	void LogData(T data);
+	void LogData(T data)
+	{
+		LogDataBuffer<T>(&data, sizeof(T));
+	}
 
 	
 private:
