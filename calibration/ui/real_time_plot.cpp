@@ -17,7 +17,7 @@ cRealTimePlot::cRealTimePlot(const std::string& title, const std::string& xAxisL
 	// --- Set Up Plotting --- //
 	
 	PLFLT ymin = 1000000.0, ymax = 1.0;
-	PLFLT xmin = 0.0, xmax = 500.0, xjump_pct = 0.5;
+	PLFLT xmin = 0.0, xmax = 2500.0, xjump_pct = 0.75;
 
 	PLINT colbox = 1, collab = 3;
 
@@ -54,7 +54,7 @@ cRealTimePlot::cRealTimePlot(const std::string& title, const std::string& xAxisL
 	PLFLT xlab = 0.0;
 	PLFLT ylab = 1.0;
 
-	bool autoy = true, acc = true;
+	bool autoy = true, acc = false;
 
 	mPlotStream.init();
 
@@ -73,7 +73,7 @@ cRealTimePlot::cRealTimePlot(const std::string& title, const std::string& xAxisL
 	// --- Set Up Thread-Related Stuff --- //
 
 	mContinuePlotting = true;
-	mBufferedPoints.clear();
+	mNewPointReady = false;
 	pthread_mutex_init(&mDataMutex, NULL);
 	pthread_create(&mPlottingThreadHandle, NULL, ThreadFunc, (void*)this);
 }
@@ -82,9 +82,9 @@ cRealTimePlot::cRealTimePlot(const std::string& title, const std::string& xAxisL
 
 cRealTimePlot::~cRealTimePlot()
 {
-	// It is possible that there are some points left to plot.  Wait until
-	// they are all plotted by the other thread.
-	while(!mBufferedPoints.empty())
+	// It is possible that there is a point left to plot.  Wait until the other
+	// thread has plotted it.
+	while(mNewPointReady)
 	{
 		;
 	}
@@ -142,7 +142,8 @@ void cRealTimePlot::EnqueueDataPoint(double p1, double p2, double p3, double p4)
 	p.mPoint4 = p4;
 
 	pthread_mutex_lock(&mDataMutex);
-	mBufferedPoints.push_back(p);
+	mNewPointReady = true;
+	mBufferedPoint = p;
 	pthread_mutex_unlock(&mDataMutex);
 }
 
@@ -195,11 +196,11 @@ void* cRealTimePlot::ThreadFunc(void* pIn)
 	{
 		// Try to grab the point.
 		pthread_mutex_lock(&(pThis->mDataMutex));
-		if( !pThis->mBufferedPoints.empty() )
+		if( pThis->mNewPointReady )
 		{
-			p = pThis->mBufferedPoints.front();
-			pThis->mBufferedPoints.pop_front();
+			p = pThis->mBufferedPoint;
 			plot = true;
+			pThis->mNewPointReady = false;
 		}
 		pthread_mutex_unlock(&(pThis->mDataMutex));
 
