@@ -134,8 +134,11 @@ private:
 	// Mutex protecting access to the data queue.
 	pthread_mutex_t mDataMutex;
 
-	// A list of data points waiting to be plotted.
-	std::deque<sDataPoint> mBufferedPoints;
+	// The data point waiting to be plotted.
+	sDataPoint mBufferedPoint;
+
+	// A flag indicating that a new data point is ready to be plotted.
+	bool mNewPointReady;
 
 	// A boolean used to control whether the separate thread should continue plotting.
 	bool mContinuePlotting;
