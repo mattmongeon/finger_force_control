@@ -2,6 +2,8 @@
 #include <sstream>
 #include <ctime>
 #include <cstring>
+#include <iostream>
+#include <sys/stat.h>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -10,10 +12,16 @@
 
 cDataLogger::cDataLogger()
 {
+	struct stat st = {0};
+	if( stat("./data", &st) == -1)
+	{
+		mkdir("./data", 0777);
+	}
+	
 	time_t curTime = time(NULL);
 	tm* t = localtime(&curTime);
 	std::ostringstream s;
-	s << "data_" << t->tm_year + 1900 << "_"
+	s << "./data/data_" << t->tm_year + 1900 << "_"
 	  << t->tm_mon << "_"
 	  << t->tm_mday << "_"
 	  << t->tm_hour << "_"
@@ -33,9 +41,15 @@ cDataLogger::~cDataLogger()
 {
 	// It is possible there is still some data left to be written.  Sit here and
 	// spin until it is written to file.
-	while(!mOutputQueue.empty())
+	if( !mOutputQueue.empty() )
 	{
-		;
+		std::cout << "Data logger still has data to write to file.  Finishing..." << std::endl;
+		while(!mOutputQueue.empty())
+		{
+			;
+		}
+
+		std::cout << "Finished writing points to file!" << std::endl;
 	}
 	
 	mLoopRunning = false;
@@ -43,38 +57,6 @@ cDataLogger::~cDataLogger()
 	pthread_mutex_destroy(&mDataMutex);
 	
 	mOutFile.close();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-//  Interface Functions
-////////////////////////////////////////////////////////////////////////////////
-
-template<typename T>
-void cDataLogger::LogDataBuffer(T* pData, int size)
-{
-	sData data;
-	data.mpData = new unsigned char[size];
-	memcpy(data.mpData, reinterpret_cast<unsigned char*>(pData), size);
-	data.mNumBytes = size;
-
-	pthread_mutex_lock(&mDataMutex);
-	mOutputQueue.push(data);
-	pthread_mutex_unlock(&mDataMutex);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-template<typename T>
-void cDataLogger::LogData(T data)
-{
-	sData d;
-	data.mpData = new unsigned char[sizeof(T)];
-	memcpy(d.mpData, reinterpret_cast<unsigned char*>(&data), sizeof(T));
-	data.mNumBytes = sizeof(T);
-
-	pthread_mutex_lock(&mDataMutex);
-	mOutputQueue.push(d);
-	pthread_mutex_unlock(&mDataMutex);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
