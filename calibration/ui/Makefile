@@ -7,14 +7,17 @@ LFLAGS=-lpthread
 LINKDIR=-Lusr/lib/x86_64-linux-gnu
 PKGS=`pkg-config --cflags --libs plplot-c++`
 OBJECTS=$(SOURCES:.cpp=.o)
+OBJDIR=obj
+BUILDOBJECTS=$(patsubst %,$(OBJDIR)/%,$(OBJECTS))
 
 $(PROG): $(OBJECTS)
-	$(CC) -o $(PROG) $(OBJECTS) $(LFLAGS) $(LINKDIR) $(PKGS)
+	$(CC) -o $(PROG) $(BUILDOBJECTS) $(LFLAGS) $(LINKDIR) $(PKGS)
 
 %.o: %.cpp
-	$(CC) $(CPPFLAGS) -o $@ $<
+	$(CC) $(CPPFLAGS) -o $(OBJDIR)/$@ $<
 
 clean:
-	rm -rf *.o biotac_cal *~
+	rm -rf *.o biotac_cal *~ $(OBJDIR)
+	mkdir $(OBJDIR)
 
 rebuild: clean $(PROG)
