@@ -11,9 +11,6 @@
 #define LOOP_TIMER_PRESCALAR 16
 
 
-static int numCalibrationSamples = 0;
-
-
 /*
 Notes:
 - Send both the raw values and the decoded values to the UI
@@ -59,6 +56,8 @@ Notes:
 
 
 
+
+
 #define READ_BIOTAC_SAMPLE(cmd, var)							\
 	/* Request data */											\
 	spi_comm_enable(1);											\
@@ -78,18 +77,16 @@ Notes:
 	wait_usec(10);
 
 
+static biotac_tune_data biotacTuneBuffer[200];
+static int biotacTuneIndex = 0;
+
 
 static void biotac_read_and_tx()
 {
-	static biotac_data data;
-	
-	unsigned long time_stamp = _CP0_GET_COUNT();
-	read_biotac(&data);
-	int load_cell = load_cell_read_grams();
-
-	uart1_send_packet((unsigned char*)(&time_stamp), sizeof(unsigned long));
-	uart1_send_packet((unsigned char*)(&data), sizeof(biotac_data));
-	uart1_send_packet((unsigned char*)(&load_cell), sizeof(int));
+	biotac_tune_data* p = &(biotacTuneBuffer[biotacTuneIndex]);
+	p->timestamp = _CP0_GET_COUNT();
+	read_biotac(&(p->data));
+	p->load_cell = load_cell_read_grams();
 }
 
 
@@ -103,24 +100,26 @@ void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_reader_int()
 		// and transmit it.
 		biotac_read_and_tx();
 
-		++numCalibrationSamples;
-		if( numCalibrationSamples > 200 )
+		++biotacTuneIndex;
+		if( biotacTuneIndex >= 200 )
 		{
 			// Signal end of data stream to the UI.
 
-			unsigned long time_stamp = 0;
-			uart1_send_packet((unsigned char*)(&time_stamp), sizeof(unsigned long));
+			int i = 0;
+			for( ; i < 200; ++i )
+			{
+				uart1_send_packet((unsigned char*)(&(biotacTuneBuffer[i])), sizeof(biotac_tune_data));
+			}
+	
+			biotac_tune_data data;
+			memset(&data, 0x00, sizeof(biotac_tune_data));
+			uart1_send_packet((unsigned char*)(&data), sizeof(biotac_tune_data));
 
-			biotac_data data;
-			memset(&data, 0x00, sizeof(biotac_data));
-			uart1_send_packet((unsigned char*)(&data), sizeof(biotac_data));
-
-			int load_cell = 0;
-			uart1_send_packet((unsigned char*)(&load_cell), sizeof(int));
+			biotacTuneIndex = 0;
 			
 			system_set_state(IDLE);
 		}
-		
+
 		break;
 	}
 
@@ -132,7 +131,7 @@ void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_reader_int()
 	}
 
 	default:
-		numCalibrationSamples = 0;
+		biotacTuneIndex = 0;
 		break;
 	}
 	

@@ -2,11 +2,11 @@
 #include "load_cell.h"
 #include "utils.h"
 #include "uart.h"
+#include "system.h"
 
 
 static volatile unsigned long adc_value_timestamp = 0;
 static volatile int adc_value = 0;
-static volatile int enable_continuous = 0;
 
 
 #define LOOP_RATE_HZ  320
@@ -61,16 +61,14 @@ void __ISR(_TIMER_1_VECTOR, IPL5SOFT) adc_timer_interrupt()
 
 	unsigned long time = end - start;
 
-	if( enable_continuous )
+	if( system_get_state() == LOAD_CELL_CONTINUOUS_READ )
 	{
-		LCD_Clear();
-		char b[20];
-		sprintf(b, "Ticks: %d", time);
-		LCD_WriteString(b);
-
 		uart1_send_packet( (unsigned char*)(&start), sizeof(unsigned long) );
 		uart1_send_packet( (unsigned char*)(&time), sizeof(unsigned long) );
 		uart1_send_packet( (unsigned char*)(&adc_value), sizeof(int) );
+
+		int load_cell_val = load_cell_read_grams();
+		uart1_send_packet( (unsigned char*)(&load_cell_val), sizeof(int) );
 	}
 
 	IFS0CLR = 0x10;
@@ -121,10 +119,5 @@ int load_cell_read_grams()
 int load_cell_raw_value()
 {
 	return adc_value;
-}
-
-void load_cell_continuous_raw(int enable)
-{
-	enable_continuous = enable;
 }
 

@@ -110,6 +110,7 @@ void __ISR(_TIMER_2_VECTOR, IPL5SOFT) current_controller()
 	case TRACK_CURRENT:
 	case TRACK_FORCE_TRAJECTORY:
 	case HOLD_FORCE:
+	case BIOTAC_CAL_SINGLE:
 		square_wave_timer = 0;
 		
 		// follow the current reference set by motor_amps_set
