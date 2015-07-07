@@ -1,6 +1,8 @@
 #include "load_cell.h"
 #include "utils.h"
 #include "pic_serial.h"
+#include "keyboard_thread.h"
+#include "real_time_plot.h"
 #include <plplot/plplot.h>
 #include <vector>
 #include <utility>
@@ -91,9 +93,77 @@ void cLoadCell::RunCalibrationRoutine()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-int cLoadCell::ReadLoadCell_grams()
+void cLoadCell::ReadSingle()
 {
-	return mpPicSerial->ReadValueFromPic<int>(nUtils::READ_LOAD_CELL);
+	std::cout << "Current load cell reading:  " << mpPicSerial->ReadValueFromPic<int>(nUtils::READ_LOAD_CELL) << std::endl;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void cLoadCell::ReadContinuous()
+{
+	cRealTimePlot plotter("Load Cell", "Sample", "Force (g)", "Force (g)");
+
+	
+	// --- Start Gathering Data --- //
+			
+	mpPicSerial->WriteCommandToPic(nUtils::LOAD_CELL_READ_CONTINUOUS);
+			
+	cKeyboardThread::Instance()->StartDetection();
+
+	std::cout << nUtils::CLEAR_CONSOLE << std::flush;
+	std::cout << "Read continuously from load cell\r\n";
+	std::cout << "Enter q+ENTER to quit\r\n";
+	std::cout << "\r\n";
+	std::cout << "Waiting for start...\r\n";
+	std::cout << "Waiting for loop frequency...\r\n";
+	std::cout << "Waiting for ticks...\r\n";
+	std::cout << "Waiting for exe time...\r\n";
+	std::cout << "Waiting for possible frequency...\r\n";
+	std::cout << "Waiting for ADC...\r\n";
+	std::cout << "Waiting for load cell...\r\n";
+	std::cout << std::flush;
+
+	uint32_t prevStart = 0;
+	while(true)
+	{
+		std::cout << nUtils::PREV_LINE << nUtils::PREV_LINE
+				  << nUtils::PREV_LINE << nUtils::PREV_LINE
+				  << nUtils::PREV_LINE << nUtils::PREV_LINE
+				  << nUtils::PREV_LINE;
+
+		int adc_value = 0;
+		uint32_t ticks = 0;
+		uint32_t start = 0;
+		int load_cell_value = 0;
+		mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&start), sizeof(uint32_t) );
+		mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&ticks), sizeof(uint32_t) );
+		mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&adc_value), sizeof(int) );
+		mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&load_cell_value), sizeof(int) );
+
+		plotter.AddDataPoint(adc_value);
+				
+		float exe_time_ms = (ticks * 25.0) / 1000000.0;
+		float loopFreq_hz = ((start - prevStart) * 25.0) / 1000000000.0;
+		loopFreq_hz = 1.0 / loopFreq_hz;
+		std::cout << nUtils::CLEAR_LINE << "Start: " << start << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "Loop Freq: " << loopFreq_hz << " Hz\r\n";
+		std::cout << nUtils::CLEAR_LINE << "Ticks:	" << ticks << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "Exe Time:  " << exe_time_ms	<< " ms\r\n";
+		std::cout << nUtils::CLEAR_LINE << "Possible Freq:	" << 1.0 / (exe_time_ms / 1000.0) << " Hz\r\n";
+		std::cout << nUtils::CLEAR_LINE << "ADC:	 " << adc_value << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "Calibrated Value:  " << load_cell_value << "\r\n";
+		std::cout << std::flush;
+
+		prevStart = start;
+
+		if(cKeyboardThread::Instance()->QuitRequested())
+		{
+			mpPicSerial->WriteCommandToPic(nUtils::STOP_ACTIVITY);
+			mpPicSerial->DiscardIncomingData();
+			break;
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////

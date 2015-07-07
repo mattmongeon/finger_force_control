@@ -150,8 +150,7 @@ int main(int argc, char** argv)
 		{
 		case 'a':
 		{
-			
-			
+			biotac.RecordCalibrationRun();
 			break;
 		}
 		
@@ -211,7 +210,7 @@ int main(int argc, char** argv)
 
 		case 'l':
 		{
-			std::cout << "Current load cell reading:  " << loadCell.ReadLoadCell_grams() << std::endl;
+			loadCell.ReadSingle();
 			break;
 		}
 
@@ -227,112 +226,13 @@ int main(int argc, char** argv)
 
 		case 'r':
 		{
-			cStopwatch stopwatch;
-			cKeyboardThread::Instance()->StartDetection();
-			stopwatch.Start();
-
-			std::cout << nUtils::CLEAR_CONSOLE << std::flush;
-			std::cout << "Read continuously from BioTac\r\n";
-			std::cout << "Enter q + ENTER to quit\r\n";
-			std::cout << "\r\n";
-			std::cout << "Waiting for E1...\r\n"; 
-			std::cout << "Waiting for E2...\r\n"; 
-			std::cout << "Waiting for E3...\r\n"; 
-			std::cout << "Waiting for E4...\r\n"; 
-			std::cout << "Waiting for E5...\r\n"; 
-			std::cout << "Waiting for E6...\r\n"; 
-			std::cout << "Waiting for E7...\r\n"; 
-			std::cout << "Waiting for E8...\r\n"; 
-			std::cout << "Waiting for E9...\r\n"; 
-			std::cout << "Waiting for E10...\r\n";
-			std::cout << "Waiting for E11...\r\n";
-			std::cout << "Waiting for E12...\r\n";
-			std::cout << "Waiting for E13...\r\n";
-			std::cout << "Waiting for E14...\r\n";
-			std::cout << "Waiting for E15...\r\n";
-			std::cout << "Waiting for E16...\r\n";
-			std::cout << "Waiting for E17...\r\n";
-			std::cout << "Waiting for E18...\r\n";
-			std::cout << "Waiting for E19...\r\n";
-			std::cout << "Waiting for PAC...\r\n";
-			std::cout << "Waiting for PDC...\r\n";
-			std::cout << "Waiting for TAC...\r\n";
-			std::cout << "Waiting for TDC...\r\n";
-			
-			while(true)
-			{
-				std::cout << nUtils::PREV_LINE << nUtils::CLEAR_LINE
-						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
-						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
-						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
-						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
-						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
-						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
-						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
-						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
-						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
-						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
-						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
-						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
-						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
-						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
-						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
-						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
-						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
-						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
-						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
-						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
-						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
-						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE
-						  << nUtils::PREV_LINE << nUtils::CLEAR_LINE;
-				
-				biotac.ReadSingle();
-
-				stopwatch.Reset();
-				while(stopwatch.GetElapsedTime_ms() < 100.0)
-				{
-					;
-				}
-
-				if(cKeyboardThread::Instance()->QuitRequested())
-					break;
-			}
-
+			biotac.ReadContinuous();
 			break;
 		}
 
 		case 's':
 		{
-			cStopwatch stopwatch;
-			cKeyboardThread::Instance()->StartDetection();
-			stopwatch.Start();
-			cRealTimePlot plotter("Load Cell", "Force (g)", "Sample", "Load Cell (g)");
-
-			std::cout << nUtils::CLEAR_CONSOLE << std::flush;
-			std::cout << "Read continuously from load cell\r\n";
-			std::cout << "Enter q+ENTER to quit\r\n";
-			std::cout << "\r\n";
-			std::cout << "Waiting for force...\r\n";
-			
-
-			while(true)
-			{
-				double loadCell_g = loadCell.ReadLoadCell_grams();
-				std::cout << nUtils::PREV_LINE << nUtils::CLEAR_LINE << "Force:  " << loadCell_g << " g\r\n";
-				std::cout << std::flush;
-
-				plotter.AddDataPoint( loadCell_g );
-
-				stopwatch.Reset();
-				while(stopwatch.GetElapsedTime_ms() < 100.0)
-				{
-					;
-				}
-
-				if(cKeyboardThread::Instance()->QuitRequested())
-					break;
-			}
-
+			loadCell.ReadContinuous();
 			break;
 		}
 
@@ -351,70 +251,7 @@ int main(int argc, char** argv)
 
 		case 'z':
 		{
-			cRealTimePlot plotter("ADC", "Sample", "Raw Ticks", "ADC Ticks");
-
-
-			// --- Start Gathering Data --- //
-			
-			picSerial.WriteCommandToPic(nUtils::WILDCARD);
-			
-			cKeyboardThread::Instance()->StartDetection();
-
-			std::cout << nUtils::CLEAR_CONSOLE << std::flush;
-			std::cout << "Read continuously from load cell\r\n";
-			std::cout << "Enter q+ENTER to quit\r\n";
-			std::cout << "\r\n";
-			std::cout << "Waiting for start...\r\n";
-			std::cout << "Waiting for loop frequency...\r\n";
-			std::cout << "Waiting for ticks...\r\n";
-			std::cout << "Waiting for exe time...\r\n";
-			std::cout << "Waiting for possible frequency...\r\n";
-			std::cout << "Waiting for ADC...\r\n";
-			std::cout << std::flush;
-
-			uint32_t prevStart = 0;
-			cStopwatch timer;
-			while(true)
-			{
-				std::cout << nUtils::PREV_LINE << nUtils::PREV_LINE
-						  << nUtils::PREV_LINE << nUtils::PREV_LINE
-						  << nUtils::PREV_LINE << nUtils::PREV_LINE
-						  << nUtils::PREV_LINE;
-				timer.Reset();
-				timer.Start();
-
-				int adc_value = 0;
-				uint32_t ticks = 0;
-				uint32_t start = 0;
-				picSerial.ReadFromPic( reinterpret_cast<unsigned char*>(&start), sizeof(uint32_t) );
-				picSerial.ReadFromPic( reinterpret_cast<unsigned char*>(&ticks), sizeof(uint32_t) );
-				picSerial.ReadFromPic( reinterpret_cast<unsigned char*>(&adc_value), sizeof(int) );
-
-				plotter.AddDataPoint(adc_value);
-				
-				float exe_time_ms = (ticks * 25.0) / 1000000.0;
-				float loopFreq_hz = ((start - prevStart) * 25.0) / 1000000000.0;
-				loopFreq_hz = 1.0 / loopFreq_hz;
-				std::cout << nUtils::CLEAR_LINE << "Start: " << start << "\r\n";
-				std::cout << nUtils::CLEAR_LINE << "Loop Freq: " << loopFreq_hz << " Hz\r\n";
-				std::cout << nUtils::CLEAR_LINE << "Ticks:	" << ticks << "\r\n";
-				std::cout << nUtils::CLEAR_LINE << "Exe Time:  " << exe_time_ms	<< " ms\r\n";
-				std::cout << nUtils::CLEAR_LINE << "Possible Freq:	" << 1.0 / (exe_time_ms / 1000.0) << " Hz\r\n";
-				std::cout << nUtils::CLEAR_LINE << "ADC:	 " << adc_value << "\r\n";
-				std::cout << std::flush;
-
-				std::cout << "end while:  " << timer.GetElapsedTime_ms() << std::endl;
-
-				prevStart = start;
-
-				if(cKeyboardThread::Instance()->QuitRequested())
-				{
-					picSerial.WriteCommandToPic(nUtils::STOP_ACTIVITY);
-					picSerial.DiscardIncomingData();
-					break;
-				}
-			}
-
+			std::cout << "CURRENTLY DOING NOTHING WITH z" << std::endl;
 			break;
 		}
 

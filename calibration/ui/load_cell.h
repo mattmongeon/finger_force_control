@@ -28,14 +28,19 @@ public:
 	// values to generate a linear fit.
 	void RunCalibrationRoutine();
 
-	// Sends a request to the PIC to read from the load cell and send back the value
-	// in grams.
-	//
-	// Return - the calibrated load cell reading in grams.
-	int ReadLoadCell_grams();
+	
+	// Reads the calibrated value of the load cell in grams.
+	void ReadSingle();
 
 
+	// Continuously reads streaming data from the load cell.
+	void ReadContinuous();
+	
+
+	// Requests a force value through the UI and then commands the PIC to hold that
+	// value and return the results for analysis.
 	void TuneForceHolding();
+
 	
 private:
 

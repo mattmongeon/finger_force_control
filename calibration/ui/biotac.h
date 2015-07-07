@@ -20,9 +20,28 @@ public:
 
 
 	//--------------------------------------------------------------------------//
+	//--------------------------  INTERFACE FUNCTIONS  -------------------------//
+	//--------------------------------------------------------------------------//
+
+	// Makes a single reading from the BioTac and returns the data.
+	void ReadSingle() const;
+
+
+	// Reads data continuously from the BioTac.
+	void ReadContinuous() const;
+
+	
+	// Records a single run of calibrating the BioTac.
+	void RecordCalibrationRun();
+	
+	
+private:
+
+	//--------------------------------------------------------------------------//
 	//-----------------------------  NESTED STRUCT  ----------------------------//
 	//--------------------------------------------------------------------------//
 
+#pragma pack(push,1)
 	// The struct containing all of the BioTac data from a single read.
 	struct sBioTacData
 	{
@@ -53,31 +72,15 @@ public:
 		unsigned short tdc;
 	};
 
+
 	struct sBioTacTuneData
 	{
-		unsigned long mTimestamp;
+		unsigned int mTimestamp;
 		sBioTacData mData;
 		int mLoadCell_g;
 	};
+#pragma pack(pop)
 
-
-	//--------------------------------------------------------------------------//
-	//--------------------------  INTERFACE FUNCTIONS  -------------------------//
-	//--------------------------------------------------------------------------//
-
-	// Makes a single reading from the BioTac and returns the data.
-	void ReadSingle() const;
-
-
-	// Reads data continuously from the BioTac.
-	void ReadContinuous() const;
-
-	
-	// Performs a single calibration run with the BioTac
-	void CalibrationSingle();
-	
-	
-private:
 
 	//--------------------------------------------------------------------------//
 	//---------------------------  HELPER FUNCTIONS  ---------------------------//
