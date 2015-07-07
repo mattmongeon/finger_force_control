@@ -5,6 +5,12 @@
 #pragma pack(push,1)
 typedef struct
 {
+	unsigned short pac;
+	unsigned short pdc;
+
+	unsigned short tac;
+	unsigned short tdc;
+
 	unsigned short e1;
 	unsigned short e2;
 	unsigned short e3;
@@ -24,12 +30,6 @@ typedef struct
 	unsigned short e17;
 	unsigned short e18;
 	unsigned short e19;
-
-	unsigned short pac;
-	unsigned short pdc;
-
-	unsigned short tac;
-	unsigned short tdc;
 } biotac_data;
 
 
