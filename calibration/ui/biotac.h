@@ -45,6 +45,12 @@ private:
 	// The struct containing all of the BioTac data from a single read.
 	struct sBioTacData
 	{
+		unsigned short pac;
+		unsigned short pdc;
+
+		unsigned short tac;
+		unsigned short tdc;
+
 		unsigned short e1;
 		unsigned short e2;
 		unsigned short e3;
@@ -64,12 +70,6 @@ private:
 		unsigned short e17;
 		unsigned short e18;
 		unsigned short e19;
-
-		unsigned short pac;
-		unsigned short pdc;
-
-		unsigned short tac;
-		unsigned short tdc;
 	};
 
 

@@ -91,11 +91,14 @@ void cBioTac::ReadContinuous() const
 	std::cout << "Waiting for PDC...\r\n";
 	std::cout << "Waiting for TAC...\r\n";
 	std::cout << "Waiting for TDC...\r\n";
+	std::cout << "Waiting for load cell...\r\n";
+	std::cout << "Waiting for loop actual frequency...\r\n";
 	std::cout << std::flush;
 	
 	mpPicSerial->DiscardIncomingData(0);
 	mpPicSerial->WriteCommandToPic(nUtils::BIOTAC_READ_CONTINUOUS);
 
+	unsigned int prevTimestamp = 0;
 	while(true)
 	{
 		sBioTacTuneData data;
@@ -106,7 +109,8 @@ void cBioTac::ReadContinuous() const
 				  << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE
 				  << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE
 				  << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE
-				  << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE;
+				  << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE
+				  << nUtils::PREV_LINE;
 
 		std::cout << nUtils::CLEAR_LINE << "E1:   " << data.mData.e1 << "\r\n";
 		std::cout << nUtils::CLEAR_LINE << "E2:	  " << data.mData.e2 << "\r\n";
@@ -132,7 +136,12 @@ void cBioTac::ReadContinuous() const
 		std::cout << nUtils::CLEAR_LINE << "TAC:  " << data.mData.tac << "\r\n";
 		std::cout << nUtils::CLEAR_LINE << "TDC:  " << data.mData.tdc << "\r\n";
 		std::cout << nUtils::CLEAR_LINE << "Load cell:  " << data.mLoadCell_g << "\r\n";
+
+		float freq = 1.0 / ((data.mTimestamp - prevTimestamp) * 25.0 / 1000000000.0);
+		std::cout << nUtils::CLEAR_LINE << "Actual frequency (Hz):  " << freq << "\r\n";
 		std::cout << std::flush;
+
+		prevTimestamp = data.mTimestamp;
 		
 		if(cKeyboardThread::Instance()->QuitRequested())
 		{
