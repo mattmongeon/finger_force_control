@@ -177,6 +177,25 @@ int main()
 			
 			break;
 		}
+
+		case 's':
+		{
+			// --- Read Load Cell Continuously --- //
+
+			system_set_state(LOAD_CELL_CONTINUOUS_READ);
+
+			while(1)
+			{
+				NU32_ReadUART1(buffer, 20);
+				if( buffer[0] == 'q' )
+				{
+					system_set_state(IDLE);
+					break;
+				}
+			}
+			
+			break;
+		}
 		
 		case 't':
 		{
@@ -224,16 +243,14 @@ int main()
 
 		case 'z':
 		{
-			load_cell_continuous_raw(1);
+			system_set_state(LOAD_CELL_CONTINUOUS_READ);
 
 			while(1)
 			{
 				NU32_ReadUART1(buffer, 20);
 				if( buffer[0] == 'q' )
 				{
-					LCD_Clear();
-					LCD_WriteString("Stopping");
-					load_cell_continuous_raw(0);
+					system_set_state(IDLE);
 					break;
 				}
 			}

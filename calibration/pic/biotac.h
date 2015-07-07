@@ -2,6 +2,7 @@
 #define INCLUDED_BIOTAC_H
 
 
+#pragma pack(push,1)
 typedef struct
 {
 	unsigned short e1;
@@ -30,6 +31,15 @@ typedef struct
 	unsigned short tac;
 	unsigned short tdc;
 } biotac_data;
+
+
+typedef struct
+{
+	unsigned long timestamp;
+	biotac_data data;
+	int load_cell;
+} biotac_tune_data;
+#pragma pack(pop)
 
 
 void biotac_init();
