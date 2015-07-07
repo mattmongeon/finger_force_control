@@ -25,6 +25,7 @@ namespace nUtils
 	const std::string READ_RAW_LOAD_CELL = "m\n";
 	const std::string SET_PWM = "p\n";
 	const std::string BIOTAC_READ_CONTINUOUS = "r\n";
+	const std::string LOAD_CELL_READ_CONTINUOUS = "s\n";
 	const std::string TUNE_TORQUE_GAINS = "t\n";
 
 	const std::string WILDCARD = "z\n";

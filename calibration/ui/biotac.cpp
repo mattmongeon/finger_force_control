@@ -61,8 +61,6 @@ void cBioTac::ReadSingle() const
 
 void cBioTac::ReadContinuous() const
 {
-	mpPicSerial->WriteCommandToPic(nUtils::BIOTAC_READ_CONTINUOUS);
-
 	cKeyboardThread::Instance()->StartDetection();
 
 	std::cout << nUtils::CLEAR_CONSOLE << std::flush;
@@ -94,27 +92,30 @@ void cBioTac::ReadContinuous() const
 	std::cout << "Waiting for TDC...\r\n";
 	std::cout << std::flush;
 	
+	mpPicSerial->DiscardIncomingData(0);
+	mpPicSerial->WriteCommandToPic(nUtils::BIOTAC_READ_CONTINUOUS);
+
 	while(true)
 	{
+		sBioTacTuneData data;
+		mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&data), sizeof(sBioTacTuneData) );
+
 		std::cout << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE
 				  << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE
 				  << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE
 				  << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE
 				  << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE
-				  << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE;
-
-		sBioTacTuneData data;
-		mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&data), sizeof(sBioTacTuneData) );
+				  << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE;
 
 		std::cout << nUtils::CLEAR_LINE << "E1:   " << data.mData.e1 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E2:   " << data.mData.e2 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E3:   " << data.mData.e3 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E4:   " << data.mData.e4 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E5:   " << data.mData.e5 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E6:   " << data.mData.e6 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E7:   " << data.mData.e7 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E8:   " << data.mData.e8 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E9:   " << data.mData.e9 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E2:	  " << data.mData.e2 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E3:	  " << data.mData.e3 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E4:	  " << data.mData.e4 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E5:	  " << data.mData.e5 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E6:	  " << data.mData.e6 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E7:	  " << data.mData.e7 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E8:	  " << data.mData.e8 << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "E9:	  " << data.mData.e9 << "\r\n";
 		std::cout << nUtils::CLEAR_LINE << "E10:  " << data.mData.e10 << "\r\n";
 		std::cout << nUtils::CLEAR_LINE << "E11:  " << data.mData.e11 << "\r\n";
 		std::cout << nUtils::CLEAR_LINE << "E12:  " << data.mData.e12 << "\r\n";
@@ -129,6 +130,7 @@ void cBioTac::ReadContinuous() const
 		std::cout << nUtils::CLEAR_LINE << "PDC:  " << data.mData.pdc << "\r\n";
 		std::cout << nUtils::CLEAR_LINE << "TAC:  " << data.mData.tac << "\r\n";
 		std::cout << nUtils::CLEAR_LINE << "TDC:  " << data.mData.tdc << "\r\n";
+		std::cout << nUtils::CLEAR_LINE << "Load cell:  " << data.mLoadCell_g << "\r\n";
 		std::cout << std::flush;
 		
 		if(cKeyboardThread::Instance()->QuitRequested())
@@ -142,8 +144,9 @@ void cBioTac::ReadContinuous() const
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void cBioTac::CalibrationSingle()
+void cBioTac::RecordCalibrationRun()
 {
+	mpPicSerial->DiscardIncomingData(0);
 	mpPicSerial->WriteCommandToPic(nUtils::BIOTAC_CAL_SINGLE);
 
 	std::cout << "Enter calibration force (g):  ";
