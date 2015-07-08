@@ -2,6 +2,9 @@
 #define INCLUDED_TORQUE_CONTROL_H
 
 
+#include "../common/torque_control_comm.h"
+
+
 // This file contains function declarations for the module that is responsible for
 // trying to generate a requested motor torque value based on the desired force
 // at the contact point.  It contains the PI controller for turning the error in
@@ -9,21 +12,6 @@
 // controller will be responsible for using the torque error to generate a PWM
 // value for changing the current through the motor.
 
-
-////////////////////////////////////////////////////////////////////////////////
-//  Struct Declarations
-////////////////////////////////////////////////////////////////////////////////
-
-// Represents data that is useful when tuning the PI parameters for holding a force.
-typedef struct
-{
-	int load_cell_g;
-	int error;
-	int error_int;
-	int current_mA;
-	unsigned int timestamp;
-	float loop_exe_time_ms;
-} torque_tune_data;
 
 ////////////////////////////////////////////////////////////////////////////////
 //  Interface Functions

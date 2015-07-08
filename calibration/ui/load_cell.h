@@ -2,6 +2,9 @@
 #define INCLUDED_LOAD_CELL_H
 
 
+#include "../common/torque_control_comm.h"
+
+
 class cPicSerial;
 
 
@@ -43,21 +46,6 @@ public:
 
 	
 private:
-
-	//--------------------------------------------------------------------------//
-	//-----------------------------  NESTED STRUCT  ----------------------------//
-	//--------------------------------------------------------------------------//
-
-	struct sTorqueTuneData
-	{
-		int mLoadCell_g;
-		int mError;
-		int mErrorInt;
-		int mCurrent_mA;
-		unsigned int mTimeStamp;
-		float mLoopExeTime_ms;
-	};
-
 
 	//--------------------------------------------------------------------------//
 	//-----------------------------  DATA MEMBERS  -----------------------------//
