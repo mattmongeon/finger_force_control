@@ -61,32 +61,29 @@ void motor_duty_cycle_pct_set(int duty_pct)
 
 void motor_pwm_set(int pwm_new)
 {
-	if( system_get_state() != IDLE )
+	int motorPWM = pwm_new;
+	if( motorPWM >= 0 )
 	{
-		int motorPWM = pwm_new;
-		if( motorPWM >= 0 )
-		{
-			motorDirection = CLOCKWISE;
-		}
-		else
-		{
-			motorDirection = COUNTERCLOCKWISE;
-			motorPWM *= -1;
-		}
+		motorDirection = CLOCKWISE;
+	}
+	else
+	{
+		motorDirection = COUNTERCLOCKWISE;
+		motorPWM *= -1;
+	}
 
-		OC1RS = motorPWM;
+	OC1RS = motorPWM;
 
 		
-		// --- Set Motor Direction --- //
+	// --- Set Motor Direction --- //
 
-		if( motorDirection == CLOCKWISE )
-		{
-			LATBSET = 0x02;
-		}
-		else
-		{
-			LATBCLR = 0x02;
-		}
+	if( motorDirection == CLOCKWISE )
+	{
+		LATBSET = 0x02;
+	}
+	else
+	{
+		LATBCLR = 0x02;
 	}
 }
 

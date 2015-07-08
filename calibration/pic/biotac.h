@@ -21,5 +21,12 @@ void biotac_init();
 void read_biotac(biotac_data* pData);
 
 
+// Sets the length of time in seconds for which the tuning session should last.
+//
+// Params:
+// seconds - The length of time in seconds.
+void biotac_set_time_length(int seconds);
+
+
 #endif  // INCLUDED_BIOTAC_H
 

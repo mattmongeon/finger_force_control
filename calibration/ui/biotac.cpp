@@ -157,13 +157,7 @@ void cBioTac::ReadContinuous() const
 
 void cBioTac::RecordCalibrationRun()
 {
-	mpPicSerial->DiscardIncomingData(0);
-	mpPicSerial->WriteCommandToPic(nUtils::BIOTAC_CAL_SINGLE);
-
-	std::cout << "Enter calibration force (g):  ";
-
-	int force;
-	std::cin >> force;
+	// --- Preparations --- //
 
 	// Ahead of time we will set up the things to be used during real-time processing.
 	biotac_tune_data rxData;
@@ -171,7 +165,24 @@ void cBioTac::RecordCalibrationRun()
 	memset(&stopCondition, 0, sizeof(biotac_tune_data));
 	std::vector<biotac_tune_data> tuneData;
 	cDataLogger logger;
-	cRealTimePlot plotter("Load Cell", "Sample", "Force (g)", "Force (g)", "", "", "", 200.0);
+
+	
+	// --- Start The Process --- //
+	
+	mpPicSerial->DiscardIncomingData(0);
+	mpPicSerial->WriteCommandToPic(nUtils::BIOTAC_CAL_SINGLE);
+
+	std::cout << "Enter number of seconds for this run (s):  " ;
+	int seconds = 0;
+	std::cin >> seconds;
+	mpPicSerial->WriteValueToPic(seconds);
+	
+	
+	std::cout << "Enter calibration force (g):  ";
+	int force;
+	std::cin >> force;
+
+	cRealTimePlot plotter("Load Cell", "Sample", "Force (g)", "Force (g)", "", "", "", seconds * 100.0);
 
 	// Now start the process.
 	mpPicSerial->WriteToPic( reinterpret_cast<unsigned char*>(&force), sizeof(int) );
@@ -207,6 +218,10 @@ void cBioTac::RecordCalibrationRun()
 	}
 
 	std::cout << std::endl;
+
+
+	// Just in case...
+	mpPicSerial->DiscardIncomingData(0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

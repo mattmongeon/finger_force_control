@@ -60,6 +60,18 @@ int main()
 		{
 			// --- BioTac Calibration --- //
 
+			int seconds;
+			uart1_read_packet( (unsigned char*)(&seconds), sizeof(int) );
+			if( seconds > 0 )
+			{
+				biotac_set_time_length(seconds);
+			}
+			else
+			{
+				// Provide our own default value.
+				biotac_set_time_length(2);
+			}
+			
 			int force;
 			uart1_read_packet( (unsigned char*)(&force), sizeof(int) );
 			torque_control_set_desired_force(force);
@@ -70,6 +82,8 @@ int main()
 			{
 				;
 			}
+
+			break;
 		}
 
 		case 'b':
@@ -148,8 +162,8 @@ int main()
 
 			if( pwm != 0 )
 			{
-				system_set_state(DIRECT_PWM);
 				motor_duty_cycle_pct_set(pwm);
+				system_set_state(DIRECT_PWM);
 			}
 			else
 			{
