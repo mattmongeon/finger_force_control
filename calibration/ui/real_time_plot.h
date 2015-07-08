@@ -5,13 +5,12 @@
 #include <plplot/plplot.h>
 #include <plplot/plstream.h>
 #include <pthread.h>
-#include <deque>
 #include <string>
 
 
 // Performs real-time plotting of up to four plots.  Performance becomes an issue as
 // the number of plots increases.  Beware that at times the plotting may be too slow
-// to keep up with the data being sent to it, so it might be lagging behind the system.
+// to keep up with the data being sent to it, so it might skip data points.
 class cRealTimePlot
 {
 public:
@@ -20,10 +19,23 @@ public:
 	//----------------------  CONSTRUCTION / DESTRUCTION  ----------------------//
 	//--------------------------------------------------------------------------//
 
-	// Constructor.  Enables the plotter to accept and plot data.
+	// Constructor.  Enables the plotter to accept and plot data.  Can plot 1-4 plots
+	// simultaneously.  Number of plots is set by setting the names of the plots.
+	// If the name is an empty string, that plot will not exist.
+	//
+	// Params:
+	// title - The title to be displayed above the plot.
+	// xAxisLabel - The label to be displayed along the x-axis.
+	// yAxisLabel - The label to be displayed along the y-axis.
+	// line1Legend - The string identifying plot 1.
+	// line2Legend - The string identifying plot 2.  Set to empty string to disable.
+	// line3Legend - The string identifying plot 3.  Set to empty string to disable.
+	// line4Legend - The string identifying plot 4.  Set to empty string to disable.
+	// xAxisMax - Specifies the width of the x-axis in generic units.
 	cRealTimePlot(const std::string& title, const std::string& xAxisLabel, const std::string& yAxisLabel,
 				  const std::string& line1Legend, const std::string& line2Legend = "",
-				  const std::string& line3Legend = "", const std::string& line4Legend = "");
+				  const std::string& line3Legend = "", const std::string& line4Legend = "",
+				  PLFLT xAxisMax = 2500.0);
 
 	// Desturctor.  Stops plotting and cleans up.
 	~cRealTimePlot();
