@@ -35,7 +35,7 @@ public:
 	cRealTimePlot(const std::string& title, const std::string& xAxisLabel, const std::string& yAxisLabel,
 				  const std::string& line1Legend, const std::string& line2Legend = "",
 				  const std::string& line3Legend = "", const std::string& line4Legend = "",
-				  PLFLT xAxisMax = 2500.0);
+				  PLFLT xAxisMax = 2500.0, PLFLT yAxisMin = 1000000.0, PLFLT yAxisMax = 1.0);
 
 	// Desturctor.  Stops plotting and cleans up.
 	~cRealTimePlot();

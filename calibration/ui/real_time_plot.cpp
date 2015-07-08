@@ -11,13 +11,13 @@ cRealTimePlot::cRealTimePlot(const std::string& title, const std::string& xAxisL
 							 const std::string& yAxisLabel,
 							 const std::string& line1Legend, const std::string& line2Legend,
 							 const std::string& line3Legend, const std::string& line4Legend,
-							 PLFLT xAxisMax)
+							 PLFLT xAxisMax, PLFLT yAxisMin, PLFLT yAxisMax)
 	: mPlotStream( 1, 1, 255, 255, 255, "xcairo" ),
 	  mNumActivePlots( 1 )
 {
 	// --- Set Up Plotting --- //
 	
-	PLFLT ymin = 1000000.0, ymax = 1.0;
+	PLFLT ymin = yAxisMin, ymax = yAxisMax;
 	PLFLT xmin = 0.0, xmax = xAxisMax, xjump_pct = 0.75;
 
 	PLINT colbox = 1, collab = 3;
@@ -217,6 +217,6 @@ void* cRealTimePlot::ThreadFunc(void* pIn)
 			plot = false;
 		}
 	}
-
+	
 	return NULL;
 }

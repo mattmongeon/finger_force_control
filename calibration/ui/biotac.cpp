@@ -215,6 +215,7 @@ void cBioTac::RecordCalibrationRun()
 
 biotac_data cBioTac::Read() const
 {
-	return mpPicSerial->ReadValueFromPic<biotac_data>(nUtils::READ_BIOTAC);
+	mpPicSerial->WriteCommandToPic(nUtils::READ_BIOTAC);
+	return mpPicSerial->ReadValueFromPic<biotac_data>();
 }
 
