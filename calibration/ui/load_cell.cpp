@@ -59,7 +59,8 @@ void cLoadCell::RunCalibrationRoutine()
 			int raw = 0;
 			for( int i = 0; i < 20; ++i )
 			{
-				raw += mpPicSerial->ReadValueFromPic<int>(nUtils::READ_RAW_LOAD_CELL);
+				mpPicSerial->WriteCommandToPic(nUtils::READ_RAW_LOAD_CELL);
+				raw += mpPicSerial->ReadValueFromPic<int>();
 			}
 			raw /= 20;
 			std::cout << "Avg value:  " << raw << std::endl;
@@ -94,14 +95,15 @@ void cLoadCell::RunCalibrationRoutine()
 
 void cLoadCell::ReadSingle()
 {
-	std::cout << "Current load cell reading:  " << mpPicSerial->ReadValueFromPic<int>(nUtils::READ_LOAD_CELL) << std::endl;
+	mpPicSerial->WriteCommandToPic(nUtils::READ_LOAD_CELL);
+	std::cout << "Current load cell reading:  " << mpPicSerial->ReadValueFromPic<int>() << std::endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void cLoadCell::ReadContinuous()
 {
-	cRealTimePlot plotter("Load Cell", "Sample", "Force (g)", "Force (g)");
+	cRealTimePlot plotter("Load Cell", "Sample", "Force (g)", "Force (g)", "", "", "", 2500.0, 0.0, 10.0);
 
 	
 	// --- Start Gathering Data --- //
@@ -145,6 +147,7 @@ void cLoadCell::ReadContinuous()
 		float exe_time_ms = (ticks * 25.0) / 1000000.0;
 		float loopFreq_hz = ((start - prevStart) * 25.0) / 1000000000.0;
 		loopFreq_hz = 1.0 / loopFreq_hz;
+
 		std::cout << nUtils::CLEAR_LINE << "Start: " << start << "\r\n";
 		std::cout << nUtils::CLEAR_LINE << "Loop Freq: " << loopFreq_hz << " Hz\r\n";
 		std::cout << nUtils::CLEAR_LINE << "Ticks:	" << ticks << "\r\n";

@@ -44,15 +44,14 @@ public:
 	//
 	// Returns - the value requested from the PIC.
 	template<typename T>
-	T ReadValueFromPic(const std::string& cmd) const
+	T ReadValueFromPic() const
 	{
-		WriteCommandToPic(cmd);
-
 		unsigned char buffer[sizeof(T)];
 		ReadFromPic(buffer, sizeof(T));
-
+		
 		T retVal;
 		memcpy(&retVal, &(buffer[0]), sizeof(T));
+
 		return retVal;
 	}
 
