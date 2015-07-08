@@ -31,7 +31,7 @@ cBioTac::~cBioTac()
 void cBioTac::ReadSingle() const
 {
 	std::cout << "Read from BioTac:" << std::endl;
-	cBioTac::sBioTacData d = Read();
+	biotac_data d = Read();
 	std::cout << "E1:   " << d.e1 << "\r\n";
 	std::cout << "E2:   " << d.e2 << "\r\n";
 	std::cout << "E3:   " << d.e3 << "\r\n";
@@ -101,8 +101,8 @@ void cBioTac::ReadContinuous() const
 	unsigned int prevTimestamp = 0;
 	while(true)
 	{
-		sBioTacTuneData data;
-		mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&data), sizeof(sBioTacTuneData) );
+		biotac_tune_data data;
+		mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&data), sizeof(biotac_tune_data) );
 
 		std::cout << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE
 				  << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE
@@ -165,10 +165,10 @@ void cBioTac::RecordCalibrationRun()
 	std::cin >> force;
 
 	// Ahead of time we will set up the things to be used during real-time processing.
-	sBioTacTuneData rxData;
-	sBioTacTuneData stopCondition;
-	memset(&stopCondition, 0, sizeof(sBioTacTuneData));
-	std::vector<sBioTacTuneData> tuneData;
+	biotac_tune_data rxData;
+	biotac_tune_data stopCondition;
+	memset(&stopCondition, 0, sizeof(biotac_tune_data));
+	std::vector<biotac_tune_data> tuneData;
 	cDataLogger logger;
 
 	// Now start the process.
@@ -178,11 +178,11 @@ void cBioTac::RecordCalibrationRun()
 
 	while(true)
 	{
-		mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&rxData), sizeof(sBioTacTuneData) );
+		mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&rxData), sizeof(biotac_tune_data) );
 
-		if( memcmp(&rxData, &stopCondition, sizeof(sBioTacTuneData)) != 0 )
+		if( memcmp(&rxData, &stopCondition, sizeof(biotac_tune_data)) != 0 )
 		{
-			logger.LogDataBuffer(&rxData, sizeof(sBioTacTuneData));
+			logger.LogDataBuffer(&rxData, sizeof(biotac_tune_data));
 			tuneData.push_back(rxData);
 		}
 		else
@@ -210,8 +210,8 @@ void cBioTac::RecordCalibrationRun()
 //  Helper Functions
 ////////////////////////////////////////////////////////////////////////////////
 
-cBioTac::sBioTacData cBioTac::Read() const
+biotac_data cBioTac::Read() const
 {
-	return mpPicSerial->ReadValueFromPic<sBioTacData>(nUtils::READ_BIOTAC);
+	return mpPicSerial->ReadValueFromPic<biotac_data>(nUtils::READ_BIOTAC);
 }
 

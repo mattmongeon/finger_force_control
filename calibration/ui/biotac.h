@@ -2,6 +2,9 @@
 #define INCLUDED_BIOTAC_H
 
 
+#include "../common/biotac_comm.h"
+
+
 class cPicSerial;
 
 
@@ -38,58 +41,13 @@ public:
 private:
 
 	//--------------------------------------------------------------------------//
-	//-----------------------------  NESTED STRUCT  ----------------------------//
-	//--------------------------------------------------------------------------//
-
-#pragma pack(push,1)
-	// The struct containing all of the BioTac data from a single read.
-	struct sBioTacData
-	{
-		unsigned short pac;
-		unsigned short pdc;
-
-		unsigned short tac;
-		unsigned short tdc;
-
-		unsigned short e1;
-		unsigned short e2;
-		unsigned short e3;
-		unsigned short e4;
-		unsigned short e5;
-		unsigned short e6;
-		unsigned short e7;
-		unsigned short e8;
-		unsigned short e9;
-		unsigned short e10;
-		unsigned short e11;
-		unsigned short e12;
-		unsigned short e13;
-		unsigned short e14;
-		unsigned short e15;
-		unsigned short e16;
-		unsigned short e17;
-		unsigned short e18;
-		unsigned short e19;
-	};
-
-
-	struct sBioTacTuneData
-	{
-		unsigned int mTimestamp;
-		sBioTacData mData;
-		int mLoadCell_g;
-	};
-#pragma pack(pop)
-
-
-	//--------------------------------------------------------------------------//
 	//---------------------------  HELPER FUNCTIONS  ---------------------------//
 	//--------------------------------------------------------------------------//
 
 	// Reads from the BioTac and returns the data.
 	//
 	// Return - the data struct containing all the data from a single reading.
-	sBioTacData Read() const;
+	biotac_data Read() const;
 	
 
 	//--------------------------------------------------------------------------//

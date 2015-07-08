@@ -170,6 +170,7 @@ void cLoadCell::ReadContinuous()
 
 void cLoadCell::TuneForceHolding()
 {
+	mpPicSerial->DiscardIncomingData(0);
 	mpPicSerial->WriteCommandToPic(nUtils::TUNE_TORQUE_GAINS);
 
 	std::cout << "Enter force to hold (g):  ";
@@ -181,15 +182,26 @@ void cLoadCell::TuneForceHolding()
 
 	std::cout << "Waiting for tuning results..." << std::endl;
 
-	sTorqueTuneData tuneData[200];
-	mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&tuneData), sizeof(sTorqueTuneData)*200 );
+	torque_tune_data tuneData[200];
+	mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&tuneData), sizeof(torque_tune_data)*200 );
 
 	std::cout << "Tuning results received!" << std::endl;
-	std::cout << "Load Cell\tError\t\tError Integral\t\tCurrent (mA)\t\tTimestamp\t\tExe Time (ms)" << std::endl;
+	std::cout << "Load Cell\tError\t\tError Integral\t\tCurrent (mA)\t\tTimestamp\t\tExe Time (ms)\t\tFrequency (Hz)" << std::endl;
+	unsigned int prevTimestamp = 0;
 	for( int i = 0; i < 200; ++i )
 	{
-		std::cout << tuneData[i].mLoadCell_g << "\t\t" << tuneData[i].mError << "\t\t" << tuneData[i].mErrorInt << "\t\t" << tuneData[i].mCurrent_mA << "\t\t" << tuneData[i].mTimeStamp << "\t\t" << tuneData[i].mLoopExeTime_ms << std::endl;
+		std::cout << tuneData[i].load_cell_g << "\t\t"
+				  << tuneData[i].error << "\t\t"
+				  << tuneData[i].error_int << "\t\t"
+				  << tuneData[i].current_mA << "\t\t"
+				  << tuneData[i].timestamp << "\t\t"
+				  << tuneData[i].loop_exe_time_ms << "\t\t"
+				  << 1.0 / ((tuneData[i].timestamp - prevTimestamp) * 25.0 / 1000000000.0) << "\t\t"
+				  << std::endl;
+
+		prevTimestamp = tuneData[i].timestamp;
 	}
+
 
 	std::cout << std::endl;
 
@@ -205,9 +217,9 @@ void cLoadCell::TuneForceHolding()
 	{
 		x.push_back(i);
 
-		yMax = std::max<PLFLT>(yMax, tuneData[i].mLoadCell_g);
-		yMin = std::min<PLFLT>(yMin, tuneData[i].mLoadCell_g);
-		y.push_back(tuneData[i].mLoadCell_g);
+		yMax = std::max<PLFLT>(yMax, tuneData[i].load_cell_g);
+		yMin = std::min<PLFLT>(yMin, tuneData[i].load_cell_g);
+		y.push_back(tuneData[i].load_cell_g);
 	}
 
 	plsdev("xcairo");
@@ -224,5 +236,7 @@ void cLoadCell::TuneForceHolding()
 
 	plend();
 
+	// Just in case...
+	mpPicSerial->DiscardIncomingData(0);
 }
 
