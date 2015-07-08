@@ -6,6 +6,7 @@
 #include "biotac.h"
 #include "torque_control.h"
 #include "uart.h"
+#include "system.h"
 
 
 extern volatile int adc_data_ready;

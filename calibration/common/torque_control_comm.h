@@ -17,7 +17,7 @@ typedef struct
 	int32_t load_cell_g;
 	int32_t error;
 	int32_t error_int;
-	int32_t current_mA;
+	int32_t pwm;
 	uint32_t timestamp;
 	float loop_exe_time_ms;
 } torque_tune_data;

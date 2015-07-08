@@ -44,12 +44,5 @@ void torque_control_set_gains(float kp_new, float ki_new);
 void torque_control_get_gains(float* p, float* i);
 
 
-// Returns a pointer to the beginning of the buffer containing all of the
-// data recorded while tuning the torque control PI constants.
-//
-// Return - pointer to the recorded tuning buffer.
-unsigned char* torque_control_get_raw_tune_buffer();
-
-
 #endif  // INCLUDED_TORQUE_CONTROL_H
 

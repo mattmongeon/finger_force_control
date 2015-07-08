@@ -140,7 +140,7 @@ void cLoadCell::ReadContinuous()
 		mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&adc_value), sizeof(int) );
 		mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&load_cell_value), sizeof(int) );
 
-		plotter.AddDataPoint(adc_value);
+		plotter.AddDataPoint(load_cell_value);
 				
 		float exe_time_ms = (ticks * 25.0) / 1000000.0;
 		float loopFreq_hz = ((start - prevStart) * 25.0) / 1000000000.0;
@@ -215,14 +215,14 @@ void cLoadCell::TuneForceHolding()
 	// --- Print Results --- //
 	
 	std::cout << "Tuning results received!" << std::endl;
-	std::cout << "Load Cell\tError\t\tError Integral\t\tCurrent (mA)\t\tTimestamp\t\tExe Time (ms)\t\tFrequency (Hz)" << std::endl;
+	std::cout << "Load Cell\tError\t\tError Integral\t\tPWM\t\tTimestamp\t\tExe Time (ms)\t\tFrequency (Hz)" << std::endl;
 	unsigned int prevTimestamp = 0;
 	for( size_t i = 0; i < tuneData.size(); ++i )
 	{
 		std::cout << tuneData[i].load_cell_g << "\t\t"
 				  << tuneData[i].error << "\t\t"
 				  << tuneData[i].error_int << "\t\t"
-				  << tuneData[i].current_mA << "\t\t"
+				  << tuneData[i].pwm << "\t\t"
 				  << tuneData[i].timestamp << "\t\t"
 				  << tuneData[i].loop_exe_time_ms << "\t\t"
 				  << 1.0 / ((tuneData[i].timestamp - prevTimestamp) * 25.0 / 1000000000.0) << "\t\t"

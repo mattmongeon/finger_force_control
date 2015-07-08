@@ -28,9 +28,6 @@ static volatile int ki_num = 250;
 
 static int error_int = 0;
 
-static int holdTorqueTuneIndex = 0;
-static torque_tune_data holdTorqueTuneBuffer[200];
-
 
 // --- Local Functions --- //
 
@@ -52,12 +49,12 @@ static int torque_control_loop(int load_cell_g, torque_tune_data* pTuneData)
 
 	int u_new = ((kp_num*error)/K_DENOM) + ((ki_num*error_int)/K_DENOM);
 
-	motor_mA_set(u_new);
+	motor_pwm_set(u_new);
 	
 	pTuneData->load_cell_g = load_cell_g;
 	pTuneData->error = error;
 	pTuneData->error_int = error_int;
-	pTuneData->current_mA = u_new;
+	pTuneData->pwm = u_new;
 
 	return u_new;
 }
@@ -71,17 +68,10 @@ static int torque_control_loop(int load_cell_g, torque_tune_data* pTuneData)
 void __ISR(_TIMER_4_VECTOR, IPL5SOFT) torque_controller()
 {
 	static torque_tune_data tune_data;
+	static int torqueTuneSamples = 0;
 	
 	switch(system_get_state())
 	{
-	case IDLE:
-	case DIRECT_PWM:
-	case TUNE_CURRENT_GAINS:
-	case TRACK_CURRENT:
-		holdTorqueTuneIndex = 0;
-		error_int = 0;
-		break;
-
 	case TUNE_TORQUE_GAINS:
 	case BIOTAC_CAL_SINGLE:
 	{
@@ -101,27 +91,23 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) torque_controller()
 
 			uart1_send_packet( (unsigned char*)(&tune_data), sizeof(torque_tune_data) );
 			
-			++holdTorqueTuneIndex;
-			if( holdTorqueTuneIndex >= 200 )
+			++torqueTuneSamples;
+			if( torqueTuneSamples >= 200 )
 			{
 				memset(&tune_data, 0, sizeof(torque_tune_data));
 				uart1_send_packet( (unsigned char*)(&tune_data), sizeof(torque_tune_data) );
 				
+				motor_pwm_set(0);
 				system_set_state(IDLE);
-				motor_mA_set(0);
 			}
 		}
 		
 		break;
 	}
 
-	case TRACK_FORCE_TRAJECTORY:
-		break;
-
-	case HOLD_FORCE:
-		break;
-
 	default:
+		torqueTuneSamples = 0;
+		error_int = 0;
 		break;
 	}
 
@@ -182,12 +168,5 @@ void torque_control_get_gains(float* p, float* i)
 {
 	*p = ((float)(kp_num) / (float)(K_DENOM));
 	*i = ((float)(ki_num) / (float)(K_DENOM));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-unsigned char* torque_control_get_raw_tune_buffer()
-{
-	return (unsigned char*)(&holdTorqueTuneBuffer[0]);
 }
 
