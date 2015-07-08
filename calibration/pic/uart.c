@@ -1,8 +1,11 @@
 #include "uart.h"
 #include "NU32.h"
 
+////////////////////////////////////////////////////////////////////////////////
+//  Interface Functions
+////////////////////////////////////////////////////////////////////////////////
 
-int uart1_send_packet(unsigned char* pData, int numBytes)
+void uart1_send_packet(unsigned char* pData, int numBytes)
 {
 	int i = 0;
 	for( ; i < numBytes; ++i )
@@ -17,8 +20,9 @@ int uart1_send_packet(unsigned char* pData, int numBytes)
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////
 
-int uart1_read_packet(unsigned char* pData, int numBytes)
+void uart1_read_packet(unsigned char* pData, int numBytes)
 {
 	int i = 0;
 	while(numBytes-i > 0)

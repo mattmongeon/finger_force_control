@@ -5,7 +5,9 @@
 #include "NU32.h"
 
 
-// --- Utility Macros --- //
+////////////////////////////////////////////////////////////////////////////////
+//  Macros
+////////////////////////////////////////////////////////////////////////////////
 
 #define DEBUG_ENABLE
 
@@ -30,12 +32,21 @@
 
 #endif
 
+////////////////////////////////////////////////////////////////////////////////
+//  Interface Functions
+////////////////////////////////////////////////////////////////////////////////
 
-// --- Function Declarations --- //
-
+// This function performs a spin wait for the specified number of microseconds.
+//
+// Params:
+// time_usec - The number of microseconds to wait in place.
 void wait_usec(unsigned long time_usec);
 
+// This function performs a spin wait for the specified number of nanoseconds.
 // This timer has 25 nanoseconds resolution.
+//
+// Params:
+// time_nsec - The number of nanoseconds to wait in place.
 void wait_nsec(unsigned long time_nsec);
 
 
