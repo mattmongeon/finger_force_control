@@ -28,8 +28,8 @@ static volatile int ki_num = 250;
 
 static int error_int = 0;
 
-// Default to 2 seconds since we are running at 200 Hz.
-static int num_tuning_samples = 400;
+// Default to 2 seconds.
+static int max_tuning_samples = 2 * LOOP_RATE_HZ;
 
 
 // --- Local Functions --- //
@@ -95,12 +95,11 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) torque_controller()
 			uart1_send_packet( (unsigned char*)(&tune_data), sizeof(torque_tune_data) );
 			
 			++torqueTuneSamples;
-			if( torqueTuneSamples >= num_tuning_samples )
+			if( torqueTuneSamples >= max_tuning_samples )
 			{
 				memset(&tune_data, 0, sizeof(torque_tune_data));
 				uart1_send_packet( (unsigned char*)(&tune_data), sizeof(torque_tune_data) );
 				
-				motor_pwm_set(0);
 				system_set_state(IDLE);
 			}
 		}
@@ -108,6 +107,11 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) torque_controller()
 		break;
 	}
 
+	case IDLE:
+		motor_pwm_set(0);
+		torqueTuneSamples = 0;
+		error_int = 0;
+	
 	default:
 		torqueTuneSamples = 0;
 		error_int = 0;
@@ -156,7 +160,7 @@ void torque_control_set_time_length(int seconds)
 {
 	__builtin_disable_interrupts();
 
-	num_tuning_samples = seconds * LOOP_RATE_HZ;
+	max_tuning_samples = seconds * LOOP_RATE_HZ;
 
 	__builtin_enable_interrupts();
 }

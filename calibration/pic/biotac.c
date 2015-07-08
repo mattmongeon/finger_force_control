@@ -19,7 +19,8 @@
 
 // --- Variables --- //
 
-static int numCalibrationSamples = 0;
+// Default to 2 seconds.
+static int max_tuning_samples = 2 * LOOP_RATE_HZ;
 
 
 // --- BioTac Sampling Commands --- //
@@ -157,6 +158,8 @@ static void biotac_read_and_tx()
 // Timer 5 interrupt which is responsible for handling real-time BioTac operations.
 void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_reader_int()
 {
+	static int biotac_tune_samples = 0;
+	
 	switch(system_get_state())
 	{
 	case BIOTAC_CAL_SINGLE:
@@ -165,15 +168,15 @@ void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_reader_int()
 		// and transmit it.
 		biotac_read_and_tx();
 
-		++numCalibrationSamples;
-		if( numCalibrationSamples >= 200 )
+		++biotac_tune_samples;
+		if( biotac_tune_samples >= max_tuning_samples )
 		{
 			// Signal end of data stream to the UI.
 			biotac_tune_data data;
 			memset(&data, 0x00, sizeof(biotac_tune_data));
 			uart1_send_packet((unsigned char*)(&data), sizeof(biotac_tune_data));
 
-			numCalibrationSamples = 0;
+			biotac_tune_samples = 0;
 			
 			system_set_state(IDLE);
 		}
@@ -189,7 +192,7 @@ void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_reader_int()
 	}
 
 	default:
-		numCalibrationSamples = 0;
+		biotac_tune_samples = 0;
 		break;
 	}
 	
@@ -251,5 +254,16 @@ void read_biotac(biotac_data* pData)
 	READ_BIOTAC_SAMPLE( BIOTAC_SAMPLE_E17, pData->e17 )
 	READ_BIOTAC_SAMPLE( BIOTAC_SAMPLE_E18, pData->e18 )
 	READ_BIOTAC_SAMPLE( BIOTAC_SAMPLE_E19, pData->e19 )
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void biotac_set_time_length(int seconds)
+{
+	__builtin_disable_interrupts();
+
+	max_tuning_samples = seconds * LOOP_RATE_HZ;
+
+	__builtin_enable_interrupts();
 }
 

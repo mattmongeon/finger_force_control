@@ -199,7 +199,7 @@ void cLoadCell::TuneForceHolding()
 
 	// Do this one next.  It is really annoying to create it before sending the force, because it pops up
 	// a window right in the way.
-	cRealTimePlot plotter("Load Cell", "Sample", "Force (g)", "Force (g)", "", "", "", seconds * 200.0);
+	cRealTimePlot plotter("Load Cell", "Sample", "Force (g)", "Force (g)", "", "", "", seconds * 200.0, 0.0, 10.0);
 
 	mpPicSerial->WriteValueToPic(force);
 
