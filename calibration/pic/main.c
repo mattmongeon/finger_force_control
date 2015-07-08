@@ -201,9 +201,6 @@ int main()
 		{
 			// --- Hold Commanded Tuning Force --- //
 
-			LCD_Clear();
-			LCD_WriteString("Tuning force...");
-			
 			int force;
 			uart1_read_packet( (unsigned char*)(&force), sizeof(int) );
 			torque_control_set_desired_force(force);
@@ -216,27 +213,6 @@ int main()
 				;
 			}
 
-			LCD_Clear();
-			LCD_WriteString("Done tuning force");
-			
-			// Send the recorded data to the PC.
-			unsigned char* pBuff = torque_control_get_raw_tune_buffer();
-
-			unsigned long start = _CP0_GET_COUNT();
-			uart1_send_packet( pBuff, sizeof(torque_tune_data)*200 );
-			unsigned long end = _CP0_GET_COUNT();
-
-			float t = end - start;
-			t *= 0.000025;  // Put it in ms
-			char b[20];
-			sprintf(b, "Tx: %f", t);
-			LCD_Move(1,0);
-			LCD_WriteString(b);
-			LCD_Move(0,0);
-
-			// LCD_Clear();
-			LCD_WriteString("Tuning data sent");
-			
 			break;
 		}
 

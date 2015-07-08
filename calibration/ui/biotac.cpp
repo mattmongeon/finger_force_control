@@ -3,6 +3,7 @@
 #include "utils.h"
 #include "keyboard_thread.h"
 #include "data_logger.h"
+#include "real_time_plot.h"
 #include <iostream>
 #include <vector>
 
@@ -170,6 +171,7 @@ void cBioTac::RecordCalibrationRun()
 	memset(&stopCondition, 0, sizeof(biotac_tune_data));
 	std::vector<biotac_tune_data> tuneData;
 	cDataLogger logger;
+	cRealTimePlot plotter("Load Cell", "Sample", "Force (g)", "Force (g)", "", "", "", 200.0);
 
 	// Now start the process.
 	mpPicSerial->WriteToPic( reinterpret_cast<unsigned char*>(&force), sizeof(int) );
@@ -183,6 +185,7 @@ void cBioTac::RecordCalibrationRun()
 		if( memcmp(&rxData, &stopCondition, sizeof(biotac_tune_data)) != 0 )
 		{
 			logger.LogDataBuffer(&rxData, sizeof(biotac_tune_data));
+			plotter.AddDataPoint(rxData.mLoadCell_g);
 			tuneData.push_back(rxData);
 		}
 		else

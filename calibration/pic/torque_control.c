@@ -2,6 +2,7 @@
 #include "load_cell.h"
 #include "system.h"
 #include "motor.h"
+#include "uart.h"
 #include "NU32.h"
 
 
@@ -39,7 +40,7 @@ static torque_tune_data holdTorqueTuneBuffer[200];
 // load_cell_g - The most recent reading of the load cell in grams.
 //
 // Return - The new control signal representing a current value in mA.
-static int torque_control_loop(int load_cell_g)
+static int torque_control_loop(int load_cell_g, torque_tune_data* pTuneData)
 {
 	int error = desired_force_g - load_cell_g;
 
@@ -53,10 +54,10 @@ static int torque_control_loop(int load_cell_g)
 
 	motor_mA_set(u_new);
 	
-	holdTorqueTuneBuffer[holdTorqueTuneIndex].load_cell_g = load_cell_g;
-	holdTorqueTuneBuffer[holdTorqueTuneIndex].error = error;
-	holdTorqueTuneBuffer[holdTorqueTuneIndex].error_int = error_int;
-	holdTorqueTuneBuffer[holdTorqueTuneIndex].current_mA = u_new;
+	pTuneData->load_cell_g = load_cell_g;
+	pTuneData->error = error;
+	pTuneData->error_int = error_int;
+	pTuneData->current_mA = u_new;
 
 	return u_new;
 }
@@ -69,6 +70,8 @@ static int torque_control_loop(int load_cell_g)
 // in real-time.
 void __ISR(_TIMER_4_VECTOR, IPL5SOFT) torque_controller()
 {
+	static torque_tune_data tune_data;
+	
 	switch(system_get_state())
 	{
 	case IDLE:
@@ -84,7 +87,7 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) torque_controller()
 	{
 		unsigned int start = _CP0_GET_COUNT();
 
-		torque_control_loop(load_cell_read_grams());
+		torque_control_loop(load_cell_read_grams(), &tune_data);
 
 		unsigned int end = _CP0_GET_COUNT();
 
@@ -92,14 +95,18 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) torque_controller()
 		{
 			// Only do this part if we are specifically tuning torque gains.  Otherwise
 			// the BioTac portion is actually in charge.
-			holdTorqueTuneBuffer[holdTorqueTuneIndex].loop_exe_time_ms =  end - start;
-			holdTorqueTuneBuffer[holdTorqueTuneIndex].loop_exe_time_ms *= 0.000025;  // Put it in ms
-			holdTorqueTuneBuffer[holdTorqueTuneIndex].timestamp = start;
-		
-			++holdTorqueTuneIndex;
+			tune_data.loop_exe_time_ms = end - start;
+			tune_data.loop_exe_time_ms *= 0.000025;	// Put it in ms
+			tune_data.timestamp = start;
 
+			uart1_send_packet( (unsigned char*)(&tune_data), sizeof(torque_tune_data) );
+			
+			++holdTorqueTuneIndex;
 			if( holdTorqueTuneIndex >= 200 )
 			{
+				memset(&tune_data, 0, sizeof(torque_tune_data));
+				uart1_send_packet( (unsigned char*)(&tune_data), sizeof(torque_tune_data) );
+				
 				system_set_state(IDLE);
 				motor_mA_set(0);
 			}

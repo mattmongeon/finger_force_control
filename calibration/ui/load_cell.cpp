@@ -170,6 +170,17 @@ void cLoadCell::ReadContinuous()
 
 void cLoadCell::TuneForceHolding()
 {
+	// --- Preparations --- //
+
+	// Ahead of time we will set up the things to be used during real-time processing so we can move fast.
+	torque_tune_data rxData;
+	torque_tune_data stopCondition;
+	memset(&stopCondition, 0, sizeof(torque_tune_data));
+	std::vector<torque_tune_data> tuneData;
+	
+
+	// --- Start The Process --- //
+	
 	mpPicSerial->DiscardIncomingData(0);
 	mpPicSerial->WriteCommandToPic(nUtils::TUNE_TORQUE_GAINS);
 
@@ -178,17 +189,36 @@ void cLoadCell::TuneForceHolding()
 	int force;
 	std::cin >> force;
 
+	// Do this one next.  It is really annoying to create it before sending the force, because it pops up
+	// a window right in the way.
+	cRealTimePlot plotter("Load Cell", "Sample", "Force (g)", "Force (g)", "", "", "", 200.0);
+
 	mpPicSerial->WriteToPic( reinterpret_cast<unsigned char*>(&force), sizeof(int) );
 
 	std::cout << "Waiting for tuning results..." << std::endl;
 
-	torque_tune_data tuneData[200];
-	mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&tuneData), sizeof(torque_tune_data)*200 );
+	while(true)
+	{
+		mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&rxData), sizeof(torque_tune_data) );
 
+		if( memcmp(&rxData, &stopCondition, sizeof(torque_tune_data)) != 0 )
+		{
+			plotter.AddDataPoint(rxData.load_cell_g);
+			tuneData.push_back(rxData);
+		}
+		else
+		{
+			break;
+		}
+	}
+
+
+	// --- Print Results --- //
+	
 	std::cout << "Tuning results received!" << std::endl;
 	std::cout << "Load Cell\tError\t\tError Integral\t\tCurrent (mA)\t\tTimestamp\t\tExe Time (ms)\t\tFrequency (Hz)" << std::endl;
 	unsigned int prevTimestamp = 0;
-	for( int i = 0; i < 200; ++i )
+	for( size_t i = 0; i < tuneData.size(); ++i )
 	{
 		std::cout << tuneData[i].load_cell_g << "\t\t"
 				  << tuneData[i].error << "\t\t"
@@ -205,36 +235,6 @@ void cLoadCell::TuneForceHolding()
 
 	std::cout << std::endl;
 
-
-	// --- Plot Results --- //
-
-	std::vector<PLFLT> x;
-	std::vector<PLFLT> y;
-	PLFLT yMax = -1000000.0;
-	PLFLT yMin = 1000000.0;
-
-	for( int i = 0; i < 200; ++i )
-	{
-		x.push_back(i);
-
-		yMax = std::max<PLFLT>(yMax, tuneData[i].load_cell_g);
-		yMin = std::min<PLFLT>(yMin, tuneData[i].load_cell_g);
-		y.push_back(tuneData[i].load_cell_g);
-	}
-
-	plsdev("xcairo");
-	plscolbg(255, 255, 255);
-	plinit();
-
-	plscolbg(0,0,0);  // The first call to plscolbg() edits the value stored for color index 0.  Set it back to black.
-	plcol0(nUtils::enumPLplotColor_BLACK);
-	plenv(0, 200, yMin, yMax, 0, 0);
-	pllab("Measurement", "Force (g)", "Trial results");
-
-	plcol0(nUtils::enumPLplotColor_BLUE);
-	plline(200, &(x[0]), &(y[0]));
-
-	plend();
 
 	// Just in case...
 	mpPicSerial->DiscardIncomingData(0);
