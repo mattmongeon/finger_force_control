@@ -5,35 +5,27 @@
 #include "system.h"
 
 
+////////////////////////////////////////////////////////////////////////////////
+//  File-Local Declarations
+////////////////////////////////////////////////////////////////////////////////
+
+// --- Variables --- //
+
 static volatile unsigned long adc_value_timestamp = 0;
 static volatile int adc_value = 0;
 
 
-#define LOOP_RATE_HZ  320
-#define LOOP_TIMER_PRESCALAR  16
+// --- Constants --- //
+
+#define LOOP_RATE_HZ  500
+#define LOOP_TIMER_PRESCALAR  64
 
 
-/*
-Notes:
-- Transmit a timestamp for the beginning of the ADC loop
-  o In the UI take the difference between timestamps during gain tuning to ensure
-    the loop really is running regularly.
-  o Update the execution time of each loop in the console.
-  o Update the time between ADC loop ticks.
-- Try doing the full BioTac calibration functionality.
+////////////////////////////////////////////////////////////////////////////////
+//  Interrupt Functions
+////////////////////////////////////////////////////////////////////////////////
 
-- Figure out why my loop is triggering faster than I think I have it set for.
-  o The ticks tell me it is triggering at 512 Hz even though my numbers say 320.  
-- Fix the slight ADC noise.
-  o Average the ADC value over a few readings internal to the loop.
-  o Double-check all of the loop frequency and execution stuff to ensure we are still ok.
-  o Make sure to test it all during gain tuning since that is currently most intensive.
-- Debug why the loop is getting stuck
-  o Most likely it is due to the UART Tx buffer loop.  When the UI is constantly receiving, it
-    never gets stuck.  This tells me sometimes the Tx buffer gets stuck.
-*/
-
-
+// Timer 1 interrupt for timing reading the ADC.
 void __ISR(_TIMER_1_VECTOR, IPL5SOFT) adc_timer_interrupt()
 {
 	unsigned long start = _CP0_GET_COUNT();
@@ -74,6 +66,9 @@ void __ISR(_TIMER_1_VECTOR, IPL5SOFT) adc_timer_interrupt()
 	IFS0CLR = 0x10;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//  Interface Functions
+////////////////////////////////////////////////////////////////////////////////
 
 void load_cell_init()
 {
@@ -87,7 +82,7 @@ void load_cell_init()
 	// --- Configure Timer 1 --- //
 
 	PR1 = ((NU32_SYS_FREQ / LOOP_RATE_HZ) / LOOP_TIMER_PRESCALAR) - 1;
-	T1CON = 0x0040;
+	T1CON = 0x0020;
 	TMR1 = 0;
 	
 	
@@ -100,9 +95,10 @@ void load_cell_init()
 	
 	// --- Start Controller Timer --- //
 
-	T1CONSET = 0x8000;
+	T1CONSET = 0x8040;
 }
 
+////////////////////////////////////////////////////////////////////////////////
 
 int load_cell_read_grams()
 {
@@ -115,6 +111,7 @@ int load_cell_read_grams()
 		return 0;
 }
 
+////////////////////////////////////////////////////////////////////////////////
 
 int load_cell_raw_value()
 {
