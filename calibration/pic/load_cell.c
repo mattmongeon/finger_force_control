@@ -30,18 +30,18 @@ void __ISR(_TIMER_1_VECTOR, IPL5SOFT) adc_timer_interrupt()
 {
 	unsigned long start = _CP0_GET_COUNT();
 	
-	AD1CHSbits.CH0SA = 2;  // Sample AN0
-	AD1CON1bits.SAMP = 1;
+	AD1CHSSET = 0x20000;  // Sample AN0
+	AD1CON1SET = 0x2;  // Begin sampling...
 
 	// Wait enough time for sampling.
 	wait_nsec(250);
 
 	// Turn off the sampling bit.
-	AD1CON1bits.SAMP = 0;
+	AD1CON1CLR = 0x2;
 
 	// Start the conversion process.  The PIC will tell us when it is done
 	// by setting the DONE bit to 1.
-	while( !AD1CON1bits.DONE )
+	while( !(AD1CON1 & 0x1) )
 	{
 		;
 	}

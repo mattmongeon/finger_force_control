@@ -227,8 +227,7 @@ int main()
 			unsigned long end = _CP0_GET_COUNT();
 
 			float t = end - start;
-			t *= 25.0;
-			t /= 1000000.0;
+			t *= 0.000025;  // Put it in ms
 			char b[20];
 			sprintf(b, "Tx: %f", t);
 			LCD_Move(1,0);

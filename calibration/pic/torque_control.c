@@ -93,8 +93,7 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) torque_controller()
 			// Only do this part if we are specifically tuning torque gains.  Otherwise
 			// the BioTac portion is actually in charge.
 			holdTorqueTuneBuffer[holdTorqueTuneIndex].loop_exe_time_ms =  end - start;
-			holdTorqueTuneBuffer[holdTorqueTuneIndex].loop_exe_time_ms *= 25.0;
-			holdTorqueTuneBuffer[holdTorqueTuneIndex].loop_exe_time_ms /= 1000000.0;  // Put it in ms
+			holdTorqueTuneBuffer[holdTorqueTuneIndex].loop_exe_time_ms *= 0.000025;  // Put it in ms
 			holdTorqueTuneBuffer[holdTorqueTuneIndex].timestamp = start;
 		
 			++holdTorqueTuneIndex;
