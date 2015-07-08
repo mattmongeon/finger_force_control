@@ -10,14 +10,15 @@
 cRealTimePlot::cRealTimePlot(const std::string& title, const std::string& xAxisLabel,
 							 const std::string& yAxisLabel,
 							 const std::string& line1Legend, const std::string& line2Legend,
-							 const std::string& line3Legend, const std::string& line4Legend)
+							 const std::string& line3Legend, const std::string& line4Legend,
+							 PLFLT xAxisMax)
 	: mPlotStream( 1, 1, 255, 255, 255, "xcairo" ),
 	  mNumActivePlots( 1 )
 {
 	// --- Set Up Plotting --- //
 	
 	PLFLT ymin = 1000000.0, ymax = 1.0;
-	PLFLT xmin = 0.0, xmax = 2500.0, xjump_pct = 0.75;
+	PLFLT xmin = 0.0, xmax = xAxisMax, xjump_pct = 0.75;
 
 	PLINT colbox = 1, collab = 3;
 
@@ -101,6 +102,10 @@ cRealTimePlot::~cRealTimePlot()
 
 ////////////////////////////////////////////////////////////////////////////////
 //  Interface Functions
+////////////////////////////////////////////////////////////////////////////////
+
+
+
 ////////////////////////////////////////////////////////////////////////////////
 
 void cRealTimePlot::AddDataPoint(double pt)
