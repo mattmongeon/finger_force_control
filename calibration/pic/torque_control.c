@@ -28,6 +28,9 @@ static volatile int ki_num = 250;
 
 static int error_int = 0;
 
+// Default to 2 seconds since we are running at 200 Hz.
+static int num_tuning_samples = 400;
+
 
 // --- Local Functions --- //
 
@@ -92,7 +95,7 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) torque_controller()
 			uart1_send_packet( (unsigned char*)(&tune_data), sizeof(torque_tune_data) );
 			
 			++torqueTuneSamples;
-			if( torqueTuneSamples >= 200 )
+			if( torqueTuneSamples >= num_tuning_samples )
 			{
 				memset(&tune_data, 0, sizeof(torque_tune_data));
 				uart1_send_packet( (unsigned char*)(&tune_data), sizeof(torque_tune_data) );
@@ -145,6 +148,17 @@ void torque_control_init()
 void torque_control_set_desired_force(int force_g)
 {
 	desired_force_g = force_g;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void torque_control_set_time_length(int seconds)
+{
+	__builtin_disable_interrupts();
+
+	num_tuning_samples = seconds * LOOP_RATE_HZ;
+
+	__builtin_enable_interrupts();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
