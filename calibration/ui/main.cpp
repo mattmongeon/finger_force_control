@@ -219,7 +219,8 @@ int main(int argc, char** argv)
 			std::cout << "PWM value as integer percentage:  " << std::flush;
 			int pwm = 0;
 			std::cin >> pwm;
-			picSerial.WriteValueToPic<char>(nUtils::SET_PWM, static_cast<char>(pwm));
+			picSerial.WriteCommandToPic(nUtils::SET_PWM);
+			picSerial.WriteValueToPic<char>(static_cast<char>(pwm));
 			std::cout << "Sent!" << std::endl;
 			break;
 		}

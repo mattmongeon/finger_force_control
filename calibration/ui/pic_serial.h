@@ -60,18 +60,11 @@ public:
 	// Simple helper template function for writing a single value to the PIC.
 	//
 	// Parms:
-	// cmd - the string command sent to the PIC.  Needs to be a single
-	//       character followed by '\n'.
 	// value - the value to be written to the PIC.
 	template<typename T>
-	void WriteValueToPic(const std::string& cmd, T value) const
+	void WriteValueToPic(T value) const
 	{
-		WriteCommandToPic(cmd);
-
-		unsigned char buffer[sizeof(T)+1];
-		memcpy(buffer, &value, sizeof(T));
-		buffer[sizeof(T)] = '\n';
-		WriteToPic(buffer, sizeof(T)+1);
+		WriteToPic(reinterpret_cast<unsigned char*>(&value), sizeof(T));
 	}
 
 	

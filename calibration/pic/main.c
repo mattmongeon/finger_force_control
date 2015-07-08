@@ -24,7 +24,6 @@ int main()
 	
 	LCD_Setup();	
 	load_cell_init();
-	isense_init();
 	motor_init();
 	biotac_init();
 	torque_control_init();
@@ -143,19 +142,20 @@ int main()
 		case 'p':
 		{
 			// --- Set PWM Directly --- //
-			
-			NU32_ReadUART1(buffer, 50);
-			char pwm = buffer[0];
+
+			char pwm = 0;
+			uart1_read_packet( (unsigned char*)(&pwm), sizeof(char) );
+
 			if( pwm != 0 )
 			{
 				system_set_state(DIRECT_PWM);
+				motor_duty_cycle_pct_set(pwm);
 			}
 			else
 			{
+				motor_duty_cycle_pct_set(pwm);
 				system_set_state(IDLE);
 			}
-			
-			motor_duty_cycle_pct_set(pwm);
 			
 			break;
 		}
@@ -202,6 +202,18 @@ int main()
 		{
 			// --- Hold Commanded Tuning Force --- //
 
+			int seconds;
+			uart1_read_packet( (unsigned char*)(&seconds), sizeof(int) );
+			if( seconds > 0 )
+			{
+				torque_control_set_time_length(seconds);
+			}
+			else
+			{
+				// Provide our own default value.
+				torque_control_set_time_length(2);
+			}
+			
 			int force;
 			uart1_read_packet( (unsigned char*)(&force), sizeof(int) );
 			torque_control_set_desired_force(force);

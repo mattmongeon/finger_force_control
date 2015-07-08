@@ -28,6 +28,13 @@ void torque_control_init();
 void torque_control_set_desired_force(int force_g);
 
 
+// Sets the length of time in seconds for which the tuning session should last.
+//
+// Params:
+// seconds - The length of time in seconds.
+void torque_control_set_time_length(int seconds);
+
+
 // Adjusts the PI gain values to the parameter values.
 //
 // Params:

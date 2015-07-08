@@ -183,6 +183,12 @@ void cLoadCell::TuneForceHolding()
 	mpPicSerial->DiscardIncomingData(0);
 	mpPicSerial->WriteCommandToPic(nUtils::TUNE_TORQUE_GAINS);
 
+	std::cout << "Enter number of seconds for this run (s):  " ;
+	int seconds = 0;
+	std::cin >> seconds;
+
+	mpPicSerial->WriteValueToPic(seconds);
+	
 	std::cout << "Enter force to hold (g):  ";
 
 	int force;
@@ -190,9 +196,9 @@ void cLoadCell::TuneForceHolding()
 
 	// Do this one next.  It is really annoying to create it before sending the force, because it pops up
 	// a window right in the way.
-	cRealTimePlot plotter("Load Cell", "Sample", "Force (g)", "Force (g)", "", "", "", 200.0);
+	cRealTimePlot plotter("Load Cell", "Sample", "Force (g)", "Force (g)", "", "", "", seconds * 200.0);
 
-	mpPicSerial->WriteToPic( reinterpret_cast<unsigned char*>(&force), sizeof(int) );
+	mpPicSerial->WriteValueToPic(force);
 
 	std::cout << "Waiting for tuning results..." << std::endl;
 

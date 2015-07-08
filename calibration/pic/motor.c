@@ -1,6 +1,5 @@
 #include "motor.h"
 #include "utils.h"
-#include "isense.h"
 #include "NU32.h"
 #include "system.h"
 
