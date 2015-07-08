@@ -3,7 +3,6 @@
 #include "pic_serial.h"
 #include "keyboard_thread.h"
 #include "real_time_plot.h"
-#include <plplot/plplot.h>
 #include <vector>
 #include <utility>
 #include <iostream>
