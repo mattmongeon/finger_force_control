@@ -7,22 +7,19 @@
 #include "NU32.h"
 
 
+////////////////////////////////////////////////////////////////////////////////
+//  File-Local Constants
+////////////////////////////////////////////////////////////////////////////////
+
+// --- Constants --- //
+
 #define LOOP_RATE_HZ 100
 #define LOOP_TIMER_PRESCALAR 16
 
 
+// --- Variables --- //
+
 static int numCalibrationSamples = 0;
-
-
-/*
-Notes:
-- Send both the raw values and the decoded values to the UI
-  o Print the decoded values followed by the decoded binary value
-- Try swapping byte order of the sampling commands
-- Try swapping byte order of the received data
-- Try using 00 instead of 01 as the additional byte.
-  o The sample code does this.
-*/
 
 
 // --- BioTac Sampling Commands --- //
@@ -72,6 +69,8 @@ Notes:
 #define BIOTAC_DUMMY_DATA (unsigned short)(0x0100)
 
 
+// --- Macros --- //
+
 #define READ_BIOTAC_SAMPLE(cmd, var)							\
 	/* Request data */											\
 	__builtin_disable_interrupts();								\
@@ -95,7 +94,13 @@ Notes:
 	wait_usec(10);
 
 
+// --- Local Functions --- //
 
+// Reads configuration data from the BioTac as part of the unit's configuration scheme.
+//
+// Params:
+// cmd - The data to read from the BioTac.
+// numBytes - The expected number of bytes of the BioTac's response.
 static void biotac_read_config(unsigned short cmd, int numBytes)
 {
 	spi_comm_enable(1);
@@ -116,12 +121,24 @@ static void biotac_read_config(unsigned short cmd, int numBytes)
 		wait_usec(10);
 	}
 }
-	    
 
+////////////////////////////////////////////////////////////////////////////////
+
+// Initializes the BioTac by reading from some of its read-only registers.
+static void biotac_configure()
+{
+	biotac_read_config(BIOTAC_READ_FLEX_VERSION, BIOTAC_READ_FLEX_VERSION_LENGTH);
+	biotac_read_config(BIOTAC_READ_FIRMWARE_VERSION, BIOTAC_READ_FIRMWARE_VERSION_LENGTH);
+	biotac_read_config(BIOTAC_READ_SERIAL_NUMBER, BIOTAC_READ_SERIAL_NUMBER_LENGTH);
+	biotac_read_config(BIOTAC_READ_CPU_SPEED, BIOTAC_READ_CPU_SPEED_LENGTH);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+// Polls the BioTac for its latest readings and transmits the current timestamp,
+// the BioTac data, and the latest load cell reading over UART.
 static void biotac_read_and_tx()
 {
-	LCD_Clear();
-	
 	static biotac_data data;
 	
 	unsigned long time_stamp = _CP0_GET_COUNT();
@@ -131,26 +148,13 @@ static void biotac_read_and_tx()
 	uart1_send_packet((unsigned char*)(&time_stamp), sizeof(unsigned long));
 	uart1_send_packet((unsigned char*)(&data), sizeof(biotac_data));
 	uart1_send_packet((unsigned char*)(&load_cell), sizeof(int));
-
-	unsigned long end = _CP0_GET_COUNT();
-	float t = end - time_stamp;
-	t *= 25.0;
-	t /= 1000000.0;
-	char b[20];
-	sprintf(b, "%f", t);
-	LCD_WriteString(b);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//  Interrupt Functions
+////////////////////////////////////////////////////////////////////////////////
 
-static void biotac_configure()
-{
-	biotac_read_config(BIOTAC_READ_FLEX_VERSION, BIOTAC_READ_FLEX_VERSION_LENGTH);
-	biotac_read_config(BIOTAC_READ_FIRMWARE_VERSION, BIOTAC_READ_FIRMWARE_VERSION_LENGTH);
-	biotac_read_config(BIOTAC_READ_SERIAL_NUMBER, BIOTAC_READ_SERIAL_NUMBER_LENGTH);
-	biotac_read_config(BIOTAC_READ_CPU_SPEED, BIOTAC_READ_CPU_SPEED_LENGTH);
-}
-
-
+// Timer 5 interrupt which is responsible for handling real-time BioTac operations.
 void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_reader_int()
 {
 	switch(system_get_state())
@@ -192,6 +196,10 @@ void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_reader_int()
 	IFS0CLR = 1 << 20;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//  Interface Functions
+////////////////////////////////////////////////////////////////////////////////
+
 void biotac_init()
 {
 	spi_init();
@@ -211,6 +219,7 @@ void biotac_init()
 	T5CONSET = 0x8000;
 }
 
+////////////////////////////////////////////////////////////////////////////////
 
 void read_biotac(biotac_data* pData)
 {
