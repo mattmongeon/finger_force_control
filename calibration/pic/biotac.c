@@ -193,7 +193,7 @@ void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_reader_int()
 		break;
 	}
 	
-	IFS0CLR = 1 << 20;
+	IFS0CLR = 0x100000;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -212,9 +212,9 @@ void biotac_init()
 	T5CON = 0x0040;
 	TMR5 = 0;
 
-	IPC5SET = 0x11;     // priority 4, subpriority 1
-	IFS0CLR = 1 << 20;  // Clear the interrupt flag
-	IEC0SET = 1 << 20;  // Enable the interrupt
+	IPC5SET = 0x11;      // priority 4, subpriority 1
+	IFS0CLR = 0x100000;  // Clear the interrupt flag
+	IEC0SET = 0x100000;  // Enable the interrupt
 
 	T5CONSET = 0x8000;
 }

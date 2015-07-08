@@ -16,7 +16,7 @@ typedef struct
 
 	uint16_t tac;
 	uint16_t tdc;
- 
+
 	uint16_t e1;
 	uint16_t e2;
 	uint16_t e3;
