@@ -1,8 +1,13 @@
 #ifndef INCLUDED_BIOTAC_H
 #define INCLUDED_BIOTAC_H
 
+////////////////////////////////////////////////////////////////////////////////
+//  Struct Declarations
+////////////////////////////////////////////////////////////////////////////////
 
 #pragma pack(push,1)
+
+// Represents the data from a single BioTac reading.
 typedef struct
 {
 	unsigned short pac;
@@ -32,7 +37,7 @@ typedef struct
 	unsigned short e19;
 } biotac_data;
 
-
+// Contains the data used when tuning the BioTac.
 typedef struct
 {
 	unsigned long timestamp;
@@ -42,11 +47,20 @@ typedef struct
 #pragma pack(pop)
 
 
+////////////////////////////////////////////////////////////////////////////////
+//  Interface Functions
+////////////////////////////////////////////////////////////////////////////////
+
+// Sets up communication and initializes the BioTac.
 void biotac_init();
 
 
+// Reads a full set of data from the BioTac's sensors and sets the values in
+// the parameter struct pointer.
+//
+// Params:
+// pData - [OUT] - a pointer representing the struct to be filled with data.
 void read_biotac(biotac_data* pData);
-
 
 
 #endif  // INCLUDED_BIOTAC_H

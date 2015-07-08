@@ -1,9 +1,11 @@
 #ifndef INCLUDED_SYSTEM_H
 #define INCLUDED_SYSTEM_H
 
+////////////////////////////////////////////////////////////////////////////////
+//  Enum Declarations
+////////////////////////////////////////////////////////////////////////////////
 
-// --- System State --- //
-
+// Represents the various possible states of the overall state machine.
 typedef enum
 {
 	IDLE = 0,
@@ -18,9 +20,20 @@ typedef enum
 	LOAD_CELL_CONTINUOUS_READ
 } state_t;
 
+////////////////////////////////////////////////////////////////////////////////
+//  Interface Functions
+////////////////////////////////////////////////////////////////////////////////
 
+// Returns the current state of the state machine.
+//
+// Return - The state machine's current state.
 state_t system_get_state();
 
+
+// Sets the state machine to the parameter state.
+//
+// Params:
+// state - The new requested state.
 void system_set_state(state_t state);
 
 

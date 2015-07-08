@@ -5,6 +5,12 @@
 #include "NU32.h"
 
 
+////////////////////////////////////////////////////////////////////////////////
+//  File-Local Declarations
+////////////////////////////////////////////////////////////////////////////////
+
+// --- Constants --- //
+
 #define MAX_ERROR_INT 10000
 #define LOOP_RATE_HZ 200
 #define LOOP_TIMER_PRESCALAR 16
@@ -12,7 +18,7 @@
 #define K_DENOM 1000
 
 
-// --- Private Variables --- //
+// --- Variables --- //
 
 static volatile int desired_force_g = 0;
 
@@ -25,8 +31,14 @@ static int holdTorqueTuneIndex = 0;
 static torque_tune_data holdTorqueTuneBuffer[200];
 
 
-// --- Control Loop Function --- //
+// --- Local Functions --- //
 
+// Implements the PI controller with integrator saturation.
+//
+// Params:
+// load_cell_g - The most recent reading of the load cell in grams.
+//
+// Return - The new control signal representing a current value in mA.
 static int torque_control_loop(int load_cell_g)
 {
 	int error = desired_force_g - load_cell_g;
@@ -49,9 +61,12 @@ static int torque_control_loop(int load_cell_g)
 	return u_new;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//  Interrupt Functions
+////////////////////////////////////////////////////////////////////////////////
 
-// --- The Timer Interrupt --- //
-
+// Timer 4 interrupt which is responsible for implementing the torque controller
+// in real-time.
 void __ISR(_TIMER_4_VECTOR, IPL5SOFT) torque_controller()
 {
 	switch(system_get_state())
@@ -108,8 +123,9 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) torque_controller()
 	IFS0CLR = 0x10000;  // clear the interrupt flag
 }
 
-
-// --- Interface Functions --- //
+////////////////////////////////////////////////////////////////////////////////
+//  Interface Functions
+////////////////////////////////////////////////////////////////////////////////
 
 void torque_control_init()
 {
@@ -132,10 +148,14 @@ void torque_control_init()
 	T4CONSET = 0x8000;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 void torque_control_set_desired_force(int force_g)
 {
 	desired_force_g = force_g;
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 void torque_control_set_gains(float kp_new, float ki_new)
 {
@@ -150,11 +170,15 @@ void torque_control_set_gains(float kp_new, float ki_new)
 	__builtin_enable_interrupts();
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 void torque_control_get_gains(float* p, float* i)
 {
 	*p = ((float)(kp_num) / (float)(K_DENOM));
 	*i = ((float)(ki_num) / (float)(K_DENOM));
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 unsigned char* torque_control_get_raw_tune_buffer()
 {
