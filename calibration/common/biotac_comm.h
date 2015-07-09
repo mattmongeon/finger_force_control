@@ -45,6 +45,7 @@ typedef struct
 	uint32_t mTimestamp;
 	biotac_data mData;
 	int32_t mLoadCell_g;
+	int32_t mReference_g;
 } biotac_tune_data;
 #pragma pack(pop)
 
