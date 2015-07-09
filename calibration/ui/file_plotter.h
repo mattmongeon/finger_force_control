@@ -2,6 +2,8 @@
 #define INCLUDED_FILE_PLOTTER_H
 
 
+#include "../common/biotac_comm.h"
+#include <vector>
 #include <string>
 #include <plplot/plplot.h>
 #include <plplot/plstream.h>
@@ -22,18 +24,27 @@ public:
 	~cFilePlotter();
 
 
-	//--------------------------------------------------------------------------//
-	//--------------------------  INTERFACE FUNCTIONS  -------------------------//
-	//--------------------------------------------------------------------------//
-	
 private:
+
+	//--------------------------------------------------------------------------//
+	//---------------------------  HELPER FUNCTIONS  ---------------------------//
+	//--------------------------------------------------------------------------//
+
+	void ConfigureAndPlotForce(const std::vector<biotac_tune_data>& data, const std::string& fileName);
+
+	void ConfigureAndPlotPressTemp(const std::vector<biotac_tune_data>& data, const std::string& fileName);
+
+	void ConfigureAndPlotElectrodes1(const std::vector<biotac_tune_data>& data, const std::string& fileName);
+
+	void ConfigureAndPlotElectrodes2(const std::vector<biotac_tune_data>& data, const std::string& fileName);
+	
 	
 	//--------------------------------------------------------------------------//
 	//-----------------------------  DATA MEMBERS  -----------------------------//
 	//--------------------------------------------------------------------------//
 
 	// The stream object used for plotting with PLplot.
-	plstream mPlotStream;
+	plstream mPlottingStream;
 
 };
 
