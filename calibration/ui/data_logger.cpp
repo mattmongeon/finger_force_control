@@ -23,7 +23,7 @@ cDataLogger::cDataLogger()
 	std::ostringstream s;
 	s << "./data/data_" << t->tm_year + 1900 << "_"
 	  << t->tm_mon + 1 << "_"
-	  << t->tm_mday + 1 << "_"
+	  << t->tm_mday << "_"
 	  << t->tm_hour << "_"
 	  << t->tm_min << "_"
 	  << t->tm_sec << ".dat";
