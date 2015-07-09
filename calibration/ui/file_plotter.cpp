@@ -65,30 +65,37 @@ void cFilePlotter::ConfigureAndPlotForce(const std::vector<biotac_tune_data>& da
 {
 	PLFLT* pX = new PLFLT[data.size()];
 	PLFLT* pLoadCell = new PLFLT[data.size()];
+	PLFLT* pReference = new PLFLT[data.size()];
+
 	PLFLT ymin = 1000000.0, ymax = -1000000.0;
 	for( size_t i = 0; i < data.size(); ++i )
 	{
 		pX[i] = i;
 		pLoadCell[i] = data[i].mLoadCell_g;
+		pReference[i] = data[i].mReference_g;
 
-		if( pLoadCell[i] > ymax )
-			ymax = pLoadCell[i];
+		ymax = std::max(pLoadCell[i], ymax);
+		ymax = std::max(pReference[i], ymax);
 
-		if( pLoadCell[i] < ymin )
-			ymin = pLoadCell[i];
+		ymin = std::min(pLoadCell[i], ymin);
+		ymin = std::min(pReference[i], ymin);
 	}
 
-	mPlottingStream.col0(1);
+	mPlottingStream.col0(nUtils::enumPLplotColor_RED);
 	mPlottingStream.env(0, data.size(), ymin, ymax*1.001, 0, 0);
-	mPlottingStream.col0(3);
 	mPlottingStream.lab("Samples", "Force", "Reference and Measured Force");
+
 	mPlottingStream.col0(nUtils::enumPLplotColor_BLUE);
 	mPlottingStream.line( data.size(), pX, pLoadCell );
+	
+	mPlottingStream.col0(nUtils::enumPLplotColor_GREEN);
+	mPlottingStream.line( data.size(), pX, pReference );
 	
 	// NEED TO ADD LEGENDS
 	
 	delete[] pX;
 	delete[] pLoadCell;
+	delete[] pReference;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -121,9 +128,8 @@ void cFilePlotter::ConfigureAndPlotPressTemp(const std::vector<biotac_tune_data>
 		ymin = std::min(pTAC[i], ymin);
 	}
 	
-	mPlottingStream.col0(1);
+	mPlottingStream.col0(nUtils::enumPLplotColor_RED);
 	mPlottingStream.env(0, data.size(), ymin, ymax*1.001, 0, 0);
-	mPlottingStream.col0(nUtils::enumPLplotColor_GREEN);
 	mPlottingStream.lab("Samples", "Pressure/Temp", "Pressure and Temperature");
 
 	mPlottingStream.col0(nUtils::enumPLplotColor_RED);
