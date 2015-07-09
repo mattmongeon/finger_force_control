@@ -28,6 +28,12 @@ void torque_control_init();
 void torque_control_set_desired_force(int force_g);
 
 
+// Returns the force in grams value to be held by the controller.
+//
+// Return - The force value in grams.
+int torque_control_get_desired_force_g();
+
+
 // Sets the length of time in seconds for which the tuning session should last.
 //
 // Params:

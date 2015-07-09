@@ -156,6 +156,13 @@ void torque_control_set_desired_force(int force_g)
 
 ////////////////////////////////////////////////////////////////////////////////
 
+int torque_control_get_desired_force_g()
+{
+	return desired_force_g;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 void torque_control_set_time_length(int seconds)
 {
 	__builtin_disable_interrupts();

@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "uart.h"
 #include "load_cell.h"
+#include "torque_control.h"
 #include "NU32.h"
 
 
@@ -140,15 +141,14 @@ static void biotac_configure()
 // the BioTac data, and the latest load cell reading over UART.
 static void biotac_read_and_tx()
 {
-	static biotac_data data;
+	static biotac_tune_data data;
 	
-	unsigned long time_stamp = _CP0_GET_COUNT();
-	read_biotac(&data);
-	int load_cell = load_cell_read_grams();
+	data.mTimestamp = _CP0_GET_COUNT();
+	read_biotac(&data.mData);
+	data.mLoadCell_g = load_cell_read_grams();
+	data.mReference_g = torque_control_get_desired_force_g();
 
-	uart1_send_packet((unsigned char*)(&time_stamp), sizeof(unsigned long));
-	uart1_send_packet((unsigned char*)(&data), sizeof(biotac_data));
-	uart1_send_packet((unsigned char*)(&load_cell), sizeof(int));
+	uart1_send_packet((unsigned char*)(&data), sizeof(biotac_tune_data));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
