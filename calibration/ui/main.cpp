@@ -1,18 +1,19 @@
-#include <iostream>
-#include <string>
-#include <vector>
 #include "pic_serial.h"
 #include "load_cell.h"
 #include "biotac.h"
 #include "utils.h"
 #include "stopwatch.h"
 #include "keyboard_thread.h"
-#include "real_time_plot.h"
+#include "file_plotter.h"
 #include <pthread.h>
 #include <plplot/plplot.h>
 #include <plplot/plstream.h>
+#include <iostream>
+#include <string>
+#include <vector>
 #include <cmath>
 #include <cstdio>
+#include <dirent.h>
 
 
 static bool noSerial = false;
@@ -58,6 +59,7 @@ void printMenu()
 	std::cout << "a:  Calibrate BioTac" << std::endl;
 	std::cout << "b:  Single read from BioTac" << std::endl;
 	std::cout << "c:  Calibrate load cell" << std::endl;
+	std::cout << "d:  List files in \'data\' directory" << std::endl;
 	std::cout << "f:  Hold force" << std::endl;
 	std::cout << "g:  Set torque controller gains" << std::endl;
 	std::cout << "h:  Get torque controller gains" << std::endl;
@@ -97,7 +99,7 @@ int main(int argc, char** argv)
 		
 		return 0;
 	}
-
+	
 	
 	// --- Serial Communication --- //
 	
@@ -163,6 +165,71 @@ int main(int argc, char** argv)
 		case 'c':
 		{
 			loadCell.RunCalibrationRoutine();
+			break;
+		}
+
+		case 'd':
+		{
+			std::cout << "Select the file using its list index." << std::endl;
+			std::cout << std::endl;
+			std::cout << "Files:" << std::endl;
+			std::cout << "------" << std::endl;
+			std::cout << std::endl;
+			
+			DIR* dir;
+			struct dirent* ent;
+			if((dir = opendir("./data")) != NULL )
+			{
+				// Get all of the file names from disk and print their selection indices.
+				std::vector<std::string> files;
+				while((ent = readdir(dir)) != NULL)
+				{
+					std::string name(ent->d_name);
+					if( (name != "..") && (name != ".") )
+					{
+						files.push_back(name);
+						std::cout << files.size() << ". " << name << std::endl;
+					}
+				}
+				closedir(dir);
+
+				if( files.empty() )
+				{
+					std::cout << std::endl << "There are no files in the \'data\' directory." << std::endl << std::endl;
+					break;
+				}
+
+				bool goodSelection = false;
+				while(!goodSelection)
+				{
+					std::cout << std::endl;
+					std::cout << "Selection: " << std::flush;
+
+					size_t selection = 0;
+					std::cin >> selection;
+					selection -= 1;
+					std::cout << std::endl << std::endl;
+					
+					if( (selection < files.size()) && (selection >= 0) )
+					{
+						goodSelection = true;
+						std::string path("./data/");
+						path += files[selection];
+						std::cout << "Opening \'" << files[selection] << "\'" << std::endl;
+						cFilePlotter f(path);
+					}
+					else
+					{
+						std::cout << "The entry \'" << selection+1 << "\' is invalid." << std::endl;
+					}
+				}
+			}
+			else
+			{
+				std::cout << "Could not open \'data\' directory!" << std::endl;
+				std::cout << std::endl;
+			}
+			
 			break;
 		}
 
