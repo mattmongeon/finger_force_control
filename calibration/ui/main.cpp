@@ -5,7 +5,7 @@
 #include "stopwatch.h"
 #include "keyboard_thread.h"
 #include "file_plotter.h"
-#include <pthread.h>
+#include "function_fit_nn.h"
 #include <plplot/plplot.h>
 #include <plplot/plstream.h>
 #include <iostream>
@@ -64,7 +64,7 @@ void printMenu()
 	std::cout << "g:  Set torque controller gains" << std::endl;
 	std::cout << "h:  Get torque controller gains" << std::endl;
 	std::cout << "l:  Read load cell" << std::endl;
-	std::cout << "m:  Read uncalibrated load cell" << std::endl;
+	std::cout << "n:  Neural network" << std::endl;
 	std::cout << "p:  Set motor PWM duty cycle" << std::endl;
 	std::cout << "r:  Continuously read from BioTac" << std::endl;
 	std::cout << "s:  Continuously read from load cell" << std::endl;
@@ -278,6 +278,37 @@ int main(int argc, char** argv)
 		case 'l':
 		{
 			loadCell.ReadSingle();
+			break;
+		}
+
+		case 'n':
+		{
+			cFunctionFitNN nn;
+			std::vector<std::string> v;
+
+			DIR* dir;
+			struct dirent* ent;
+			if((dir = opendir("./data")) != NULL )
+			{
+				// Get all of the file names from disk and print their selection indices.
+				while((ent = readdir(dir)) != NULL)
+				{
+					std::string name(ent->d_name);
+					if( (name != "..") && (name != ".") )
+					{
+						std::string ending = ".dat";
+						if( name.compare(name.length() - ending.length(), ending.length(), ending) == 0 )
+						{
+							name.insert(0, "./data/");
+							v.push_back(name);
+						}
+					}
+				}
+				closedir(dir);
+			}
+
+			nn.TrainAgainstDataFiles(v);
+			
 			break;
 		}
 
