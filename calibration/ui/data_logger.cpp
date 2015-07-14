@@ -31,8 +31,7 @@ cDataLogger::cDataLogger()
 	mOutFile.open(s.str().c_str(), std::ios::binary | std::ios::out);
 
 	mLoopRunning = true;
-	pthread_mutex_init(&mDataMutex, NULL);
-	pthread_create(&mThreadHandle, NULL, ThreadFunc, (void*)this);
+	mThread = boost::thread(ThreadFunc, this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -53,8 +52,7 @@ cDataLogger::~cDataLogger()
 	}
 	
 	mLoopRunning = false;
-	pthread_join(mThreadHandle, NULL);
-	pthread_mutex_destroy(&mDataMutex);
+	mThread.join();
 	
 	mOutFile.close();
 }
@@ -63,22 +61,20 @@ cDataLogger::~cDataLogger()
 //  Threaded Functions
 ////////////////////////////////////////////////////////////////////////////////
 
-void* cDataLogger::ThreadFunc(void* pIn)
+void cDataLogger::ThreadFunc(cDataLogger* pThis)
 {
-	cDataLogger* pThis = reinterpret_cast<cDataLogger*>(pIn);
-
 	sData data;
 	bool writeData = false;
 	while(pThis->mLoopRunning)
 	{
-		pthread_mutex_lock(&(pThis->mDataMutex));
+		pThis->mDataMutex.lock();
 		if( !pThis->mOutputQueue.empty() )
 		{
 			writeData = true;
 			data = pThis->mOutputQueue.front();
 			pThis->mOutputQueue.pop();
 		}
-		pthread_mutex_unlock(&(pThis->mDataMutex));
+		pThis->mDataMutex.unlock();
 
 		
 		if( writeData )
@@ -88,6 +84,4 @@ void* cDataLogger::ThreadFunc(void* pIn)
 			delete data.mpData;
 		}
 	}
-
-	return NULL;
 }

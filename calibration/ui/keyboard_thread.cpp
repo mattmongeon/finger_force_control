@@ -27,7 +27,7 @@ cKeyboardThread::cKeyboardThread()
 	mQuitRequested(false),
 	mLoopRunning(true)
 {
-	pthread_create(&mKeyboardThreadHandle, NULL, ThreadFunc, NULL);
+	mKeyboardThread = boost::thread(ThreadFunc);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@ cKeyboardThread::cKeyboardThread()
 cKeyboardThread::~cKeyboardThread()
 {
 	mLoopRunning = false;
-	pthread_join(mKeyboardThreadHandle, NULL);
+	mKeyboardThread.join();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -64,7 +64,7 @@ bool cKeyboardThread::QuitRequested()
 // Threaded Function
 ////////////////////////////////////////////////////////////////////////////////
 
-void* cKeyboardThread::ThreadFunc(void* pIn)
+void cKeyboardThread::ThreadFunc()
 {
 	while(mpInstance->mLoopRunning)
 	{
@@ -80,7 +80,5 @@ void* cKeyboardThread::ThreadFunc(void* pIn)
 			}
 		}
 	}
-
-	return NULL;
 }
 

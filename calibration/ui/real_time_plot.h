@@ -4,7 +4,8 @@
 
 #include <plplot/plplot.h>
 #include <plplot/plstream.h>
-#include <pthread.h>
+#include <boost/thread/thread.hpp>
+#include <boost/thread/mutex.hpp>
 #include <string>
 
 
@@ -122,9 +123,11 @@ private:
 	//--------------------------  THREADED FUNCTIONS  --------------------------//
 	//--------------------------------------------------------------------------//
 
-	// The threaded function that does the plotting.  The parameter is expted to
-	// be a pointer to the instance of this class.
-	static void* ThreadFunc(void* pIn);
+	// The threaded function that does the plotting.
+	//
+	// Params:
+	// pThis - A pointer to an instance of this class.
+	static void ThreadFunc(cRealTimePlot* pThis);
 
 
 	//--------------------------------------------------------------------------//
@@ -140,11 +143,11 @@ private:
 	// Number of active plots.  Maximum of 4.  Will affect how everything is drawn.
 	int mNumActivePlots;
 
-	// The handle to the thread that will be doing the plotting in real-time.
-	pthread_t mPlottingThreadHandle;
+	// The thread that will be doing the plotting in real-time.
+	boost::thread mPlottingThread;
 
 	// Mutex protecting access to the data queue.
-	pthread_mutex_t mDataMutex;
+	boost::mutex mDataMutex;
 
 	// The data point waiting to be plotted.
 	sDataPoint mBufferedPoint;

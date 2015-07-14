@@ -1,9 +1,9 @@
 #ifndef INCLUDED_DATA_LOGGER_H
 #define INCLUDED_DATA_LOGGER_H
 
+#include <boost/thread/thread.hpp>
 #include <queue>
 #include <fstream>
-#include <pthread.h>
 #include <cstring>
 
 
@@ -44,9 +44,9 @@ public:
 		memcpy(data.mpData, reinterpret_cast<unsigned char*>(pData), size);
 		data.mNumBytes = size;
 
-		pthread_mutex_lock(&mDataMutex);
+		mDataMutex.lock();
 		mOutputQueue.push(data);
-		pthread_mutex_unlock(&mDataMutex);
+		mDataMutex.unlock();
 	}
 
 
@@ -81,7 +81,7 @@ private:
 
 	// The threaded function that writes the data to file.  The parameter is
 	// expected to be a pointer to the instance of this class.
-	static void* ThreadFunc(void* pIn);
+	static void ThreadFunc(cDataLogger* pThis);
 
 
 	//--------------------------------------------------------------------------//
@@ -91,11 +91,11 @@ private:
 	// The file for writing the data. 
 	std::ofstream mOutFile;
 
-	// The handle to the POSIX thread.
-	pthread_t mThreadHandle;
+	// The handle to the worker thread.
+	boost::thread mThread;
 
 	// Mutex protecting access to the data queue.
-	pthread_mutex_t mDataMutex;
+	boost::mutex mDataMutex;
 	
 	// True if the real-time thread is still running.
 	bool mLoopRunning;

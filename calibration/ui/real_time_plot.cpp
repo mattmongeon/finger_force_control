@@ -75,8 +75,7 @@ cRealTimePlot::cRealTimePlot(const std::string& title, const std::string& xAxisL
 
 	mContinuePlotting = true;
 	mNewPointReady = false;
-	pthread_mutex_init(&mDataMutex, NULL);
-	pthread_create(&mPlottingThreadHandle, NULL, ThreadFunc, (void*)this);
+	mPlottingThread = boost::thread(ThreadFunc, this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -91,8 +90,7 @@ cRealTimePlot::~cRealTimePlot()
 	}
 	
 	mContinuePlotting = false;
-	pthread_join(mPlottingThreadHandle, NULL);
-	pthread_mutex_destroy(&mDataMutex);
+	mPlottingThread.join();
 
 	std::cout << std::endl;
 	std::cout << std::endl;
@@ -146,10 +144,10 @@ void cRealTimePlot::EnqueueDataPoint(double p1, double p2, double p3, double p4)
 	p.mPoint3 = p3;
 	p.mPoint4 = p4;
 
-	pthread_mutex_lock(&mDataMutex);
+	mDataMutex.lock();
 	mNewPointReady = true;
 	mBufferedPoint = p;
-	pthread_mutex_unlock(&mDataMutex);
+	mDataMutex.unlock();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -190,24 +188,22 @@ void cRealTimePlot::PlotPoints( const sDataPoint& p, int pointNum, int numPlots 
 //  Threaded Functions
 ////////////////////////////////////////////////////////////////////////////////
 
-void* cRealTimePlot::ThreadFunc(void* pIn)
+void cRealTimePlot::ThreadFunc(cRealTimePlot* pThis)
 {
-	cRealTimePlot* pThis = reinterpret_cast<cRealTimePlot*>(pIn);
-
 	sDataPoint p;
 	bool plot = false;
 	int pointNum = 0;
 	while(pThis->mContinuePlotting)
 	{
 		// Try to grab the point.
-		pthread_mutex_lock(&(pThis->mDataMutex));
+		pThis->mDataMutex.lock();
 		if( pThis->mNewPointReady )
 		{
 			p = pThis->mBufferedPoint;
 			plot = true;
 			pThis->mNewPointReady = false;
 		}
-		pthread_mutex_unlock(&(pThis->mDataMutex));
+		pThis->mDataMutex.unlock();
 
 		// Plot it.
 		if( plot )
@@ -217,6 +213,4 @@ void* cRealTimePlot::ThreadFunc(void* pIn)
 			plot = false;
 		}
 	}
-	
-	return NULL;
 }
