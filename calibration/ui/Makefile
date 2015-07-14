@@ -2,10 +2,10 @@ PROG=biotac_cal
 CC=g++
 CPPFLAGS=-c -Wall
 SOURCES=main.cpp pic_serial.cpp load_cell.cpp utils.cpp stopwatch.cpp keyboard_thread.cpp biotac.cpp
-SOURCES+=real_time_plot.cpp data_logger.cpp file_plotter.cpp
-LFLAGS=-lpthread
+SOURCES+=real_time_plot.cpp data_logger.cpp file_plotter.cpp data_file_reader.cpp function_fit_nn.cpp
+LFLAGS=-lpthread -lboost_thread -lboost_system
 LINKDIR=-Lusr/lib/x86_64-linux-gnu
-PKGS=`pkg-config --cflags --libs plplot-c++`
+PKGS=`pkg-config --cflags --libs plplot-c++` `pkg-config --cflags --libs fann`
 OBJECTS=$(SOURCES:.cpp=.o)
 OBJDIR=obj
 BUILDOBJECTS=$(patsubst %,$(OBJDIR)/%,$(OBJECTS))
