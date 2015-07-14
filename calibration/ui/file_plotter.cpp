@@ -132,13 +132,13 @@ void cFilePlotter::ConfigureAndPlotPressTemp(const std::vector<biotac_tune_data>
 	mPlottingStream.env(0, data.size(), ymin, ymax*1.001, 0, 0);
 	mPlottingStream.lab("Samples", "Pressure/Temp", "Pressure and Temperature");
 
-	mPlottingStream.col0(nUtils::enumPLplotColor_RED);
+	mPlottingStream.col0(nUtils::enumPLplotColor_GREEN);
 	mPlottingStream.line( data.size(), pX, pPDC );
 
-	mPlottingStream.col0(nUtils::enumPLplotColor_GREEN);
+	mPlottingStream.col0(nUtils::enumPLplotColor_BLUE);
 	mPlottingStream.line( data.size(), pX, pPAC );
 
-	mPlottingStream.col0(nUtils::enumPLplotColor_BLUE);
+	mPlottingStream.col0(nUtils::enumPLplotColor_AQUAMARINE);
 	mPlottingStream.line( data.size(), pX, pTDC );
 
 	mPlottingStream.col0(nUtils::enumPLplotColor_MAGENTA);
