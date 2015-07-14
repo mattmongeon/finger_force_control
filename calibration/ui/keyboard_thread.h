@@ -2,7 +2,8 @@
 #define INCLUDED_KEYBOARD_THREAD_H
 
 
-#include <pthread.h>
+#include <boost/thread/thread.hpp>
+#include <boost/thread/mutex.hpp>
 
 
 // Maintains a thread that monitors keyboard input to check for when the user
@@ -55,9 +56,8 @@ private:
 	//--------------------------  THREADED FUNCTIONS  --------------------------//
 	//--------------------------------------------------------------------------//
 
-	// The threaded function that monitors the keyboard.  The parameter is not
-	// used.  This function returns nothing.
-	static void* ThreadFunc(void* pIn);
+	// The threaded function that monitors the keyboard.
+	static void ThreadFunc();
 	
 	
 	//--------------------------------------------------------------------------//
@@ -76,8 +76,8 @@ private:
 	// True if the monitoring thread is still running.
 	bool mLoopRunning;
 
-	// The handle to the POSIX thread.
-	pthread_t mKeyboardThreadHandle;
+	// The thread used for monitoring the keyboard.
+	boost::thread mKeyboardThread;
 };
 
 
