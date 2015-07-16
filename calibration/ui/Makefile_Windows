@@ -1,0 +1,51 @@
+PROG=biotac_cal
+
+CC=g++
+
+CPPFLAGS=-c -Wall -D_WIN32_WINDOWS=0x0601 -D_WIN32_WINNT=0x0601
+
+SOURCES=main.cpp pic_serial.cpp load_cell.cpp utils.cpp stopwatch.cpp keyboard_thread.cpp biotac.cpp
+SOURCES+=real_time_plot.cpp data_logger.cpp file_plotter.cpp data_file_reader.cpp function_fit_nn.cpp
+
+INCLUDEDIRS=-IC:\Libs\boost_1_54_0 -IC:\Libs\plplot-5.11.0\buildmingw\install\include -IC:\Libs\FANN-2.2.0-Source\buildmingw\include
+
+LFLAGS=-lboost_thread-mgw47-mt-s-1_54 -lboost_system-mgw47-s-1_54 -lboost_timer-mgw47-mt-s-1_54 -lboost_filesystem-mgw47-s-1_54 -lboost_chrono-mgw47-s-1_54 -lplplot.dll -lplplotcxx.dll -lws2_32 -lwsock32 -lKernel32 -lfann.dll -ldoublefann.dll -lfixedfann.dll -lfloatfann.dll
+
+LINKDIR=-LC:\MinGW\lib\gcc\mingw32\4.8.1  -LC:\MinGW\lib -LC:\Libs\boost_1_54_0\libs -LC:\Libs\boost_1_54_0\stage\lib -LC:\Libs\plplot-5.11.0\buildmingw\install\lib -LC:\Libs\plplot-5.11.0\buildmingw\install\bin -LC:\Libs\FANN-2.2.0-Source\buildmingw
+
+OBJECTS=$(SOURCES:.cpp=.o)
+OBJDIR=obj
+
+BUILDOBJECTS=$(patsubst %,$(OBJDIR)/%,$(OBJECTS))
+
+
+$(PROG): $(OBJECTS)
+	@echo
+	$(CC) -o $(PROG) $(BUILDOBJECTS) $(LINKDIR) $(LFLAGS) $(PKGS)
+
+%.o: %.cpp
+	@echo
+	$(CC) $(CPPFLAGS) $(INCLUDEDIRS) -o $(OBJDIR)/$@ $<
+	@echo
+
+.PHONY: clean
+clean:
+	rm -rf *.o biotac_cal *~ $(OBJDIR)/* *.dll
+	cp C:\Libs\plplot-5.11.0\buildmingw\install\bin\libcsirocsa.dll .
+	cp C:\Libs\plplot-5.11.0\buildmingw\install\bin\libplplot.dll .
+	cp C:\Libs\plplot-5.11.0\buildmingw\install\bin\libplplotcxx.dll .
+	cp C:\Libs\plplot-5.11.0\buildmingw\install\bin\libqsastime.dll .
+	cp C:\Libs\plplot-5.11.0\buildmingw\install\lib\plplot5.11.0\drivers\mem.dll .
+	cp C:\Libs\plplot-5.11.0\buildmingw\install\lib\plplot5.11.0\drivers\null.dll .
+	cp C:\Libs\plplot-5.11.0\buildmingw\install\lib\plplot5.11.0\drivers\ps.dll .
+	cp C:\Libs\plplot-5.11.0\buildmingw\install\lib\plplot5.11.0\drivers\svg.dll .
+	cp C:\Libs\plplot-5.11.0\buildmingw\install\lib\plplot5.11.0\drivers\wingcc.dll .
+	cp C:\Libs\plplot-5.11.0\buildmingw\install\lib\plplot5.11.0\drivers\xfig.dll .
+	cp C:\Libs\FANN-2.2.0-Source\buildmingw\libdoublefann.dll .
+	cp C:\Libs\FANN-2.2.0-Source\buildmingw\libfann.dll .
+	cp C:\Libs\FANN-2.2.0-Source\buildmingw\libfixedfann.dll .
+	cp C:\Libs\FANN-2.2.0-Source\buildmingw\libfloatfann.dll .
+	mkdir -p $(OBJDIR)
+
+.PHONY: rebuild
+rebuild: clean $(PROG)
