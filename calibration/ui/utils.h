@@ -7,12 +7,14 @@
 
 namespace nUtils
 {
-    // --- Linux-Specific Console Commands --- //
+    // --- Console Commands --- //
 
-	const std::string PREV_LINE = "\e[A";
-	const std::string CLEAR_LINE = "\e[2K";
-	const std::string CLEAR_CONSOLE = "\033[2J\033[1;1H";
+	void ClearConsole();
 
+	void ConsoleMoveCursorUpLines( int numLines );
+
+	void ClearCurrentLine();
+	
 
 	// --- PIC Commands --- //
 
@@ -59,11 +61,6 @@ namespace nUtils
 	// --- Terminal Helper Functions --- //
 
 	char GetMenuSelection();
-
-
-	// --- Time Helper Functions --- //
-
-	double GetSysTime_ms();
 }
 
 #endif  // INCLUDED_UTILS_H

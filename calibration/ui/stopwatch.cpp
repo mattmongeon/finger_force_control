@@ -7,8 +7,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 cStopwatch::cStopwatch()
-	: mPrevElapsedTime_ms(0),
-	  mStarted(false)
 {
 
 }
@@ -19,51 +17,21 @@ cStopwatch::cStopwatch()
 
 void cStopwatch::Start()
 {
-	if( !mStarted )
-	{
-		mStarted = true;
-		mStartTime = nUtils::GetSysTime_ms();
-	}
+	if( mTimer.is_stopped() )
+		mTimer.start();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void cStopwatch::Stop()
 {
-	if( mStarted )
-	{
-		mPrevElapsedTime_ms += nUtils::GetSysTime_ms() - mStartTime;
-	}
-	
-	mStarted = false;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-void cStopwatch::Reset()
-{
-	mPrevElapsedTime_ms = 0.0;
-	mStartTime = nUtils::GetSysTime_ms();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-void cStopwatch::StopAndReset()
-{
-	Stop();
-	Reset();
+	mTimer.stop();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 double cStopwatch::GetElapsedTime_ms() const
 {
-	double retVal = mPrevElapsedTime_ms;
-	if( mStarted )
-	{
-		retVal += nUtils::GetSysTime_ms() - mStartTime;
-	}
-	
-	return retVal;
+	return mTimer.elapsed().wall / 1000000.0;
 }
 

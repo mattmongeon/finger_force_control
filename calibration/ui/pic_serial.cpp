@@ -9,13 +9,22 @@
 #include <iostream>
 
 
+#ifdef WIN32
+#include <windows.h>
+#define UART_PORT_ID "COM3"
+#else
+#include <termios.h>
+#define UART_PORT_ID "/dev/ttyUSB0"
+#endif
+
+
 ////////////////////////////////////////////////////////////////////////////////
 //  Construction / Destruction
 ////////////////////////////////////////////////////////////////////////////////
 
 cPicSerial::cPicSerial()
+	: mIO(), mpPort(0)
 {
-	mPortHandle = -1;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -31,37 +40,24 @@ cPicSerial::~cPicSerial()
 
 bool cPicSerial::OpenSerialPort()
 {
-	termios tio;
-	memset(&tio, 0, sizeof(tio));
-
-	// Setting characters to 8N1
-	tio.c_cflag &= ~PARENB;
-	tio.c_cflag &= ~CSTOPB;
-	tio.c_cflag &= ~CSIZE;
-	tio.c_cflag |= CS8;
-
-	// Enable hardware flow control
-	tio.c_cflag |= CRTSCTS;
-
-	// Use raw input
-	tio.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
-
-	// Use raw output
-	tio.c_oflag &= ~OPOST;
-
-	tio.c_cc[VINTR] = 021;  // Interrupt - set to CTRL+C
-	tio.c_cc[VQUIT] = 023;  // Interrupt - set to CTRL+Z
-	tio.c_cc[VMIN] = 1;     // Minimum read 1 character
-	tio.c_cc[VTIME] = 100;  // Timeout of 10 seconds
-	
-	mPortHandle = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
-	if( mPortHandle == -1 )
+	try
+	{
+		if( mpPort == 0 )
+		{
+			mpPort = new boost::asio::serial_port(mIO, UART_PORT_ID);
+			mpPort->set_option(boost::asio::serial_port_base::baud_rate(230400));
+			mpPort->set_option(boost::asio::serial_port_base::character_size(8));
+			mpPort->set_option(boost::asio::serial_port_base::parity(boost::asio::serial_port_base::parity::none));
+			mpPort->set_option(boost::asio::serial_port_base::stop_bits(boost::asio::serial_port_base::stop_bits::one));
+			mpPort->set_option(boost::asio::serial_port_base::flow_control(boost::asio::serial_port_base::flow_control::hardware));
+		}
+	}
+	catch(...)
+	{
+		delete mpPort;
+		mpPort = 0;
 		return false;
-
-	cfsetospeed(&tio, B230400);
-	cfsetispeed(&tio, B230400);
-
-	tcsetattr(mPortHandle, TCSANOW, &tio);
+	}
 	
 	return true;
 }
@@ -70,11 +66,8 @@ bool cPicSerial::OpenSerialPort()
 
 void cPicSerial::CloseSerialPort()
 {
-	if( mPortHandle != -1 )
-	{
-		close(mPortHandle);
-		mPortHandle = -1;
-	}
+	delete mpPort;
+	mpPort = 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -82,14 +75,14 @@ void cPicSerial::CloseSerialPort()
 bool cPicSerial::WriteCommandToPic(const std::string& cmd) const
 {
 	return WriteToPic((unsigned char*)(cmd.data()), 2);
-	// return write(mPortHandle, cmd.data(), 2) == 2;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool cPicSerial::WriteToPic(unsigned char* buffer, int numBytes) const
+bool cPicSerial::WriteToPic(unsigned char* buffer, unsigned int numBytes) const
 {
-	return write(mPortHandle, buffer, numBytes) == numBytes;
+	return boost::asio::write( *mpPort,
+							   boost::asio::buffer(buffer, numBytes) ) == numBytes;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -99,7 +92,10 @@ bool cPicSerial::ReadFromPic(unsigned char* buffer, int numBytes) const
 	int numRead = 0;
 	while( numRead < numBytes )
 	{
-		int n = read(mPortHandle, &(buffer[numRead]), numBytes - numRead);
+		int n = boost::asio::read( *mpPort,
+								   boost::asio::buffer(&(buffer[numRead]), numBytes - numRead),
+								   boost::asio::transfer_at_least(1) );
+
 		if( n > 0 )
 		{
 			numRead += n;
@@ -123,5 +119,20 @@ void cPicSerial::DiscardIncomingData(int wait_ms) const
 		}
 	}
 
-	tcflush( mPortHandle, TCIFLUSH );
+	FlushPort();
 }
+
+////////////////////////////////////////////////////////////////////////////////
+//  Helper Functions
+////////////////////////////////////////////////////////////////////////////////
+
+void cPicSerial::FlushPort() const
+{
+#ifdef WIN32
+	PurgeComm( mpPort->native_handle(),
+			   PURGE_RXABORT || PURGE_RXCLEAR || PURGE_TXABORT || PURGE_TXCLEAR);
+#else
+	tcflush( mpPort->native_handle(), TCIFLUSH );
+#endif
+}
+

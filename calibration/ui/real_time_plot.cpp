@@ -3,6 +3,13 @@
 #include <iostream>
 
 
+#ifdef WIN32
+#define PLOT_DRIVER "wingcc"
+#else
+#define PLOT_DRIVER "xcairo"
+#endif
+
+
 ////////////////////////////////////////////////////////////////////////////////
 //  Construction / Destruction
 ////////////////////////////////////////////////////////////////////////////////
@@ -12,7 +19,7 @@ cRealTimePlot::cRealTimePlot(const std::string& title, const std::string& xAxisL
 							 const std::string& line1Legend, const std::string& line2Legend,
 							 const std::string& line3Legend, const std::string& line4Legend,
 							 PLFLT xAxisMax, PLFLT yAxisMin, PLFLT yAxisMax)
-	: mPlotStream( 1, 1, 255, 255, 255, "xcairo" ),
+	: mPlotStream( 1, 1, 255, 255, 255, PLOT_DRIVER ),
 	  mNumActivePlots( 1 )
 {
 	// --- Set Up Plotting --- //
@@ -94,7 +101,11 @@ cRealTimePlot::~cRealTimePlot()
 
 	std::cout << std::endl;
 	std::cout << std::endl;
+	#ifdef WIN32
+	std::cout << "Showing data plot.  Close window to continue." << std::endl;
+	#else
 	std::cout << "Showing data plot.  Right-click plot to close and continue." << std::endl;
+	#endif
 	mPlotStream.stripd( mPlotId );
 }
 

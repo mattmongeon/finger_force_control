@@ -19,13 +19,13 @@ cDataFileReader::cDataFileReader(const std::string& filePath)
 		throw std::invalid_argument("Could not open file for plotting!");
 	}
 
-	biotac_tune_data data;
-	while(inFile)
-	{
-		inFile.read(reinterpret_cast<char*>(&data), sizeof(biotac_tune_data));
-		mData.push_back(data);
-	}
-
+	inFile.seekg(0, std::ios::end);
+	std::streampos fileSize = inFile.tellg();
+	inFile.seekg(0, std::ios::beg);
+	
+	mData = std::vector<biotac_tune_data>(fileSize/sizeof(biotac_tune_data));
+	inFile.read( reinterpret_cast<char*>(&(mData[0])), fileSize);
+	
 	inFile.close();
 }
 

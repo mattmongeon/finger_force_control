@@ -31,7 +31,7 @@ cLoadCell::~cLoadCell()
 
 void cLoadCell::RunCalibrationRoutine()
 {
-	std::cout << nUtils::CLEAR_CONSOLE << std::flush;
+	nUtils::ClearConsole();
 	std::cout << "Load cell calibration" << std::endl;
 	std::cout << "---------------------" << std::endl;
 	std::cout << std::endl;
@@ -51,7 +51,9 @@ void cLoadCell::RunCalibrationRoutine()
 		{
 		case 'n':
 		{
-			std::cout << "Get value" << nUtils::PREV_LINE << "\r" << std::endl;
+			std::cout << "Get value";
+			nUtils::ConsoleMoveCursorUpLines(1);
+			std::cout << "\r" << std::endl;
 			int weight_g = 0;
 			std::cout << "Enter amount of weight (g):  " << std::flush;
 			std::cin >> weight_g;
@@ -107,12 +109,13 @@ void cLoadCell::ReadContinuous()
 
 	
 	// --- Start Gathering Data --- //
-			
+	
+	mpPicSerial->DiscardIncomingData(0);
 	mpPicSerial->WriteCommandToPic(nUtils::LOAD_CELL_READ_CONTINUOUS);
-			
+		
 	cKeyboardThread::Instance()->StartDetection();
 
-	std::cout << nUtils::CLEAR_CONSOLE << std::flush;
+	nUtils::ClearConsole();
 	std::cout << "Read continuously from load cell\r\n";
 	std::cout << "Enter q+ENTER to quit\r\n";
 	std::cout << "\r\n";
@@ -128,11 +131,8 @@ void cLoadCell::ReadContinuous()
 	uint32_t prevStart = 0;
 	while(true)
 	{
-		std::cout << nUtils::PREV_LINE << nUtils::PREV_LINE
-				  << nUtils::PREV_LINE << nUtils::PREV_LINE
-				  << nUtils::PREV_LINE << nUtils::PREV_LINE
-				  << nUtils::PREV_LINE;
-
+		nUtils::ConsoleMoveCursorUpLines(7);
+		
 		int adc_value = 0;
 		uint32_t ticks = 0;
 		uint32_t start = 0;
@@ -148,13 +148,20 @@ void cLoadCell::ReadContinuous()
 		float loopFreq_hz = ((start - prevStart) * 25.0) / 1000000000.0;
 		loopFreq_hz = 1.0 / loopFreq_hz;
 
-		std::cout << nUtils::CLEAR_LINE << "Start: " << start << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "Loop Freq: " << loopFreq_hz << " Hz\r\n";
-		std::cout << nUtils::CLEAR_LINE << "Ticks:	" << ticks << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "Exe Time:  " << exe_time_ms	<< " ms\r\n";
-		std::cout << nUtils::CLEAR_LINE << "Possible Freq:	" << 1.0 / (exe_time_ms / 1000.0) << " Hz\r\n";
-		std::cout << nUtils::CLEAR_LINE << "ADC:	 " << adc_value << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "Calibrated Value:  " << load_cell_value << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "Start: " << start << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "Loop Freq: " << loopFreq_hz << " Hz\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "Ticks:	" << ticks << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "Exe Time:	 " << exe_time_ms	<< " ms\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "Possible Freq:	" << 1.0 / (exe_time_ms / 1000.0) << " Hz\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "ADC:	 " << adc_value << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "Calibrated Value:	 " << load_cell_value << "\r\n";
 		std::cout << std::flush;
 
 		prevStart = start;

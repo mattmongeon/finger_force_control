@@ -8,12 +8,19 @@
 #include <algorithm>
 
 
+#ifdef WIN32
+#define PLOT_DRIVER "wingcc"
+#else
+#define PLOT_DRIVER "xcairo"
+#endif
+
+
 ////////////////////////////////////////////////////////////////////////////////
 //  Construction / Destruction
 ////////////////////////////////////////////////////////////////////////////////
 
 cFilePlotter::cFilePlotter(const std::string& file)
-	: mPlottingStream( 1, 1, 255, 255, 255, "xcairo" )
+	: mPlottingStream( 1, 1, 255, 255, 255, PLOT_DRIVER )
 {
 	// --- Read Data File --- //
 
@@ -24,15 +31,13 @@ cFilePlotter::cFilePlotter(const std::string& file)
 		throw std::invalid_argument("Could not open file for plotting!");
 	}
 
-	std::vector<biotac_tune_data> fileData;
-	biotac_tune_data data;
-	while(inFile)
-	{
-		inFile.read(reinterpret_cast<char*>(&data), sizeof(biotac_tune_data));
-		fileData.push_back(data);
-
-	}
-
+	inFile.seekg(0, std::ios::end);
+	std::streampos fileSize = inFile.tellg();
+	inFile.seekg(0, std::ios::beg);
+	
+	std::vector<biotac_tune_data> fileData(fileSize/sizeof(biotac_tune_data));
+	inFile.read( reinterpret_cast<char*>(&(fileData[0])), fileSize);
+	
 	inFile.close();
 
 
@@ -80,7 +85,7 @@ void cFilePlotter::ConfigureAndPlotForce(const std::vector<biotac_tune_data>& da
 		ymin = std::min(pLoadCell[i], ymin);
 		ymin = std::min(pReference[i], ymin);
 	}
-
+	
 	mPlottingStream.col0(nUtils::enumPLplotColor_RED);
 	mPlottingStream.env(0, data.size(), ymin, ymax*1.001, 0, 0);
 	mPlottingStream.lab("Samples", "Force", "Reference and Measured Force");
