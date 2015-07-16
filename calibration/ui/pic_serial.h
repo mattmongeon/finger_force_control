@@ -2,9 +2,9 @@
 #define INCLUDED_PIC_COMM_H
 
 #include <string>
-#include <termios.h>
 #include <iostream>
-#include <string.h>
+#include <boost/asio/serial_port.hpp>
+#include <boost/asio.hpp>
 
 
 // This class handles communicating with the PIC32 (NU32) over a serial connection.
@@ -84,7 +84,7 @@ public:
 	// numBytes - the number of data bytes to be transmitted.
 	//
 	// Return - true if sent successfully, false otherwise.
-	bool WriteToPic(unsigned char* buffer, int numBytes) const;
+	bool WriteToPic(unsigned char* buffer, unsigned int numBytes) const;
 
 	
 	// Reads data from the PIC over the serial connection.
@@ -109,12 +109,19 @@ public:
 private:	
 
 	//--------------------------------------------------------------------------//
+	//---------------------------  HELPER FUNCTIONS  ---------------------------//
+	//--------------------------------------------------------------------------//
+
+	// Clears any remaining data from the serial line.
+	void FlushPort() const;
+	
+	
+	//--------------------------------------------------------------------------//
 	//-----------------------------  DATA MEMBERS  -----------------------------//
 	//--------------------------------------------------------------------------//
 
-	// The handle used for identifying the serial port.
-	int mPortHandle;
-	
+	boost::asio::io_service mIO;
+	boost::asio::serial_port* mpPort;
 };
 
 

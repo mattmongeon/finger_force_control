@@ -3,7 +3,8 @@
 #include <ctime>
 #include <cstring>
 #include <iostream>
-#include <sys/stat.h>
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -12,10 +13,9 @@
 
 cDataLogger::cDataLogger()
 {
-	struct stat st = {0};
-	if( stat("./data", &st) == -1)
+	if( !boost::filesystem::exists("./data") )
 	{
-		mkdir("./data", 0777);
+		boost::filesystem::create_directory("./data");
 	}
 	
 	time_t curTime = time(NULL);

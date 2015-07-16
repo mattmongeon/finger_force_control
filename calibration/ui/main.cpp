@@ -77,8 +77,8 @@ void printMenu()
 
 int main(int argc, char** argv)
 {
-	std::cout << nUtils::CLEAR_CONSOLE << std::flush;
-
+	nUtils::ClearConsole();
+	
 	
 	// --- Read Options --- //
 	
@@ -356,41 +356,6 @@ int main(int argc, char** argv)
 
 		case '1':
 		{
-			cKeyboardThread::Instance()->StartDetection();
-			
-			struct timespec ts;
-			ts.tv_sec = 0;
-			ts.tv_nsec = 1953125;
-
-			double dt = 1.953125;
-			double t = 0;
-
-			cStopwatch timer;
-
-			int n = 0;
-			while(true)
-			{
-				// Wait about 2 ms, which corresponds to 512 Hz.
-				nanosleep( &ts, NULL );
-
-				timer.Start();
-
-				t = n * dt;
-				double newY = sin( t * 3.14 / 18 );
-
-				double time_ms = timer.GetElapsedTime_ms();
-				std::cout << "New data:  " << newY << std::endl;
-				std::cout << "Number:  " << n << std::endl;
-				std::cout << "Exe Time (ms):  " << time_ms << std::endl;
-				std::cout << "Frequency (Hz):  " << 1/(time_ms / 1000.0) << std::endl;
-				std::cout << std::endl;
-				timer.StopAndReset();
-				++n;
-
-				if(cKeyboardThread::Instance()->QuitRequested())
-					break;
-			}
-			
 			break;
 		}
 

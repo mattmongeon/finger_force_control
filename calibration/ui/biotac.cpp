@@ -65,7 +65,7 @@ void cBioTac::ReadContinuous() const
 {
 	cKeyboardThread::Instance()->StartDetection();
 
-	std::cout << nUtils::CLEAR_CONSOLE << std::flush;
+	nUtils::ClearConsole();
 	std::cout << "Read continuously from BioTac\r\n";
 	std::cout << "Enter q+ENTER to quit\r\n";
 	std::cout << "\r\n";
@@ -105,41 +105,60 @@ void cBioTac::ReadContinuous() const
 		biotac_tune_data data;
 		mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&data), sizeof(biotac_tune_data) );
 
-		std::cout << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE
-				  << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE
-				  << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE
-				  << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE
-				  << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE
-				  << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE << nUtils::PREV_LINE
-				  << nUtils::PREV_LINE;
+		nUtils::ConsoleMoveCursorUpLines(25);
 
-		std::cout << nUtils::CLEAR_LINE << "E1:   " << data.mData.e1 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E2:	  " << data.mData.e2 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E3:	  " << data.mData.e3 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E4:	  " << data.mData.e4 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E5:	  " << data.mData.e5 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E6:	  " << data.mData.e6 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E7:	  " << data.mData.e7 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E8:	  " << data.mData.e8 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E9:	  " << data.mData.e9 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E10:  " << data.mData.e10 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E11:  " << data.mData.e11 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E12:  " << data.mData.e12 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E13:  " << data.mData.e13 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E14:  " << data.mData.e14 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E15:  " << data.mData.e15 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E16:  " << data.mData.e16 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E17:  " << data.mData.e17 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E18:  " << data.mData.e18 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "E19:  " << data.mData.e19 << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "PAC:  " << data.mData.pac << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "PDC:  " << data.mData.pdc << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "TAC:  " << data.mData.tac << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "TDC:  " << data.mData.tdc << "\r\n";
-		std::cout << nUtils::CLEAR_LINE << "Load cell:  " << data.mLoadCell_g << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "E1:  " << data.mData.e1 << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "E2:  " << data.mData.e2 << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "E3:  " << data.mData.e3 << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "E4:  " << data.mData.e4 << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "E5:  " << data.mData.e5 << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "E6:  " << data.mData.e6 << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "E7:  " << data.mData.e7 << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "E8:  " << data.mData.e8 << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "E9:  " << data.mData.e9 << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "E10: " << data.mData.e10 << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "E11: " << data.mData.e11 << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "E12: " << data.mData.e12 << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "E13: " << data.mData.e13 << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "E14: " << data.mData.e14 << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "E15: " << data.mData.e15 << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "E16: " << data.mData.e16 << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "E17: " << data.mData.e17 << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "E18: " << data.mData.e18 << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "E19: " << data.mData.e19 << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "PAC: " << data.mData.pac << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "PDC: " << data.mData.pdc << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "TAC: " << data.mData.tac << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "TDC: " << data.mData.tdc << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "Load cell:  " << data.mLoadCell_g << "\r\n";
 
 		float freq = 1.0 / ((data.mTimestamp - prevTimestamp) * 25.0 / 1000000000.0);
-		std::cout << nUtils::CLEAR_LINE << "Actual frequency (Hz):  " << freq << "\r\n";
+		nUtils::ClearCurrentLine();
+		std::cout << "Actual frequency (Hz):  " << freq << "\r\n";
 		std::cout << std::flush;
 
 		prevTimestamp = data.mTimestamp;
