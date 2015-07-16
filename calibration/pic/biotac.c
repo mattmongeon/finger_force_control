@@ -206,7 +206,7 @@ void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_reader_int()
 void biotac_init()
 {
 	spi_init();
-	//biotac_configure();
+	biotac_configure();
 
 	
 	// --- Set Up Timer 3 Interrupt --- //
