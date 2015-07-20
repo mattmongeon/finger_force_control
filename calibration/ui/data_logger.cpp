@@ -1,10 +1,9 @@
 #include "data_logger.h"
+#include "file_utils.h"
 #include <sstream>
 #include <ctime>
 #include <cstring>
 #include <iostream>
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -13,10 +12,7 @@
 
 cDataLogger::cDataLogger()
 {
-	if( !boost::filesystem::exists("./data") )
-	{
-		boost::filesystem::create_directory("./data");
-	}
+	nFileUtils::CreateDirectory("./data");
 	
 	time_t curTime = time(NULL);
 	tm* t = localtime(&curTime);
