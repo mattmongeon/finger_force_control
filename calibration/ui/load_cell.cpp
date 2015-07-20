@@ -65,7 +65,7 @@ void cLoadCell::RunCalibrationRoutine()
 				raw += mpPicSerial->ReadValueFromPic<int>();
 			}
 			raw /= 20;
-			std::cout << "Avg value:  " << raw << std::endl;
+			std::cout << "Avg raw ADC value:  " << raw << std::endl;
 			calValues.push_back( std::pair<int, int>(weight_g, raw) );
 			break;
 		}
