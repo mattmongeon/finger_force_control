@@ -69,6 +69,8 @@ void printMenu()
 	std::cout << "r:  Continuously read from BioTac" << std::endl;
 	std::cout << "s:  Continuously read from load cell" << std::endl;
 	std::cout << "t:  Tune torque gains" << std::endl;
+	std::cout << "u:  Calibrate BioTac with trajectory" << std::endl;
+	std::cout << "v:  Send force trajectory" << std::endl;
 	std::cout << "q:  Quit" << std::endl;
 	std::cout << "z:  Continuous raw load cell" << std::endl;
 	std::cout << std::endl;
@@ -323,6 +325,13 @@ int main(int argc, char** argv)
 			break;
 		}
 
+		case 'q':
+		{
+			std::cout << "Exiting..." << std::endl;
+			keepGoing = false;
+			break;
+		}
+
 		case 'r':
 		{
 			biotac.ReadContinuous();
@@ -341,10 +350,42 @@ int main(int argc, char** argv)
 			break;
 		}
 
-		case 'q':
+		case 'u':
 		{
-			std::cout << "Exiting..." << std::endl;
-			keepGoing = false;
+			biotac.RecordCalWithTrajectory();
+			break;
+		}
+		
+		case 'v':
+		{
+			picSerial.WriteCommandToPic(nUtils::SEND_FORCE_TRAJECTORY);
+			picSerial.WriteValueToPic<int>(5);
+
+			for( int i = 0; i < 100; ++i )
+			{
+				picSerial.WriteValueToPic<int>(0);
+			}
+
+			for( int i = 0; i < 100; ++i )
+			{
+				picSerial.WriteValueToPic<int>(200);
+			}
+
+			for( int i = 0; i < 100; ++i )
+			{
+				picSerial.WriteValueToPic<int>(0);
+			}
+
+			for( int i = 0; i < 100; ++i )
+			{
+				picSerial.WriteValueToPic<int>(200);
+			}
+
+			for( int i = 0; i < 100; ++i )
+			{
+				picSerial.WriteValueToPic<int>(100);
+			}			
+			
 			break;
 		}
 

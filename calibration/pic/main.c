@@ -243,6 +243,27 @@ int main()
 			break;
 		}
 
+		case 'u':
+		{
+			// --- BioTac Calibration With Trajectory --- //
+
+			system_set_state(BIOTAC_CAL_TRAJECTORY);
+			
+			while(system_get_state() == BIOTAC_CAL_TRAJECTORY)
+			{
+				;
+			}
+			
+			break;
+		}
+
+		case 'v':
+		{
+			biotac_receive_force_trajectory();
+			
+			break;
+		}
+
 		case 'z':
 		{
 			system_set_state(LOAD_CELL_CONTINUOUS_READ);

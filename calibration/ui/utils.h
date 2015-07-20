@@ -29,6 +29,8 @@ namespace nUtils
 	const std::string BIOTAC_READ_CONTINUOUS = "r\n";
 	const std::string LOAD_CELL_READ_CONTINUOUS = "s\n";
 	const std::string TUNE_TORQUE_GAINS = "t\n";
+	const std::string BIOTAC_CAL_TRAJECTORY = "u\n";
+	const std::string SEND_FORCE_TRAJECTORY = "v\n";
 
 	const std::string WILDCARD = "z\n";
 

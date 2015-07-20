@@ -36,6 +36,10 @@ public:
 	
 	// Records a single run of calibrating the BioTac.
 	void RecordCalibrationRun();
+
+
+	// Records a calibration run following a force trajectory.
+	void RecordCalWithTrajectory();
 	
 	
 private:

@@ -63,6 +63,24 @@ void cBioTac::ReadSingle() const
 
 void cBioTac::ReadContinuous() const
 {
+	// --- Check If We Are Recording To File --- //
+	
+	bool recording = false;
+	nUtils::ClearConsole();
+	std::cout << "Record session? [y/n]: " << std::flush;
+	std::string choice;
+	std::cin >> choice;
+	recording = (choice == "y") || (choice == "Y");
+
+
+	// --- Set Up --- //
+
+	cRealTimePlot plotter("Load Cell", "Sample", "Force (g)", "Force (g)", "", "", "", 2500.0);
+	cDataLogger* pLogger = NULL;
+	if( recording )
+		pLogger = new cDataLogger();
+
+	
 	cKeyboardThread::Instance()->StartDetection();
 
 	nUtils::ClearConsole();
@@ -99,6 +117,9 @@ void cBioTac::ReadContinuous() const
 	mpPicSerial->DiscardIncomingData(0);
 	mpPicSerial->WriteCommandToPic(nUtils::BIOTAC_READ_CONTINUOUS);
 
+
+	// --- Read Data --- //
+	
 	unsigned int prevTimestamp = 0;
 	while(true)
 	{
@@ -161,6 +182,11 @@ void cBioTac::ReadContinuous() const
 		std::cout << "Actual frequency (Hz):  " << freq << "\r\n";
 		std::cout << std::flush;
 
+		if( pLogger != NULL )
+			pLogger->LogDataBuffer(&data, sizeof(biotac_tune_data));
+		
+		plotter.AddDataPoint(data.mLoadCell_g);
+		
 		prevTimestamp = data.mTimestamp;
 		
 		if(cKeyboardThread::Instance()->QuitRequested())
@@ -170,6 +196,9 @@ void cBioTac::ReadContinuous() const
 			break;
 		}
 	}
+
+	if( pLogger != NULL )
+		delete pLogger;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -239,6 +268,65 @@ void cBioTac::RecordCalibrationRun()
 	std::cout << std::endl;
 
 
+	// Just in case...
+	mpPicSerial->DiscardIncomingData(0);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void cBioTac::RecordCalWithTrajectory()
+{
+	// --- Preparations --- //
+
+	// Ahead of time we will set up the things to be used during real-time processing.
+	biotac_tune_data rxData;
+	biotac_tune_data stopCondition;
+	memset(&stopCondition, 0, sizeof(biotac_tune_data));
+	std::vector<biotac_tune_data> tuneData;
+	cDataLogger logger;
+	cRealTimePlot plotter("Load Cell", "Sample", "Force (g)", "Force (g)", "", "", "", 500.0);
+
+	
+	// --- Start The Process --- //
+	
+	mpPicSerial->DiscardIncomingData(0);
+	mpPicSerial->WriteCommandToPic(nUtils::BIOTAC_CAL_TRAJECTORY);
+
+	std::cout << "Waiting for tuning results..." << std::endl;
+
+	while(true)
+	{
+		mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&rxData), sizeof(biotac_tune_data) );
+
+		if( memcmp(&rxData, &stopCondition, sizeof(biotac_tune_data)) != 0 )
+		{
+			logger.LogDataBuffer(&rxData, sizeof(biotac_tune_data));
+			plotter.AddDataPoint(rxData.mLoadCell_g);
+			tuneData.push_back(rxData);
+		}
+		else
+		{
+			break;
+		}
+	}
+
+
+	// --- Print Results --- //
+
+	std::cout << "Results received!" << std::endl << std::endl;
+
+	std::cout << "Load cell\tBioTac PDC\tBioTac PAC\tBioTac TDC\tBioTac TAC\tTimestamp" << std::endl;
+	for( size_t i = 0; i < tuneData.size(); ++i )
+	{
+		std::cout << tuneData[i].mLoadCell_g << "\t\t" << tuneData[i].mData.pdc << "\t\t" << tuneData[i].mData.pac << "\t\t"
+				  << tuneData[i].mData.tdc << "\t\t" << tuneData[i].mData.tac << "\t\t" << tuneData[i].mTimestamp << std::endl;
+	}
+
+	std::cout << std::endl;
+
+
+
+	
 	// Just in case...
 	mpPicSerial->DiscardIncomingData(0);
 }

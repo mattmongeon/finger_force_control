@@ -23,6 +23,10 @@
 // Default to 2 seconds.
 static int max_tuning_samples = 2 * LOOP_RATE_HZ;
 
+static int force_trajectory_g[10 * LOOP_RATE_HZ];
+static volatile int force_trajectory_index = 0;
+static int num_force_trajectory_samples = 10 * LOOP_RATE_HZ;
+
 
 // --- BioTac Sampling Commands --- //
 
@@ -184,6 +188,30 @@ void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_reader_int()
 		break;
 	}
 
+	case BIOTAC_CAL_TRAJECTORY:
+	{
+		torque_control_set_desired_force( force_trajectory_g[force_trajectory_index] );
+		
+		// Read a single BioTac reading and associated load cell reading
+		// and transmit it.
+		biotac_read_and_tx();
+
+		++force_trajectory_index;
+		if( force_trajectory_index >= num_force_trajectory_samples )
+		{
+			// Signal end of data stream to the UI.
+			biotac_tune_data data;
+			memset(&data, 0x00, sizeof(biotac_tune_data));
+			uart1_send_packet((unsigned char*)(&data), sizeof(biotac_tune_data));
+
+			biotac_tune_samples = 0;
+			
+			system_set_state(IDLE);
+		}
+
+		break;
+	}
+	
 	case BIOTAC_CONTINUOUS_READ:
 	{
 		biotac_read_and_tx();
@@ -193,6 +221,7 @@ void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_reader_int()
 
 	default:
 		biotac_tune_samples = 0;
+		force_trajectory_index = 0;
 		break;
 	}
 	
@@ -267,3 +296,15 @@ void biotac_set_time_length(int seconds)
 	__builtin_enable_interrupts();
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
+unsigned int biotac_receive_force_trajectory()
+{
+	uart1_read_packet( (unsigned char*)(&num_force_trajectory_samples), sizeof(int) );
+	num_force_trajectory_samples *= LOOP_RATE_HZ;
+
+	uart1_read_packet( (unsigned char*)(&force_trajectory_g[0]),
+					   sizeof(int) * num_force_trajectory_samples );
+
+	return num_force_trajectory_samples;
+}

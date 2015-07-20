@@ -28,5 +28,10 @@ void read_biotac(biotac_data* pData);
 void biotac_set_time_length(int seconds);
 
 
+// Reads from the UART line to take in a force trajectory.  The length is sent
+// as part of the stream.
+unsigned int biotac_receive_force_trajectory();
+
+
 #endif  // INCLUDED_BIOTAC_H
 
