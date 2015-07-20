@@ -25,11 +25,12 @@ public:
 	//--------------------------------------------------------------------------//
 
 	// Loads a saved neural network configuration from file and configures this
-	// object to match it.
+	// object to match it.  The parameter should only be a file name.  The location
+	// of neural network files is fixed.
 	//
 	// Params:
-	// filePath - The location to the saved neural network setup.
-	void LoadNeuralNetwork(const std::string& filePath);
+	// fileName - The name of the saved neural network setup.
+	void LoadNeuralNetwork(const std::string& fileName);
 
 	// Trains this neural network to the parameter files.  If the files are of
 	// extension ".data", the files will first be converted to the necessary
@@ -47,12 +48,12 @@ public:
 	// files - List of paths to files that will be used for testing.
 	void TestAgainstDataFiles(const std::vector<std::string>& files);
 
-	// Saves the setup of this neural network to file using the parameter file name
-	// and path.
+	// Saves the setup of this neural network to file using the parameter file name.
+	// The path is a predetermined location.
 	//
 	// Params:
-	// filePath - The path to the save file.
-	void SaveNeuralNetwork(const std::string& filePath);
+	// fileName - The name the save file.
+	void SaveNeuralNetwork(const std::string& fileName);
 
 	
 private:
