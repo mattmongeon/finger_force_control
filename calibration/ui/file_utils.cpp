@@ -16,7 +16,7 @@ void nFileUtils::CreateDirectory(const std::string path)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-std::vector<std::string> nFileUtils::GetFilesInDirectory(const std::string path)
+std::vector<std::string> nFileUtils::GetFilesInDirectory(const std::string path, const std::string extension)
 {
 	std::vector<std::string> retVal;
 	
@@ -28,7 +28,12 @@ std::vector<std::string> nFileUtils::GetFilesInDirectory(const std::string path)
 		{
 			if( ent->d_type == DT_REG )
 			{
-				retVal.push_back(ent->d_name);
+				std::string name(ent->d_name);
+				if( (extension == "") ||
+					(name.compare(name.length() - extension.length(), extension.length(), extension) == 0) )
+				{
+					retVal.push_back(ent->d_name);
+				}
 			}
 		}
 		
