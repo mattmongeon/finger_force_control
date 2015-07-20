@@ -77,9 +77,10 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) torque_controller()
 	{
 	case TUNE_TORQUE_GAINS:
 	case BIOTAC_CAL_SINGLE:
+	case BIOTAC_CAL_TRAJECTORY:
 	{
 		unsigned int start = _CP0_GET_COUNT();
-
+		
 		torque_control_loop(load_cell_read_grams(), &tune_data);
 
 		unsigned int end = _CP0_GET_COUNT();
