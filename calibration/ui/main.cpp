@@ -6,6 +6,7 @@
 #include "keyboard_thread.h"
 #include "file_plotter.h"
 #include "function_fit_nn.h"
+#include "file_utils.h"
 #include <plplot/plplot.h>
 #include <plplot/plstream.h>
 #include <iostream>
@@ -13,7 +14,6 @@
 #include <vector>
 #include <cmath>
 #include <cstdio>
-#include <dirent.h>
 
 
 static bool noSerial = false;
@@ -64,7 +64,8 @@ void printMenu()
 	std::cout << "g:  Set torque controller gains" << std::endl;
 	std::cout << "h:  Get torque controller gains" << std::endl;
 	std::cout << "l:  Read load cell" << std::endl;
-	std::cout << "n:  Neural network" << std::endl;
+	std::cout << "n:  Train Neural network" << std::endl;
+	std::cout << "o:  Test Neural Network" << std::endl;
 	std::cout << "p:  Set motor PWM duty cycle" << std::endl;
 	std::cout << "r:  Continuously read from BioTac" << std::endl;
 	std::cout << "s:  Continuously read from load cell" << std::endl;
@@ -74,6 +75,39 @@ void printMenu()
 	std::cout << "q:  Quit" << std::endl;
 	std::cout << "z:  Continuous raw load cell" << std::endl;
 	std::cout << std::endl;
+}
+
+
+int getFileSelection(const std::vector<std::string>& files)
+{
+	for( std::size_t i = 0; i < files.size(); ++i )
+	{
+		std::cout << i+1 << ": " << files[i] << std::endl;
+	}
+				
+	bool goodSelection = false;
+	while(!goodSelection)
+	{
+		std::cout << std::endl;
+		std::cout << "Selection: " << std::flush;
+
+		size_t selection = 0;
+		std::cin >> selection;
+		selection -= 1;
+		std::cout << std::endl << std::endl;
+					
+		if( (selection < files.size()) && (selection >= 0) )
+		{
+			goodSelection = true;
+			return selection;
+		}
+		else
+		{
+			std::cout << "The entry \'" << selection+1 << "\' is invalid." << std::endl;
+		}
+	}
+
+	return -1;
 }
 
 
@@ -177,58 +211,28 @@ int main(int argc, char** argv)
 			std::cout << "Files:" << std::endl;
 			std::cout << "------" << std::endl;
 			std::cout << std::endl;
-			
-			DIR* dir;
-			struct dirent* ent;
-			if((dir = opendir("./data")) != NULL )
+
+			std::vector<std::string> files = nFileUtils::GetFilesInDirectory("./data", ".dat");
+
+			if( !files.empty() )
 			{
-				// Get all of the file names from disk and print their selection indices.
-				std::vector<std::string> files;
-				while((ent = readdir(dir)) != NULL)
+				int selection = getFileSelection(files);
+
+				if( selection != -1 )
 				{
-					std::string name(ent->d_name);
-					if( (name != "..") && (name != ".") )
-					{
-						files.push_back(name);
-						std::cout << files.size() << ". " << name << std::endl;
-					}
+					std::string path("./data/");
+					path += files[selection];
+					std::cout << "Opening \'" << files[selection] << "\'" << std::endl;
+					cFilePlotter f(path);
 				}
-				closedir(dir);
-
-				if( files.empty() )
+				else
 				{
-					std::cout << std::endl << "There are no files in the \'data\' directory." << std::endl << std::endl;
-					break;
-				}
-
-				bool goodSelection = false;
-				while(!goodSelection)
-				{
-					std::cout << std::endl;
-					std::cout << "Selection: " << std::flush;
-
-					size_t selection = 0;
-					std::cin >> selection;
-					selection -= 1;
-					std::cout << std::endl << std::endl;
-					
-					if( (selection < files.size()) && (selection >= 0) )
-					{
-						goodSelection = true;
-						std::string path("./data/");
-						path += files[selection];
-						std::cout << "Opening \'" << files[selection] << "\'" << std::endl;
-						cFilePlotter f(path);
-					}
-					else
-					{
-						std::cout << "The entry \'" << selection+1 << "\' is invalid." << std::endl;
-					}
+					std::cout << "There was an error choosing the file!" << std::endl;
 				}
 			}
 			else
 			{
-				std::cout << "Could not open \'data\' directory!" << std::endl;
+				std::cout << std::endl << "There are no files in the \'data\' directory." << std::endl << std::endl;
 				std::cout << std::endl;
 			}
 			
@@ -285,31 +289,51 @@ int main(int argc, char** argv)
 
 		case 'n':
 		{
-			cFunctionFitNN nn;
-			std::vector<std::string> v;
+			std::vector<std::string> v = nFileUtils::GetFilesInDirectory("./data", ".dat");
 
-			DIR* dir;
-			struct dirent* ent;
-			if((dir = opendir("./data")) != NULL )
+			for( std::size_t i = 0; i < v.size(); ++i )
 			{
-				// Get all of the file names from disk and print their selection indices.
-				while((ent = readdir(dir)) != NULL)
-				{
-					std::string name(ent->d_name);
-					if( (name != "..") && (name != ".") )
-					{
-						std::string ending = ".dat";
-						if( name.compare(name.length() - ending.length(), ending.length(), ending) == 0 )
-						{
-							name.insert(0, "./data/");
-							v.push_back(name);
-						}
-					}
-				}
-				closedir(dir);
+				v[i].insert(0, "./data/");
 			}
-
+			
+			cFunctionFitNN nn;
 			nn.TrainAgainstDataFiles(v);
+
+			nn.SaveNeuralNetwork("first.net");
+			
+			break;
+		}
+
+		case 'o':
+		{
+			cFunctionFitNN nn;
+			nn.LoadNeuralNetwork("first.net");
+
+			std::vector<std::string> files = nFileUtils::GetFilesInDirectory("./data", ".dat");
+
+			if( !files.empty() )
+			{
+				int selection = getFileSelection(files);
+
+				if( selection != -1 )
+				{
+					std::string path("./data/");
+					path += files[selection];
+					std::cout << "Opening \'" << files[selection] << "\'" << std::endl;
+					std::vector<std::string> f;
+					f.push_back(path);
+					nn.TestAgainstDataFiles(f);
+				}
+				else
+				{
+					std::cout << "There was an error choosing the file!" << std::endl;
+				}
+			}
+			else
+			{
+				std::cout << std::endl << "There are no files in the \'data\' directory." << std::endl << std::endl;
+				std::cout << std::endl;
+			}
 			
 			break;
 		}
@@ -361,30 +385,12 @@ int main(int argc, char** argv)
 			picSerial.WriteCommandToPic(nUtils::SEND_FORCE_TRAJECTORY);
 			picSerial.WriteValueToPic<int>(5);
 
-			for( int i = 0; i < 100; ++i )
+			double pi = 3.14159265358979323846264338;
+			for( double i = 0.0; i < 500.0; ++i )
 			{
-				picSerial.WriteValueToPic<int>(0);
+				double val = 100.0 - 100.0 * cos( 4 * i * pi / 500.0 );
+				picSerial.WriteValueToPic<int>(static_cast<int>(val));
 			}
-
-			for( int i = 0; i < 100; ++i )
-			{
-				picSerial.WriteValueToPic<int>(200);
-			}
-
-			for( int i = 0; i < 100; ++i )
-			{
-				picSerial.WriteValueToPic<int>(0);
-			}
-
-			for( int i = 0; i < 100; ++i )
-			{
-				picSerial.WriteValueToPic<int>(200);
-			}
-
-			for( int i = 0; i < 100; ++i )
-			{
-				picSerial.WriteValueToPic<int>(100);
-			}			
 			
 			break;
 		}
