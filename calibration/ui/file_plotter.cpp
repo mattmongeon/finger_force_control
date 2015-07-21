@@ -72,6 +72,9 @@ void cFilePlotter::ConfigureAndPlotForce(const std::vector<biotac_tune_data>& da
 	PLFLT* pLoadCell = new PLFLT[data.size()];
 	PLFLT* pReference = new PLFLT[data.size()];
 
+
+	// --- Prepare Data --- //
+	
 	PLFLT ymin = 1000000.0, ymax = -1000000.0;
 	for( size_t i = 0; i < data.size(); ++i )
 	{
@@ -85,18 +88,56 @@ void cFilePlotter::ConfigureAndPlotForce(const std::vector<biotac_tune_data>& da
 		ymin = std::min(pLoadCell[i], ymin);
 		ymin = std::min(pReference[i], ymin);
 	}
+
+
+	// --- Generate Plot --- //
 	
 	mPlottingStream.col0(nUtils::enumPLplotColor_RED);
 	mPlottingStream.env(0, data.size(), ymin, ymax*1.001, 0, 0);
-	mPlottingStream.lab("Samples", "Force", "Reference and Measured Force");
+	mPlottingStream.lab("Samples", "Force (g)", "Reference and Measured Force");
 
 	mPlottingStream.col0(nUtils::enumPLplotColor_BLUE);
 	mPlottingStream.line( data.size(), pX, pLoadCell );
 	
 	mPlottingStream.col0(nUtils::enumPLplotColor_GREEN);
 	mPlottingStream.line( data.size(), pX, pReference );
-	
-	// NEED TO ADD LEGENDS
+
+
+	// --- Create Legend --- //
+
+	PLINT optArray[2];
+	PLINT textColors[2];
+	PLINT lineColors[2];
+	PLINT lineStyles[2];
+	PLFLT lineWidths[2];
+	const char* text[2];
+
+	optArray[0] = PL_LEGEND_LINE;
+	textColors[0] = nUtils::enumPLplotColor_BLUE;
+	lineColors[0] = nUtils::enumPLplotColor_BLUE;
+	text[0] = "Load Cell (g)";
+	lineStyles[0] = 1;
+	lineWidths[0] = 1.0;
+
+	optArray[1] = PL_LEGEND_LINE;
+	textColors[1] = nUtils::enumPLplotColor_GREEN;
+	text[1] = "Reference (g)";
+	lineColors[1] = nUtils::enumPLplotColor_GREEN;
+	lineStyles[1] = 1;
+	lineWidths[1] = 1.0;
+
+	PLFLT legendWidth, legendHeight;
+	mPlottingStream.legend( &legendWidth, &legendHeight,
+							PL_LEGEND_BACKGROUND | PL_LEGEND_BOUNDING_BOX,
+							PL_POSITION_RIGHT | PL_POSITION_BOTTOM,
+							0.0, 0.0, 0.01,
+							15, 1, 1, 0, 0,
+							2, optArray,
+							0.5, 0.5, 1.0, 0.0,
+							textColors, (const char* const *) text,
+							NULL, NULL, NULL, NULL,
+							lineColors, lineStyles, lineWidths,
+							NULL, NULL, NULL, NULL );
 	
 	delete[] pX;
 	delete[] pLoadCell;
@@ -149,7 +190,57 @@ void cFilePlotter::ConfigureAndPlotPressTemp(const std::vector<biotac_tune_data>
 	mPlottingStream.col0(nUtils::enumPLplotColor_MAGENTA);
 	mPlottingStream.line( data.size(), pX, pTAC );
 	
-	// NEED TO ADD LEGENDS
+
+	// --- Create Legend --- //
+
+	PLINT optArray[4];
+	PLINT textColors[4];
+	PLINT lineColors[4];
+	PLINT lineStyles[4];
+	PLFLT lineWidths[4];
+	const char* text[4];
+
+	optArray[0] = PL_LEGEND_LINE;
+	textColors[0] = nUtils::enumPLplotColor_GREEN;
+	lineColors[0] = nUtils::enumPLplotColor_GREEN;
+	text[0] = "PDC";
+	lineStyles[0] = 1;
+	lineWidths[0] = 1.0;
+
+	optArray[1] = PL_LEGEND_LINE;
+	textColors[1] = nUtils::enumPLplotColor_BLUE;
+	text[1] = "PAC";
+	lineColors[1] = nUtils::enumPLplotColor_BLUE;
+	lineStyles[1] = 1;
+	lineWidths[1] = 1.0;
+
+	optArray[2] = PL_LEGEND_LINE;
+	textColors[2] = nUtils::enumPLplotColor_AQUAMARINE;
+	lineColors[2] = nUtils::enumPLplotColor_AQUAMARINE;
+	text[2] = "TDC";
+	lineStyles[2] = 1;
+	lineWidths[2] = 1.0;
+
+	optArray[3] = PL_LEGEND_LINE;
+	textColors[3] = nUtils::enumPLplotColor_MAGENTA;
+	text[3] = "TAC";
+	lineColors[3] = nUtils::enumPLplotColor_MAGENTA;
+	lineStyles[3] = 1;
+	lineWidths[3] = 1.0;
+
+	PLFLT legendWidth, legendHeight;
+	mPlottingStream.legend( &legendWidth, &legendHeight,
+							PL_LEGEND_BACKGROUND | PL_LEGEND_BOUNDING_BOX,
+							PL_POSITION_RIGHT | PL_POSITION_BOTTOM,
+							0.0, 0.0, 0.01,
+							15, 1, 1, 0, 0,
+							3, optArray,
+							0.5, 0.5, 1.0, 0.0,
+							textColors, (const char* const *) text,
+							NULL, NULL, NULL, NULL,
+							lineColors, lineStyles, lineWidths,
+							NULL, NULL, NULL, NULL );
+	
 	
 	delete[] pX;
 	delete[] pPDC;
@@ -238,8 +329,92 @@ void cFilePlotter::ConfigureAndPlotElectrodes1(const std::vector<biotac_tune_dat
 	mPlottingStream.col0(nUtils::enumPLplotColor_BLUE);
 	mPlottingStream.line( data.size(), pX, pE9 );
 	
-	// NEED TO ADD LEGENDS
 	
+	// --- Create Legend --- //
+
+	PLINT optArray[9];
+	PLINT textColors[9];
+	PLINT lineColors[9];
+	PLINT lineStyles[9];
+	PLFLT lineWidths[9];
+	const char* text[9];
+
+	optArray[0] = PL_LEGEND_LINE;
+	textColors[0] = nUtils::enumPLplotColor_RED;
+	lineColors[0] = nUtils::enumPLplotColor_RED;
+	text[0] = "E1";
+	lineStyles[0] = 1;
+	lineWidths[0] = 1.0;
+
+	optArray[1] = PL_LEGEND_LINE;
+	textColors[1] = nUtils::enumPLplotColor_YELLOW;
+	text[1] = "E2";
+	lineColors[1] = nUtils::enumPLplotColor_YELLOW;
+	lineStyles[1] = 1;
+	lineWidths[1] = 1.0;
+
+	optArray[2] = PL_LEGEND_LINE;
+	textColors[2] = nUtils::enumPLplotColor_GREEN;
+	lineColors[2] = nUtils::enumPLplotColor_GREEN;
+	text[2] = "E3";
+	lineStyles[2] = 1;
+	lineWidths[2] = 1.0;
+
+	optArray[3] = PL_LEGEND_LINE;
+	textColors[3] = nUtils::enumPLplotColor_AQUAMARINE;
+	text[3] = "E4";
+	lineColors[3] = nUtils::enumPLplotColor_AQUAMARINE;
+	lineStyles[3] = 1;
+	lineWidths[3] = 1.0;
+
+	optArray[4] = PL_LEGEND_LINE;
+	textColors[4] = nUtils::enumPLplotColor_PINK;
+	lineColors[4] = nUtils::enumPLplotColor_PINK;
+	text[4] = "E5";
+	lineStyles[4] = 1;
+	lineWidths[4] = 1.0;
+
+	optArray[5] = PL_LEGEND_LINE;
+	textColors[5] = nUtils::enumPLplotColor_WHEAT;
+	text[5] = "E6";
+	lineColors[5] = nUtils::enumPLplotColor_WHEAT;
+	lineStyles[5] = 1;
+	lineWidths[5] = 1.0;
+
+	optArray[6] = PL_LEGEND_LINE;
+	textColors[6] = nUtils::enumPLplotColor_GREY;
+	lineColors[6] = nUtils::enumPLplotColor_GREY;
+	text[6] = "E7";
+	lineStyles[6] = 1;
+	lineWidths[6] = 1.0;
+
+	optArray[7] = PL_LEGEND_LINE;
+	textColors[7] = nUtils::enumPLplotColor_BROWN;
+	text[7] = "E8";
+	lineColors[7] = nUtils::enumPLplotColor_BROWN;
+	lineStyles[7] = 1;
+	lineWidths[7] = 1.0;
+
+	optArray[8] = PL_LEGEND_LINE;
+	textColors[8] = nUtils::enumPLplotColor_BLUE;
+	text[8] = "E9";
+	lineColors[8] = nUtils::enumPLplotColor_BLUE;
+	lineStyles[8] = 1;
+	lineWidths[8] = 1.0;
+
+	PLFLT legendWidth, legendHeight;
+	mPlottingStream.legend( &legendWidth, &legendHeight,
+							PL_LEGEND_BACKGROUND | PL_LEGEND_BOUNDING_BOX,
+							PL_POSITION_RIGHT | PL_POSITION_TOP,
+							0.0, 0.0, 0.01,
+							15, 1, 1, 0, 0,
+							9, optArray,
+							0.5, 0.5, 1.0, 0.0,
+							textColors, (const char* const *) text,
+							NULL, NULL, NULL, NULL,
+							lineColors, lineStyles, lineWidths,
+							NULL, NULL, NULL, NULL );
+		
 	delete[] pX;
 	delete[] pE1;
 	delete[] pE2;
@@ -342,8 +517,99 @@ void cFilePlotter::ConfigureAndPlotElectrodes2(const std::vector<biotac_tune_dat
 	mPlottingStream.col0(nUtils::enumPLplotColor_BLUE_VIOLET);
 	mPlottingStream.line( data.size(), pX, pE19 );
 	
-	// NEED TO ADD LEGENDS
-	
+
+	// --- Create Legend --- //
+
+	PLINT optArray[9];
+	PLINT textColors[9];
+	PLINT lineColors[9];
+	PLINT lineStyles[9];
+	PLFLT lineWidths[9];
+	const char* text[9];
+
+	optArray[0] = PL_LEGEND_LINE;
+	textColors[0] = nUtils::enumPLplotColor_RED;
+	lineColors[0] = nUtils::enumPLplotColor_RED;
+	text[0] = "E10";
+	lineStyles[0] = 1;
+	lineWidths[0] = 1.0;
+
+	optArray[1] = PL_LEGEND_LINE;
+	textColors[1] = nUtils::enumPLplotColor_YELLOW;
+	text[1] = "E11";
+	lineColors[1] = nUtils::enumPLplotColor_YELLOW;
+	lineStyles[1] = 1;
+	lineWidths[1] = 1.0;
+
+	optArray[2] = PL_LEGEND_LINE;
+	textColors[2] = nUtils::enumPLplotColor_GREEN;
+	lineColors[2] = nUtils::enumPLplotColor_GREEN;
+	text[2] = "E12";
+	lineStyles[2] = 1;
+	lineWidths[2] = 1.0;
+
+	optArray[3] = PL_LEGEND_LINE;
+	textColors[3] = nUtils::enumPLplotColor_AQUAMARINE;
+	text[3] = "E13";
+	lineColors[3] = nUtils::enumPLplotColor_AQUAMARINE;
+	lineStyles[3] = 1;
+	lineWidths[3] = 1.0;
+
+	optArray[4] = PL_LEGEND_LINE;
+	textColors[4] = nUtils::enumPLplotColor_PINK;
+	lineColors[4] = nUtils::enumPLplotColor_PINK;
+	text[4] = "E14";
+	lineStyles[4] = 1;
+	lineWidths[4] = 1.0;
+
+	optArray[5] = PL_LEGEND_LINE;
+	textColors[5] = nUtils::enumPLplotColor_WHEAT;
+	text[5] = "E15";
+	lineColors[5] = nUtils::enumPLplotColor_WHEAT;
+	lineStyles[5] = 1;
+	lineWidths[5] = 1.0;
+
+	optArray[6] = PL_LEGEND_LINE;
+	textColors[6] = nUtils::enumPLplotColor_GREY;
+	lineColors[6] = nUtils::enumPLplotColor_GREY;
+	text[6] = "E16";
+	lineStyles[6] = 1;
+	lineWidths[6] = 1.0;
+
+	optArray[7] = PL_LEGEND_LINE;
+	textColors[7] = nUtils::enumPLplotColor_BROWN;
+	text[7] = "E17";
+	lineColors[7] = nUtils::enumPLplotColor_BROWN;
+	lineStyles[7] = 1;
+	lineWidths[7] = 1.0;
+
+	optArray[8] = PL_LEGEND_LINE;
+	textColors[8] = nUtils::enumPLplotColor_BLUE;
+	text[8] = "E18";
+	lineColors[8] = nUtils::enumPLplotColor_BLUE;
+	lineStyles[8] = 1;
+	lineWidths[8] = 1.0;
+
+	optArray[9] = PL_LEGEND_LINE;
+	textColors[9] = nUtils::enumPLplotColor_BLUE_VIOLET;
+	text[9] = "E19";
+	lineColors[9] = nUtils::enumPLplotColor_BLUE_VIOLET;
+	lineStyles[9] = 1;
+	lineWidths[9] = 1.0;
+
+	PLFLT legendWidth, legendHeight;
+	mPlottingStream.legend( &legendWidth, &legendHeight,
+							PL_LEGEND_BACKGROUND | PL_LEGEND_BOUNDING_BOX,
+							PL_POSITION_RIGHT | PL_POSITION_TOP,
+							0.0, 0.0, 0.01,
+							15, 1, 1, 0, 0,
+							10, optArray,
+							0.5, 0.5, 1.0, 0.0,
+							textColors, (const char* const *) text,
+							NULL, NULL, NULL, NULL,
+							lineColors, lineStyles, lineWidths,
+							NULL, NULL, NULL, NULL );
+		
 	delete[] pX;
 	delete[] pE10;
 	delete[] pE11;
