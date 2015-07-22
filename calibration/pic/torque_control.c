@@ -18,19 +18,27 @@
 
 #define K_DENOM 1000
 
+#define ZERO_DEADBAND_G 10
+
 
 // --- Variables --- //
 
 static volatile int desired_force_g = 0;
 
-static volatile int kp_num = 300;
-static volatile int ki_num = 250;
+static volatile int kp_num = 500;
+static volatile int ki_num = 2000;
 
 static int error_int = 0;
 static volatile int saved_load_cell_g = 0;
 
 // Default to 2 seconds.
 static int max_tuning_samples = 2 * LOOP_RATE_HZ;
+
+
+static int get_pwm_from_desired_force(int force_g)
+{
+	return (int)(6.44719 * force_g - 513.421);
+}
 
 
 // --- Local Functions --- //
@@ -43,16 +51,35 @@ static int max_tuning_samples = 2 * LOOP_RATE_HZ;
 // Return - The new control signal representing a current value in mA.
 static int torque_control_loop(int load_cell_g, torque_tune_data* pTuneData)
 {
+	// --- Feed Forward --- //
+	
+	int u_new = get_pwm_from_desired_force(desired_force_g);
+
+
+	// --- Feedback --- //
+	
 	int error = desired_force_g - load_cell_g;
 	saved_load_cell_g = load_cell_g;
 
-	error_int += error;
-	if( error_int > MAX_ERROR_INT )
-		error_int = MAX_ERROR_INT;
-	else if( error_int < -MAX_ERROR_INT )
-		error_int = -MAX_ERROR_INT;
+	// This is a safety measure.  When it reaches 0 grams the integral term
+	// can still cause there to be some PWM send to the motor, which can cause
+	// the motor to run backwards.  This ensures the motor doesn't do that.  It
+	// will also keep the integral from blowing up.
+	if( !((desired_force_g == 0) && (load_cell_g < ZERO_DEADBAND_G)) )
+	{
+		error_int += error;
+		if( error_int > MAX_ERROR_INT )
+			error_int = MAX_ERROR_INT;
+		else if( error_int < -MAX_ERROR_INT )
+			error_int = -MAX_ERROR_INT;
 
-	int u_new = ((kp_num*error)/K_DENOM) + ((ki_num*error_int)/K_DENOM);
+		u_new += ((kp_num*error)/K_DENOM) + ((ki_num*error_int)/K_DENOM);
+	}
+	else
+	{
+		u_new = 0;
+	}
+
 
 	motor_pwm_set(u_new);
 	
