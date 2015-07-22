@@ -22,14 +22,11 @@ static volatile int adc_value = 0;
 
 
 ////////////////////////////////////////////////////////////////////////////////
-//  Interrupt Functions
+//  File-Local Functions
 ////////////////////////////////////////////////////////////////////////////////
 
-// Timer 1 interrupt for timing reading the ADC.
-void __ISR(_TIMER_1_VECTOR, IPL5SOFT) adc_timer_interrupt()
+static int adc_read_single()
 {
-	unsigned long start = _CP0_GET_COUNT();
-	
 	AD1CHSSET = 0x20000;  // Sample AN0
 	AD1CON1SET = 0x2;  // Begin sampling...
 
@@ -46,8 +43,28 @@ void __ISR(_TIMER_1_VECTOR, IPL5SOFT) adc_timer_interrupt()
 		;
 	}
 
+	return ADC1BUF0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Interrupt Functions
+////////////////////////////////////////////////////////////////////////////////
+
+// Timer 1 interrupt for timing reading the ADC.
+void __ISR(_TIMER_1_VECTOR, IPL5SOFT) adc_timer_interrupt()
+{
+	unsigned long start = _CP0_GET_COUNT();
+	
 	// Read in the ADC value.
-	adc_value = ADC1BUF0;
+	int numReads = 3;
+	int intermediate_value = 0;
+	int i = 0;
+	for( i = 0; i < numReads; ++i )
+	{
+		intermediate_value += adc_read_single();
+	}
+
+	adc_value = intermediate_value / numReads;
 
 	unsigned long end = _CP0_GET_COUNT();
 
