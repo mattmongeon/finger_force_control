@@ -16,7 +16,7 @@ HDRS := $(wildcard *.h)
 $(PROG): $(BUILDOBJECTS)
 	$(CC) -o $(PROG) $(BUILDOBJECTS) $(LFLAGS) $(LINKDIR) $(PKGS)
 
-obj/%.o: %.cpp $(HDRS)
+$(OBJDIR)/%.o: %.cpp
 	$(CC) $(CPPFLAGS) -o $@ $<
 
 .PHONY: clean
