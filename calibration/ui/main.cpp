@@ -382,14 +382,59 @@ int main(int argc, char** argv)
 		
 		case 'v':
 		{
+			std::cout << std::endl;
+			std::cout << "Choose waveform:" << std::endl;
+			std::cout << "1: Sine" << std::endl;
+			std::cout << "2: Square" << std::endl;
+
 			picSerial.WriteCommandToPic(nUtils::SEND_FORCE_TRAJECTORY);
 			picSerial.WriteValueToPic<int>(5);
-
-			double pi = 3.14159265358979323846264338;
-			for( double i = 0.0; i < 500.0; ++i )
+			
+			switch(nUtils::GetMenuSelection())
 			{
-				double val = 100.0 - 100.0 * cos( 4 * i * pi / 500.0 );
-				picSerial.WriteValueToPic<int>(static_cast<int>(val));
+			case '1':
+			{
+				double pi = 3.14159265358979323846264338;
+				for( double i = 0.0; i < 500.0; ++i )
+				{
+					double val = 100.0 - 100.0 * cos( 4 * i * pi / 500.0 );
+					picSerial.WriteValueToPic<int>(static_cast<int>(val));
+				}
+				break;
+			}
+
+			case '2':
+			{
+				for( int i = 0; i < 100; ++i )
+				{
+					picSerial.WriteValueToPic<int>(static_cast<int>(200));
+				}
+
+				for( int i = 0; i < 100; ++i )
+				{
+					picSerial.WriteValueToPic<int>(static_cast<int>(0));
+				}
+				
+				for( int i = 0; i < 100; ++i )
+				{
+					picSerial.WriteValueToPic<int>(static_cast<int>(200));
+				}
+
+				for( int i = 0; i < 100; ++i )
+				{
+					picSerial.WriteValueToPic<int>(static_cast<int>(0));
+				}
+
+				for( int i = 0; i < 100; ++i )
+				{
+					picSerial.WriteValueToPic<int>(static_cast<int>(200));
+				}
+				
+				break;
+			}
+
+			default:
+				break;
 			}
 			
 			break;
