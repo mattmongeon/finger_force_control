@@ -8,3 +8,4 @@ biotac_cal
 calibration/ui/data
 *.dat
 calibration/ui/nn
+*.nndat
