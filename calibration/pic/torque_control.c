@@ -27,6 +27,7 @@ static volatile int kp_num = 300;
 static volatile int ki_num = 250;
 
 static int error_int = 0;
+static volatile int saved_load_cell_g = 0;
 
 // Default to 2 seconds.
 static int max_tuning_samples = 2 * LOOP_RATE_HZ;
@@ -43,6 +44,7 @@ static int max_tuning_samples = 2 * LOOP_RATE_HZ;
 static int torque_control_loop(int load_cell_g, torque_tune_data* pTuneData)
 {
 	int error = desired_force_g - load_cell_g;
+	saved_load_cell_g = load_cell_g;
 
 	error_int += error;
 	if( error_int > MAX_ERROR_INT )
@@ -108,6 +110,13 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) torque_controller()
 		break;
 	}
 
+	case HOLD_FORCE:
+	{
+		torque_control_loop(load_cell_read_grams(), &tune_data);
+		
+		break;
+	}
+
 	case IDLE:
 		motor_pwm_set(0);
 		torqueTuneSamples = 0;
@@ -160,6 +169,14 @@ void torque_control_set_desired_force(int force_g)
 int torque_control_get_desired_force_g()
 {
 	return desired_force_g;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+int torque_control_get_load_cell_g()
+{
+	// THIS FUNCTION IS A HACK.  SEE FUNCTION COMMENTS IN HEADER FILE.
+	return saved_load_cell_g;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

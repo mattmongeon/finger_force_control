@@ -34,6 +34,21 @@ void torque_control_set_desired_force(int force_g);
 int torque_control_get_desired_force_g();
 
 
+// Returns the current force value as read from the load cell by the
+// torque controller.
+//
+// Note:
+// This is a horrendous hack.  To get the load cell reading everything
+// should just read from the load cell.  However, when running the BioTac
+// loop, the load cell consistently hands back a value that does not
+// match the value given to the torque controller even though both would
+// call the same function.  Until this gets resolved, everything needs to
+// use the torque controller to get the "real" load cell reading.
+//
+// Return - The force value in grams as read from the load cell.
+int torque_control_get_load_cell_g();
+
+
 // Sets the length of time in seconds for which the tuning session should last.
 //
 // Params:

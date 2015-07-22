@@ -149,7 +149,8 @@ static void biotac_read_and_tx()
 	
 	data.mTimestamp = _CP0_GET_COUNT();
 	read_biotac(&data.mData);
-	data.mLoadCell_g = load_cell_read_grams();
+	// HACK:  SEE FUNCTION COMMENTS IN TORQUE_CONTROL.H
+	data.mLoadCell_g = torque_control_get_load_cell_g();
 	data.mReference_g = torque_control_get_desired_force_g();
 
 	uart1_send_packet((unsigned char*)(&data), sizeof(biotac_tune_data));
