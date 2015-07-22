@@ -69,7 +69,7 @@ private:
 	// filePath - The path to the file to be converted.
 	//
 	// Return - The name of the newly-generated file.
-	std::string ConvertDataFileToNNFile(const std::string& filePath);
+	std::string ConvertDataFileToNNFile(const std::vector<std::string>& files);
 	
 	
 	//--------------------------------------------------------------------------//
