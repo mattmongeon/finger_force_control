@@ -10,13 +10,14 @@ PKGS=`pkg-config --cflags --libs plplot-c++` `pkg-config --cflags --libs fann`
 OBJECTS=$(SOURCES:.cpp=.o)
 OBJDIR=obj
 BUILDOBJECTS=$(patsubst %,$(OBJDIR)/%,$(OBJECTS))
+HDRS := $(wildcard *.h)
 
 
-$(PROG): $(OBJECTS)
+$(PROG): $(BUILDOBJECTS)
 	$(CC) -o $(PROG) $(BUILDOBJECTS) $(LFLAGS) $(LINKDIR) $(PKGS)
 
-%.o: %.cpp
-	$(CC) $(CPPFLAGS) -o $(OBJDIR)/$@ $<
+obj/%.o: %.cpp $(HDRS)
+	$(CC) $(CPPFLAGS) -o $@ $<
 
 .PHONY: clean
 clean:
