@@ -2,6 +2,7 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <dirent.h>
+#include <algorithm>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -36,6 +37,8 @@ std::vector<std::string> nFileUtils::GetFilesInDirectory(const std::string path,
 				}
 			}
 		}
+
+		std::sort(retVal.begin(), retVal.end());
 		
 		closedir(dir);
 	}
