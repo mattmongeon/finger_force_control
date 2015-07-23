@@ -1,9 +1,11 @@
 #include "data_logger.h"
 #include "file_utils.h"
+#include "../common/biotac_comm.h"
 #include <sstream>
 #include <ctime>
 #include <cstring>
 #include <iostream>
+#include <iomanip>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -18,13 +20,35 @@ cDataLogger::cDataLogger()
 	tm* t = localtime(&curTime);
 	std::ostringstream s;
 	s << "./data/data_" << t->tm_year + 1900 << "_"
+	  << std::setw(2) << std::setfill('0')
 	  << t->tm_mon + 1 << "_"
+	  << std::setw(2) << std::setfill('0')
 	  << t->tm_mday << "_"
+	  << std::setw(2) << std::setfill('0')
 	  << t->tm_hour << "_"
+	  << std::setw(2) << std::setfill('0')
 	  << t->tm_min << "_"
+	  << std::setw(2) << std::setfill('0')
 	  << t->tm_sec << ".dat";
+	s << std::flush;
 	
 	mOutFile.open(s.str().c_str(), std::ios::binary | std::ios::out);
+
+	s.str("");
+	s.clear();
+	s << "./data/data_" << t->tm_year + 1900 << "_"
+	  << std::setw(2) << std::setfill('0')
+	  << t->tm_mon + 1 << "_"
+	  << std::setw(2) << std::setfill('0')
+	  << t->tm_mday << "_"
+	  << std::setw(2) << std::setfill('0')
+	  << t->tm_hour << "_"
+	  << std::setw(2) << std::setfill('0')
+	  << t->tm_min << "_"
+	  << std::setw(2) << std::setfill('0')
+	  << t->tm_sec << ".dat.text";
+	
+	mTextFile.open(s.str().c_str());
 
 	mLoopRunning = true;
 	mThread = boost::thread(ThreadFunc, this);
@@ -51,6 +75,7 @@ cDataLogger::~cDataLogger()
 	mThread.join();
 	
 	mOutFile.close();
+	mTextFile.close();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -77,6 +102,38 @@ void cDataLogger::ThreadFunc(cDataLogger* pThis)
 		{
 			writeData = false;
 			pThis->mOutFile.write(reinterpret_cast<const char*>(data.mpData), data.mNumBytes);
+
+			if( data.mNumBytes == sizeof(biotac_tune_data) )
+			{
+				biotac_tune_data* pData = reinterpret_cast<biotac_tune_data*>(data.mpData);
+				pThis->mTextFile << pData->mTimestamp << " "
+								 << pData->mData.pac << " "
+								 << pData->mData.pdc << " "
+								 << pData->mData.tac << " "
+								 << pData->mData.tdc << " "
+								 << pData->mData.e1 << " "
+								 << pData->mData.e2 << " "
+								 << pData->mData.e3 << " "
+								 << pData->mData.e4 << " "
+								 << pData->mData.e5 << " "
+								 << pData->mData.e6 << " "
+								 << pData->mData.e7 << " "
+								 << pData->mData.e8 << " "
+								 << pData->mData.e9 << " "
+								 << pData->mData.e10 << " "
+								 << pData->mData.e11 << " "
+								 << pData->mData.e12 << " "
+								 << pData->mData.e13 << " "
+								 << pData->mData.e14 << " "
+								 << pData->mData.e15 << " "
+								 << pData->mData.e16 << " "
+								 << pData->mData.e17 << " "
+								 << pData->mData.e18 << " "
+								 << pData->mData.e19 << " "
+								 << pData->mLoadCell_g << " "
+								 << pData->mReference_g << std::endl;
+			}
+			
 			delete data.mpData;
 		}
 	}
