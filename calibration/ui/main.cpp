@@ -397,7 +397,7 @@ int main(int argc, char** argv)
 				double pi = 3.14159265358979323846264338;
 				for( double i = 0.0; i < 500.0; ++i )
 				{
-					double val = 100.0 - 100.0 * cos( 4 * i * pi / 500.0 );
+					double val = 100.0 - 100.0 * cos( 3 * i * pi / 500.0 );
 					picSerial.WriteValueToPic<int>(static_cast<int>(val));
 				}
 				break;
