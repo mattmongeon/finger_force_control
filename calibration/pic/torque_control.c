@@ -20,12 +20,16 @@
 
 #define ZERO_DEADBAND_G 10
 
+#define MAX_PWM_CHANGE 500
+
+#define MAX_PWM_OFF_LOADCELL 400
+
 
 // --- Variables --- //
 
 static volatile int desired_force_g = 0;
 
-static volatile int kp_num = 500;
+static volatile int kp_num = 200;
 static volatile int ki_num = 2000;
 
 static int error_int = 0;
@@ -81,6 +85,41 @@ static int torque_control_loop(int load_cell_g, torque_tune_data* pTuneData)
 	}
 
 
+	// --- Protection --- //
+
+	// We don't want to be slamming the BioTac against the surface.  Set a maximum
+	// limit to how much the PWM can change at a time.
+	int current_pwm = motor_pwm_get();
+	if( abs(u_new - current_pwm) > MAX_PWM_CHANGE )
+	{
+		if( current_pwm < u_new )
+			u_new = current_pwm + MAX_PWM_CHANGE;
+		else
+			u_new = current_pwm - MAX_PWM_CHANGE;
+	}
+
+	// The BioTac is currently off the load cell.  Limit the maximum PWM so that
+	// we don't slam it back onto the surface.  Once it is on there, it can go back
+	// to normal operation.
+	if( load_cell_g < ZERO_DEADBAND_G )
+	{
+		if( u_new > MAX_PWM_OFF_LOADCELL )
+		{
+			// While the BioTac is making its way back to the load cell, don't
+			// slam it down - be a little more gentle.
+			u_new = MAX_PWM_OFF_LOADCELL;
+		}
+		else if( u_new < 0 )
+		{
+			// If we are off the load cell, don't back up any more.  We don't want
+			// to give the BioTac any room to wind up and slam back down.
+			u_new = 0;
+		}
+	}
+
+
+	// --- Send New Command --- //
+	
 	motor_pwm_set(u_new);
 	
 	pTuneData->load_cell_g = load_cell_g;
