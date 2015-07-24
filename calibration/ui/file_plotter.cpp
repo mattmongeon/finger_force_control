@@ -14,6 +14,8 @@
 #define PLOT_DRIVER "xcairo"
 #endif
 
+#define BIOTAC_FREQUENCY 100.0
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //  Construction / Destruction
@@ -78,7 +80,7 @@ void cFilePlotter::ConfigureAndPlotForce(const std::vector<biotac_tune_data>& da
 	PLFLT ymin = 1000000.0, ymax = -1000000.0;
 	for( size_t i = 0; i < data.size(); ++i )
 	{
-		pX[i] = i;
+		pX[i] = i / BIOTAC_FREQUENCY;
 		pLoadCell[i] = data[i].mLoadCell_g;
 		pReference[i] = data[i].mReference_g;
 
@@ -93,8 +95,8 @@ void cFilePlotter::ConfigureAndPlotForce(const std::vector<biotac_tune_data>& da
 	// --- Generate Plot --- //
 	
 	mPlottingStream.col0(nUtils::enumPLplotColor_RED);
-	mPlottingStream.env(0, data.size(), ymin, ymax*1.001, 0, 0);
-	mPlottingStream.lab("Samples", "Force (g)", "Reference and Measured Force");
+	mPlottingStream.env(0, data.size() / BIOTAC_FREQUENCY, ymin, ymax*1.001, 0, 0);
+	mPlottingStream.lab("Time (s)", "Force (g)", "Reference and Measured Force");
 
 	mPlottingStream.col0(nUtils::enumPLplotColor_BLUE);
 	mPlottingStream.line( data.size(), pX, pLoadCell );
@@ -157,7 +159,7 @@ void cFilePlotter::ConfigureAndPlotPressTemp(const std::vector<biotac_tune_data>
 	PLFLT ymin = 1000000.0, ymax = -1000000.0;
 	for( size_t i = 0; i < data.size(); ++i )
 	{
-		pX[i] = i;
+		pX[i] = i / BIOTAC_FREQUENCY;
 		pPDC[i] = data[i].mData.pdc;
 		pPAC[i] = data[i].mData.pac;
 		pTDC[i] = data[i].mData.tdc;
@@ -175,8 +177,8 @@ void cFilePlotter::ConfigureAndPlotPressTemp(const std::vector<biotac_tune_data>
 	}
 	
 	mPlottingStream.col0(nUtils::enumPLplotColor_RED);
-	mPlottingStream.env(0, data.size(), ymin, ymax*1.001, 0, 0);
-	mPlottingStream.lab("Samples", "Pressure/Temp", "Pressure and Temperature");
+	mPlottingStream.env(0, data.size() / BIOTAC_FREQUENCY, ymin, ymax*1.001, 0, 0);
+	mPlottingStream.lab("Time (s)", "Pressure/Temp", "Pressure and Temperature");
 
 	mPlottingStream.col0(nUtils::enumPLplotColor_GREEN);
 	mPlottingStream.line( data.size(), pX, pPDC );
@@ -265,7 +267,7 @@ void cFilePlotter::ConfigureAndPlotElectrodes1(const std::vector<biotac_tune_dat
 	PLFLT ymin = 1000000.0, ymax = -1000000.0;
 	for( size_t i = 0; i < data.size(); ++i )
 	{
-		pX[i] = i;
+		pX[i] = i / BIOTAC_FREQUENCY;
 		pE1[i] = data[i].mData.e1;
 		pE2[i] = data[i].mData.e2;
 		pE3[i] = data[i].mData.e3;
@@ -297,10 +299,9 @@ void cFilePlotter::ConfigureAndPlotElectrodes1(const std::vector<biotac_tune_dat
 		ymin = std::min(pE9[i], ymin);
 	}
 	
-	mPlottingStream.col0(1);
-	mPlottingStream.env(0, data.size(), ymin, ymax*1.001, 0, 0);
-	mPlottingStream.col0(nUtils::enumPLplotColor_GREEN);
-	mPlottingStream.lab("Samples", "Electrode Measurement", "Electrodes 1-9");
+	mPlottingStream.col0(nUtils::enumPLplotColor_RED);
+	mPlottingStream.env(0, data.size() / BIOTAC_FREQUENCY, ymin, ymax*1.001, 0, 0);
+	mPlottingStream.lab("Time (s)", "Electrode Measurement", "Electrodes 1-9");
 	
 	mPlottingStream.col0(nUtils::enumPLplotColor_RED);
 	mPlottingStream.line( data.size(), pX, pE1 );
@@ -447,7 +448,7 @@ void cFilePlotter::ConfigureAndPlotElectrodes2(const std::vector<biotac_tune_dat
 	PLFLT ymin = 1000000.0, ymax = -1000000.0;
 	for( size_t i = 0; i < data.size(); ++i )
 	{
-		pX[i] = i;
+		pX[i] = i / BIOTAC_FREQUENCY;
 		pE10[i] = data[i].mData.e10;
 		pE11[i] = data[i].mData.e11;
 		pE12[i] = data[i].mData.e12;
@@ -482,10 +483,9 @@ void cFilePlotter::ConfigureAndPlotElectrodes2(const std::vector<biotac_tune_dat
 		ymin = std::min(pE19[i], ymin);
 	}
 	
-	mPlottingStream.col0(1);
-	mPlottingStream.env(0, data.size(), ymin, ymax*1.001, 0, 0);
-	mPlottingStream.col0(nUtils::enumPLplotColor_GREEN);
-	mPlottingStream.lab("Samples", "Electrode Measurement", "Electrodes 11-19");
+	mPlottingStream.col0(nUtils::enumPLplotColor_RED);
+	mPlottingStream.env(0, data.size() / BIOTAC_FREQUENCY, ymin, ymax*1.001, 0, 0);
+	mPlottingStream.lab("Time (s)", "Electrode Measurement", "Electrodes 11-19");
 	
 	mPlottingStream.col0(nUtils::enumPLplotColor_RED);
 	mPlottingStream.line( data.size(), pX, pE10 );
