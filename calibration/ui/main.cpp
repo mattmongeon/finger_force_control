@@ -309,7 +309,7 @@ int main(int argc, char** argv)
 			cFunctionFitNN nn;
 			nn.LoadNeuralNetwork("first.net");
 
-			std::vector<std::string> files = nFileUtils::GetFilesInDirectory("./data", ".dat");
+			std::vector<std::string> files = nFileUtils::GetFilesInDirectory("./data/test", ".dat");
 
 			if( !files.empty() )
 			{
@@ -317,7 +317,7 @@ int main(int argc, char** argv)
 
 				if( selection != -1 )
 				{
-					std::string path("./data/");
+					std::string path("./data/test/");
 					path += files[selection];
 					std::cout << "Opening \'" << files[selection] << "\'" << std::endl;
 					std::vector<std::string> f;
