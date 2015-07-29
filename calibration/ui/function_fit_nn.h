@@ -69,7 +69,10 @@ private:
 	// filePath - The path to the file to be converted.
 	//
 	// Return - The name of the newly-generated file.
-	std::string ConvertDataFileToNNFile(const std::vector<std::string>& files);
+	std::string ConvertDataFilesToNNFile(const std::vector<std::string>& files);
+
+
+	std::string ConvertDataFilesToTestFile(const std::vector<std::string>& files);
 
 
 	// Takes in the reference (groundtruth) data and the neural network output and
