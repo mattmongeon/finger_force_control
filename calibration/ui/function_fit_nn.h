@@ -70,6 +70,15 @@ private:
 	//
 	// Return - The name of the newly-generated file.
 	std::string ConvertDataFileToNNFile(const std::vector<std::string>& files);
+
+
+	// Takes in the reference (groundtruth) data and the neural network output and
+	// plots them along with the error.
+	//
+	// Parameters:
+	// calculated - The output of the neural network after passing in BioTac data.
+	// actual - Reference groundtruth value for comparison with neural network results.
+	void PlotResults(const std::vector<float>& calculated, const std::vector<float>& actual );
 	
 	
 	//--------------------------------------------------------------------------//
