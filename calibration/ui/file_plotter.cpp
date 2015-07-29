@@ -236,7 +236,7 @@ void cFilePlotter::ConfigureAndPlotPressTemp(const std::vector<biotac_tune_data>
 							PL_POSITION_RIGHT | PL_POSITION_BOTTOM,
 							0.0, 0.0, 0.01,
 							15, 1, 1, 0, 0,
-							3, optArray,
+							4, optArray,
 							0.5, 0.5, 1.0, 0.0,
 							textColors, (const char* const *) text,
 							NULL, NULL, NULL, NULL,
