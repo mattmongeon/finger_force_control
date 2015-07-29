@@ -16,8 +16,6 @@
 #define LOOP_RATE_HZ 200
 #define LOOP_TIMER_PRESCALAR 16
 
-#define K_DENOM 1000
-
 #define ZERO_DEADBAND_G 10
 
 #define MAX_PWM_CHANGE 500
@@ -29,8 +27,8 @@
 
 static volatile int desired_force_g = 0;
 
-static volatile int kp_num = 200;
-static volatile int ki_num = 2000;
+static volatile float kp = 0.2;
+static volatile float ki = 2.0;
 
 static int error_int = 0;
 static volatile int saved_load_cell_g = 0;
@@ -77,7 +75,7 @@ static int torque_control_loop(int load_cell_g, torque_tune_data* pTuneData)
 		else if( error_int < -MAX_ERROR_INT )
 			error_int = -MAX_ERROR_INT;
 
-		u_new += ((kp_num*error)/K_DENOM) + ((ki_num*error_int)/K_DENOM);
+		u_new += (kp*error) + (ki*error_int);
 	}
 	else
 	{
@@ -260,13 +258,10 @@ void torque_control_set_time_length(int seconds)
 
 void torque_control_set_gains(float kp_new, float ki_new)
 {
-	int new_kp_num = (int)(kp_new * (float)(K_DENOM));
-	int new_ki_num = (int)(ki_new * (float)(K_DENOM));
-	
 	__builtin_disable_interrupts();
 
-	kp_num = new_kp_num;
-	ki_num = new_ki_num;
+	kp = kp_new;
+	ki = ki_new;
 	
 	__builtin_enable_interrupts();
 }
@@ -275,7 +270,7 @@ void torque_control_set_gains(float kp_new, float ki_new)
 
 void torque_control_get_gains(float* p, float* i)
 {
-	*p = ((float)(kp_num) / (float)(K_DENOM));
-	*i = ((float)(ki_num) / (float)(K_DENOM));
+	*p = kp;
+	*i = ki;
 }
 
