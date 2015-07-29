@@ -23,7 +23,7 @@
 cFunctionFitNN::cFunctionFitNN()
 	: mNumLayers(4),
 	  mNumInputs(20),
-	  mNumHiddenNeurons(40),
+	  mNumHiddenNeurons(65),
 	  mNumOutputs(1)
 {
 	mpANN = fann_create_standard(mNumLayers, mNumInputs, mNumHiddenNeurons, mNumHiddenNeurons, mNumOutputs);
@@ -68,7 +68,7 @@ void cFunctionFitNN::TrainAgainstDataFiles(const std::vector<std::string>& files
 	nUtils::ClearConsole();
 	std::cout << "Training on " << files.size() << " total file(s)." << std::endl;
 
-	float desiredError = 0.000001;
+	float desiredError = 0.0000015;
 	unsigned int maxEpochs = 10000;
 	unsigned int epochsBetweenReports = 100;
 	float bitFailLimit = 0.004f;
@@ -80,7 +80,7 @@ void cFunctionFitNN::TrainAgainstDataFiles(const std::vector<std::string>& files
 			<< ", hidden: " << mNumHiddenNeurons;
 	std::cout << summary.str() << std::endl;
 	
-	fann_train_data* pTrainData = fann_read_train_from_file( ConvertDataFileToNNFile(files).c_str() );
+	fann_train_data* pTrainData = fann_read_train_from_file( ConvertDataFilesToNNFile(files).c_str() );
 	// fann_set_training_algorithm(mpANN, FANN_TRAIN_INCREMENTAL);
 	// fann_set_activation_steepness_hidden(mpANN, 1);
 	// fann_set_activation_steepness_hidden(mpANN, 1);
@@ -129,7 +129,7 @@ void cFunctionFitNN::TestAgainstDataFiles(const std::vector<std::string>& files)
 	nUtils::ClearConsole();
 	std::cout << "Testing against " << files.size() << " total file(s)." << std::endl;
 
-	fann_train_data* pTestData = fann_read_train_from_file( ConvertDataFileToNNFile(files).c_str() );
+	fann_train_data* pTestData = fann_read_train_from_file( ConvertDataFilesToTestFile(files).c_str() );
 
 	unsigned int dataLength = fann_length_train_data(pTestData);
 	std::vector<float> errors;
@@ -192,7 +192,7 @@ void cFunctionFitNN::SaveNeuralNetwork(const std::string& fileName)
 //  Helper Functions
 ////////////////////////////////////////////////////////////////////////////////
 
-std::string cFunctionFitNN::ConvertDataFileToNNFile(const std::vector<std::string>& files)
+std::string cFunctionFitNN::ConvertDataFilesToNNFile(const std::vector<std::string>& files)
 {
 	std::string fileName = "./data/training.nndat";
 	if( files.size() == 1 )
@@ -213,35 +213,167 @@ std::string cFunctionFitNN::ConvertDataFileToNNFile(const std::vector<std::strin
 		std::vector<biotac_tune_data> data = df.GetData();
 
 		outFile.precision(20);
+		unsigned long long tdc = 0;
+		unsigned long long e1 = 0;
+		unsigned long long e2 = 0;
+		unsigned long long e3 = 0;
+		unsigned long long e4 = 0;
+		unsigned long long e5 = 0;
+		unsigned long long e6 = 0;
+		unsigned long long e7 = 0;
+		unsigned long long e8 = 0;
+		unsigned long long e9 = 0;
+		unsigned long long e10 = 0;
+		unsigned long long e11 = 0;
+		unsigned long long e12 = 0;
+		unsigned long long e13 = 0;
+		unsigned long long e14 = 0;
+		unsigned long long e15 = 0;
+		unsigned long long e16 = 0;
+		unsigned long long e17 = 0;
+		unsigned long long e18 = 0;
+		unsigned long long e19 = 0;
+		unsigned long long loadCell_g = 0;
+		unsigned long long numSamples = 0;
 		for( std::size_t j = 0; j < data.size(); ++j )
 		{
 			if( j < 100 )
 				continue;
+
+			tdc += data[j].mData.tdc;
+			e1 += data[j].mData.e1;
+			e2 += data[j].mData.e2;
+			e3 += data[j].mData.e3;
+			e4 += data[j].mData.e4;
+			e5 += data[j].mData.e5;
+			e6 += data[j].mData.e6;
+			e7 += data[j].mData.e7;
+			e8 += data[j].mData.e8;
+			e9 += data[j].mData.e9;
+			e10 += data[j].mData.e10;
+			e11 += data[j].mData.e11;
+			e12 += data[j].mData.e12;
+			e13 += data[j].mData.e13;
+			e14 += data[j].mData.e14;
+			e15 += data[j].mData.e15;
+			e16 += data[j].mData.e16;
+			e17 += data[j].mData.e17;
+			e18 += data[j].mData.e18;
+			e19 += data[j].mData.e19;
+			loadCell_g += data[j].mLoadCell_g;
+			++numSamples;
+		}
+
+		tdc /= numSamples;
+		e1 /= numSamples;
+		e2 /= numSamples;
+		e3 /= numSamples;
+		e4 /= numSamples;
+		e5 /= numSamples;
+		e6 /= numSamples;
+		e7 /= numSamples;
+		e8 /= numSamples;
+		e9 /= numSamples;
+		e10 /= numSamples;
+		e11 /= numSamples;
+		e12 /= numSamples;
+		e13 /= numSamples;
+		e14 /= numSamples;
+		e15 /= numSamples;
+		e16 /= numSamples;
+		e17 /= numSamples;
+		e18 /= numSamples;
+		e19 /= numSamples;
+		loadCell_g /= numSamples;
 			
+		outFile // << static_cast<float>(data[j].mData.pac / 4096.0) << " "
+			// << static_cast<float>(data[j].mData.pdc / 4096.0) << " "
+			// << static_cast<float>(data[j].mData.tac / 4096.0) << " "
+			<< static_cast<float>(tdc / 4096.0) << " "
+			<< static_cast<float>(e1 / 4096.0) << " "
+			<< static_cast<float>(e2 / 4096.0) << " "
+			<< static_cast<float>(e3 / 4096.0) << " "
+			<< static_cast<float>(e4 / 4096.0) << " "
+			<< static_cast<float>(e5 / 4096.0) << " "
+			<< static_cast<float>(e6 / 4096.0) << " "
+			<< static_cast<float>(e7 / 4096.0) << " "
+			<< static_cast<float>(e8 / 4096.0) << " "
+			<< static_cast<float>(e9 / 4096.0) << " "
+			<< static_cast<float>(e10 / 4096.0) << " "
+			<< static_cast<float>(e11 / 4096.0) << " "
+			<< static_cast<float>(e12 / 4096.0) << " "
+			<< static_cast<float>(e13 / 4096.0) << " "
+			<< static_cast<float>(e14 / 4096.0) << " "
+			<< static_cast<float>(e15 / 4096.0) << " "
+			<< static_cast<float>(e16 / 4096.0) << " "
+			<< static_cast<float>(e17 / 4096.0) << " "
+			<< static_cast<float>(e18 / 4096.0) << " "
+			<< static_cast<float>(e19 / 4096.0) << " "
+			<< std::endl;
+
+		outFile << static_cast<float>(loadCell_g / MAX_BIOTAC_LOAD_G) << std::endl;
+
+		++numDataPoints;
+	}
+
+	// Before we exit, we need to write out the number of data points as the first entry of the file.
+	outFile.seekp(0);
+	outFile << numDataPoints << " " << mNumInputs << " " << mNumOutputs << std::flush;
+
+	outFile.close();
+
+	return fileName;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+std::string cFunctionFitNN::ConvertDataFilesToTestFile(const std::vector<std::string>& files)
+{
+	std::string fileName = "./data/test/testing.nndat";
+	if( files.size() == 1 )
+	{
+		fileName = files[0] + ".nndat";
+	}
+	
+	std::ofstream outFile(fileName.c_str());
+
+	// This just reserves space at the beginning of the file to write header information.
+	outFile << "             " << std::endl;
+
+	int numDataPoints = 0;
+	for( std::size_t i = 0; i < files.size(); ++i )
+	{
+		cDataFileReader df(files[i]);
+
+		std::vector<biotac_tune_data> data = df.GetData();
+
+		outFile.precision(20);
+		for( std::size_t j = 0; j < data.size(); ++j )
+		{
 			outFile // << static_cast<float>(data[j].mData.pac / 4096.0) << " "
-					// << static_cast<float>(data[j].mData.pdc / 4096.0) << " "
-				    // << static_cast<float>(data[j].mData.tac / 4096.0) << " "
-					<< static_cast<float>(data[j].mData.tdc / 4096.0) << " "
-					<< static_cast<float>(data[j].mData.e1 / 4096.0) << " "
-					<< static_cast<float>(data[j].mData.e2 / 4096.0) << " "
-					<< static_cast<float>(data[j].mData.e3 / 4096.0) << " "
-					<< static_cast<float>(data[j].mData.e4 / 4096.0) << " "
-					<< static_cast<float>(data[j].mData.e5 / 4096.0) << " "
-					<< static_cast<float>(data[j].mData.e6 / 4096.0) << " "
-					<< static_cast<float>(data[j].mData.e7 / 4096.0) << " "
-					<< static_cast<float>(data[j].mData.e8 / 4096.0) << " "
-					<< static_cast<float>(data[j].mData.e9 / 4096.0) << " "
-					<< static_cast<float>(data[j].mData.e10 / 4096.0) << " "
-					<< static_cast<float>(data[j].mData.e11 / 4096.0) << " "
-					<< static_cast<float>(data[j].mData.e12 / 4096.0) << " "
-					<< static_cast<float>(data[j].mData.e13 / 4096.0) << " "
-					<< static_cast<float>(data[j].mData.e14 / 4096.0) << " "
-					<< static_cast<float>(data[j].mData.e15 / 4096.0) << " "
-					<< static_cast<float>(data[j].mData.e16 / 4096.0) << " "
-					<< static_cast<float>(data[j].mData.e17 / 4096.0) << " "
-					<< static_cast<float>(data[j].mData.e18 / 4096.0) << " "
-					<< static_cast<float>(data[j].mData.e19 / 4096.0) << " "
-					<< std::endl;
+				// << static_cast<float>(data[j].mData.pdc / 4096.0) << " "
+				// << static_cast<float>(data[j].mData.tac / 4096.0) << " "
+				<< static_cast<float>(data[j].mData.tdc / 4096.0) << " "
+				<< static_cast<float>(data[j].mData.e1 / 4096.0) << " "
+				<< static_cast<float>(data[j].mData.e2 / 4096.0) << " "
+				<< static_cast<float>(data[j].mData.e3 / 4096.0) << " "
+				<< static_cast<float>(data[j].mData.e4 / 4096.0) << " "
+				<< static_cast<float>(data[j].mData.e5 / 4096.0) << " "
+				<< static_cast<float>(data[j].mData.e6 / 4096.0) << " "
+				<< static_cast<float>(data[j].mData.e7 / 4096.0) << " "
+				<< static_cast<float>(data[j].mData.e8 / 4096.0) << " "
+				<< static_cast<float>(data[j].mData.e9 / 4096.0) << " "
+				<< static_cast<float>(data[j].mData.e10 / 4096.0) << " "
+				<< static_cast<float>(data[j].mData.e11 / 4096.0) << " "
+				<< static_cast<float>(data[j].mData.e12 / 4096.0) << " "
+				<< static_cast<float>(data[j].mData.e13 / 4096.0) << " "
+				<< static_cast<float>(data[j].mData.e14 / 4096.0) << " "
+				<< static_cast<float>(data[j].mData.e15 / 4096.0) << " "
+				<< static_cast<float>(data[j].mData.e16 / 4096.0) << " "
+				<< static_cast<float>(data[j].mData.e17 / 4096.0) << " "
+				<< static_cast<float>(data[j].mData.e18 / 4096.0) << " "
+				<< static_cast<float>(data[j].mData.e19 / 4096.0) << " "
+				<< std::endl;
 
 			outFile << static_cast<float>(data[j].mLoadCell_g / MAX_BIOTAC_LOAD_G) << std::endl;
 
@@ -277,26 +409,24 @@ void cFunctionFitNN::PlotResults(const std::vector<float>& calculated, const std
 	PLFLT* pX = new PLFLT[calculated.size()];
 	PLFLT* pCalculated = new PLFLT[calculated.size()];
 	PLFLT* pActual = new PLFLT[calculated.size()];
-	PLFLT* pError = new PLFLT[calculated.size()];
 	for( std::size_t i = 0; i < calculated.size(); ++i )
 	{
 		pX[i] = i;
 		pCalculated[i] = calculated[i];
 		pActual[i] = actual[i];
-		pError[i] = fabs(calculated[i] - actual[i]);
-		
-		ymax = std::max(calculated[i], actual[i]);
-		ymax = std::max<PLFLT>(ymax, calculated[i] - actual[i]);
 
-		ymin = std::min(calculated[i], actual[i]);
-		ymin = std::min<PLFLT>(ymin, calculated[i] - actual[i]);
+		ymax = std::max<PLFLT>(ymax, calculated[i]);
+		ymax = std::max<PLFLT>(ymax, actual[i]);
+
+		ymin = std::min<PLFLT>(ymin, calculated[i]);
+		ymin = std::min<PLFLT>(ymin, actual[i]);
 	}
 
 
 	// --- Generate Plot --- //
 
 	plottingStream.col0(nUtils::enumPLplotColor_RED);
-	plottingStream.env(0, calculated.size(), ymin, ymax*1.001, 0, 0);
+	plottingStream.env(0, calculated.size(), ymin, ymax*1.01, 0, 0);
 	plottingStream.lab("Samples", "Magnitude", "Neural Network Analysis");
 
 	plottingStream.col0(nUtils::enumPLplotColor_BLUE);
@@ -305,18 +435,15 @@ void cFunctionFitNN::PlotResults(const std::vector<float>& calculated, const std
 	plottingStream.col0(nUtils::enumPLplotColor_GREEN);
 	plottingStream.line(calculated.size(), pX, pActual);
 
-	plottingStream.col0(nUtils::enumPLplotColor_MAGENTA);
-	plottingStream.line(calculated.size(), pX, pError);
-
 
 	// --- Create Legend --- //
 	
-	PLINT optArray[3];
-	PLINT textColors[3];
-	PLINT lineColors[3];
-	PLINT lineStyles[3];
-	PLFLT lineWidths[3];
-	const char* text[3];
+	PLINT optArray[2];
+	PLINT textColors[2];
+	PLINT lineColors[2];
+	PLINT lineStyles[2];
+	PLFLT lineWidths[2];
+	const char* text[2];
 
 	optArray[0] = PL_LEGEND_LINE;
 	textColors[0] = nUtils::enumPLplotColor_BLUE;
@@ -332,20 +459,13 @@ void cFunctionFitNN::PlotResults(const std::vector<float>& calculated, const std
 	lineStyles[1] = 1;
 	lineWidths[1] = 1.0;
 
-	optArray[2] = PL_LEGEND_LINE;
-	textColors[2] = nUtils::enumPLplotColor_MAGENTA;
-	lineColors[2] = nUtils::enumPLplotColor_MAGENTA;
-	text[2] = "Error";
-	lineStyles[2] = 1;
-	lineWidths[2] = 1.0;
-	
 	PLFLT legendWidth, legendHeight;
 	plottingStream.legend( &legendWidth, &legendHeight,
 							PL_LEGEND_BACKGROUND | PL_LEGEND_BOUNDING_BOX,
 							PL_POSITION_RIGHT | PL_POSITION_BOTTOM,
 							0.0, 0.0, 0.01,
 							15, 1, 1, 0, 0,
-							3, optArray,
+							2, optArray,
 							0.5, 0.5, 1.0, 0.0,
 							textColors, (const char* const *) text,
 							NULL, NULL, NULL, NULL,
