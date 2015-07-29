@@ -91,6 +91,13 @@ void cFilePlotter::ConfigureAndPlotForce(const std::vector<biotac_tune_data>& da
 		ymin = std::min(pReference[i], ymin);
 	}
 
+	// Just in case.
+	if( ymin == ymax )
+	{
+		ymin -= 0.01;
+		ymax += 0.01;
+	}
+
 
 	// --- Generate Plot --- //
 	
@@ -175,6 +182,16 @@ void cFilePlotter::ConfigureAndPlotPressTemp(const std::vector<biotac_tune_data>
 		ymin = std::min(pTDC[i], ymin);
 		ymin = std::min(pTAC[i], ymin);
 	}
+
+	// Just in case.
+	if( ymin == ymax )
+	{
+		ymin -= 0.01;
+		ymax += 0.01;
+	}
+
+
+	// --- Generate Plot --- //
 	
 	mPlottingStream.col0(nUtils::enumPLplotColor_RED);
 	mPlottingStream.env(0, data.size() / BIOTAC_FREQUENCY, ymin, ymax*1.001, 0, 0);
@@ -298,6 +315,16 @@ void cFilePlotter::ConfigureAndPlotElectrodes1(const std::vector<biotac_tune_dat
 		ymin = std::min(pE8[i], ymin);
 		ymin = std::min(pE9[i], ymin);
 	}
+	
+	// Just in case.
+	if( ymin == ymax )
+	{
+		ymin -= 0.01;
+		ymax += 0.01;
+	}
+
+
+	// --- Generate Plot --- //
 	
 	mPlottingStream.col0(nUtils::enumPLplotColor_RED);
 	mPlottingStream.env(0, data.size() / BIOTAC_FREQUENCY, ymin, ymax*1.001, 0, 0);
@@ -482,6 +509,16 @@ void cFilePlotter::ConfigureAndPlotElectrodes2(const std::vector<biotac_tune_dat
 		ymin = std::min(pE18[i], ymin);
 		ymin = std::min(pE19[i], ymin);
 	}
+
+	// Just in case.
+	if( ymin == ymax )
+	{
+		ymin -= 0.01;
+		ymax += 0.01;
+	}
+
+
+	// --- Generate Plot --- //
 	
 	mPlottingStream.col0(nUtils::enumPLplotColor_RED);
 	mPlottingStream.env(0, data.size() / BIOTAC_FREQUENCY, ymin, ymax*1.001, 0, 0);
