@@ -97,6 +97,9 @@ private:
 
 	void FillStructMember( std::vector< std::pair<double, double> >& structData,
 						   const std::map< int, std::vector<uint16_t> >& rawData );
+
+	void TrainElectrodeData( const std::vector< std::pair<double, double> >& data,
+							 double& a, double& b, double& c, double& d );
 	
 	// Takes in the reference (groundtruth) data and the function  output and
 	// plots them along with the error.
@@ -111,7 +114,7 @@ private:
 	//-----------------------------  DATA MEMBERS  -----------------------------//
 	//--------------------------------------------------------------------------//
 
-	
+	static bool mLoggingInitialized;
 };
 
 
