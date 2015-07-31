@@ -6,7 +6,9 @@
 #include "keyboard_thread.h"
 #include "file_plotter.h"
 #include "function_fit_nn.h"
+#include "function_fit_nls.h"
 #include "file_utils.h"
+#include "data_file_reader.h"
 #include <plplot/plplot.h>
 #include <plplot/plstream.h>
 #include <iostream>
@@ -14,6 +16,7 @@
 #include <vector>
 #include <cmath>
 #include <cstdio>
+#include <map>
 
 
 static bool noSerial = false;
@@ -74,6 +77,7 @@ void printMenu()
 	std::cout << "v:  Send force trajectory" << std::endl;
 	std::cout << "q:  Quit" << std::endl;
 	std::cout << "z:  Continuous raw load cell" << std::endl;
+	std::cout << "2:  Curve fitting" << std::endl;
 	std::cout << std::endl;
 }
 
@@ -454,6 +458,325 @@ int main(int argc, char** argv)
 
 		case '1':
 		{
+			std::map< int, std::vector<uint16_t> > e1, e2, e3, e4, e5,
+				                                   e6, e7, e8, e9, e10,
+				                                   e11, e12, e13, e14, e15,
+				                                   e16, e17, e18, e19;
+			
+			std::string path = "./data/tdc_electrodes/data_2015_07_30_09_44_43.dat";
+
+			cDataFileReader reader(path);
+			std::vector<biotac_tune_data> data = reader.GetData();
+			std::size_t numDataPoints = data.size();
+			for( std::size_t dataIndex = 0; dataIndex < numDataPoints; ++dataIndex )
+			{
+				e1[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e1);
+				e2[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e2);
+				e3[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e3);
+				e4[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e4);
+				e5[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e5);
+				e6[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e6);
+				e7[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e7);
+				e8[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e8);
+				e9[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e9);
+				e10[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e10);
+				e11[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e11);
+				e12[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e12);
+				e13[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e13);
+				e14[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e14);
+				e15[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e15);
+				e16[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e16);
+				e17[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e17);
+				e18[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e18);
+				e19[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e19);
+			}
+
+
+			// --- E1 --- //
+			
+			std::cout << "E1 values:" << std::endl;
+			std::cout << "{";
+			for( std::map< int, std::vector<uint16_t> >::iterator it = e1.begin(); it != e1.end(); ++it )
+			{
+				unsigned long long sum = 0;
+				for( std::size_t i = 0; i < it->second.size(); ++i )
+					sum += it->second[i];
+
+				std::cout << "{" << it->first << "," << (static_cast<double>(sum) / static_cast<double>(it->second.size())) << "},";
+			}
+
+			std::cout << "}" << std::endl;
+			std::cout << std::endl << std::endl;
+			
+
+			// --- E2 --- //
+			
+			std::cout << "E2 values:" << std::endl;
+			std::cout << "{";
+			for( std::map< int, std::vector<uint16_t> >::iterator it = e2.begin(); it != e2.end(); ++it )
+			{
+				unsigned long long sum = 0;
+				for( std::size_t i = 0; i < it->second.size(); ++i )
+					sum += it->second[i];
+
+				std::cout << "{" << it->first << "," << (static_cast<double>(sum) / static_cast<double>(it->second.size())) << "},";
+			}
+
+			std::cout << "}" << std::endl;
+			std::cout << std::endl << std::endl;
+			
+			
+			// --- E3 --- //
+			
+			std::cout << "E3 values:" << std::endl << "{";
+			for( std::map< int, std::vector<uint16_t> >::iterator it = e3.begin(); it != e3.end(); ++it )
+			{
+				unsigned long long sum = 0;
+				for( std::size_t i = 0; i < it->second.size(); ++i )
+					sum += it->second[i];
+
+				std::cout << "{" << it->first << "," << (static_cast<double>(sum) / static_cast<double>(it->second.size())) << "},";
+			}
+
+			std::cout << "}" << std::endl << std::endl << std::endl;
+
+
+			// --- E4 --- //
+			
+			std::cout << "E4 values:" << std::endl << "{";
+			for( std::map< int, std::vector<uint16_t> >::iterator it = e4.begin(); it != e4.end(); ++it )
+			{
+				unsigned long long sum = 0;
+				for( std::size_t i = 0; i < it->second.size(); ++i )
+					sum += it->second[i];
+
+				std::cout << "{" << it->first << "," << (static_cast<double>(sum) / static_cast<double>(it->second.size())) << "},";
+			}
+
+			std::cout << "}" << std::endl << std::endl << std::endl;
+			
+			
+			// --- E5 --- //
+			
+			std::cout << "E5 values:" << std::endl << "{";
+			for( std::map< int, std::vector<uint16_t> >::iterator it = e5.begin(); it != e5.end(); ++it )
+			{
+				unsigned long long sum = 0;
+				for( std::size_t i = 0; i < it->second.size(); ++i )
+					sum += it->second[i];
+
+				std::cout << "{" << it->first << "," << (static_cast<double>(sum) / static_cast<double>(it->second.size())) << "},";
+			}
+
+			std::cout << "}" << std::endl << std::endl << std::endl;
+			
+			
+			// --- E6 --- //
+			
+			std::cout << "E6 values:" << std::endl << "{";
+			for( std::map< int, std::vector<uint16_t> >::iterator it = e6.begin(); it != e6.end(); ++it )
+			{
+				unsigned long long sum = 0;
+				for( std::size_t i = 0; i < it->second.size(); ++i )
+					sum += it->second[i];
+
+				std::cout << "{" << it->first << "," << (static_cast<double>(sum) / static_cast<double>(it->second.size())) << "},";
+			}
+
+			std::cout << "}" << std::endl << std::endl << std::endl;
+			
+			
+			// --- E7 --- //
+			
+			std::cout << "E7 values:" << std::endl << "{";
+			for( std::map< int, std::vector<uint16_t> >::iterator it = e7.begin(); it != e7.end(); ++it )
+			{
+				unsigned long long sum = 0;
+				for( std::size_t i = 0; i < it->second.size(); ++i )
+					sum += it->second[i];
+
+				std::cout << "{" << it->first << "," << (static_cast<double>(sum) / static_cast<double>(it->second.size())) << "},";
+			}
+
+			std::cout << "}" << std::endl << std::endl << std::endl;
+			
+			
+			// --- E9 --- //
+			
+			std::cout << "E9 values:" << std::endl << "{";
+			for( std::map< int, std::vector<uint16_t> >::iterator it = e9.begin(); it != e9.end(); ++it )
+			{
+				unsigned long long sum = 0;
+				for( std::size_t i = 0; i < it->second.size(); ++i )
+					sum += it->second[i];
+
+				std::cout << "{" << it->first << "," << (static_cast<double>(sum) / static_cast<double>(it->second.size())) << "},";
+			}
+
+			std::cout << "}" << std::endl << std::endl << std::endl;
+			
+			
+			// --- E10 --- //
+			
+			std::cout << "E10 values:" << std::endl << "{";
+			for( std::map< int, std::vector<uint16_t> >::iterator it = e10.begin(); it != e10.end(); ++it )
+			{
+				unsigned long long sum = 0;
+				for( std::size_t i = 0; i < it->second.size(); ++i )
+					sum += it->second[i];
+
+				std::cout << "{" << it->first << "," << (static_cast<double>(sum) / static_cast<double>(it->second.size())) << "},";
+			}
+
+			std::cout << "}" << std::endl << std::endl << std::endl;
+			
+			
+			// --- E11 --- //
+			
+			std::cout << "E11 values:" << std::endl << "{";
+			for( std::map< int, std::vector<uint16_t> >::iterator it = e11.begin(); it != e11.end(); ++it )
+			{
+				unsigned long long sum = 0;
+				for( std::size_t i = 0; i < it->second.size(); ++i )
+					sum += it->second[i];
+
+				std::cout << "{" << it->first << "," << (static_cast<double>(sum) / static_cast<double>(it->second.size())) << "},";
+			}
+
+			std::cout << "}" << std::endl << std::endl << std::endl;
+			
+			
+			// --- E12 --- //
+			
+			std::cout << "E12 values:" << std::endl << "{";
+			for( std::map< int, std::vector<uint16_t> >::iterator it = e12.begin(); it != e12.end(); ++it )
+			{
+				unsigned long long sum = 0;
+				for( std::size_t i = 0; i < it->second.size(); ++i )
+					sum += it->second[i];
+
+				std::cout << "{" << it->first << "," << (static_cast<double>(sum) / static_cast<double>(it->second.size())) << "},";
+			}
+
+			std::cout << "}" << std::endl << std::endl << std::endl;
+			
+			
+			// --- E13 --- //
+			
+			std::cout << "E13 values:" << std::endl << "{";
+			for( std::map< int, std::vector<uint16_t> >::iterator it = e13.begin(); it != e13.end(); ++it )
+			{
+				unsigned long long sum = 0;
+				for( std::size_t i = 0; i < it->second.size(); ++i )
+					sum += it->second[i];
+
+				std::cout << "{" << it->first << "," << (static_cast<double>(sum) / static_cast<double>(it->second.size())) << "},";
+			}
+
+			std::cout << "}" << std::endl << std::endl << std::endl;
+			
+			
+			// --- E14 --- //
+			
+			std::cout << "E14 values:" << std::endl << "{";
+			for( std::map< int, std::vector<uint16_t> >::iterator it = e14.begin(); it != e14.end(); ++it )
+			{
+				unsigned long long sum = 0;
+				for( std::size_t i = 0; i < it->second.size(); ++i )
+					sum += it->second[i];
+
+				std::cout << "{" << it->first << "," << (static_cast<double>(sum) / static_cast<double>(it->second.size())) << "},";
+			}
+
+			std::cout << "}" << std::endl << std::endl << std::endl;
+			
+			
+			// --- E15 --- //
+			
+			std::cout << "E15 values:" << std::endl << "{";
+			for( std::map< int, std::vector<uint16_t> >::iterator it = e15.begin(); it != e15.end(); ++it )
+			{
+				unsigned long long sum = 0;
+				for( std::size_t i = 0; i < it->second.size(); ++i )
+					sum += it->second[i];
+
+				std::cout << "{" << it->first << "," << (static_cast<double>(sum) / static_cast<double>(it->second.size())) << "},";
+			}
+
+			std::cout << "}" << std::endl << std::endl << std::endl;
+			
+			
+			// --- E16 --- //
+			
+			std::cout << "E16 values:" << std::endl << "{";
+			for( std::map< int, std::vector<uint16_t> >::iterator it = e16.begin(); it != e16.end(); ++it )
+			{
+				unsigned long long sum = 0;
+				for( std::size_t i = 0; i < it->second.size(); ++i )
+					sum += it->second[i];
+
+				std::cout << "{" << it->first << "," << (static_cast<double>(sum) / static_cast<double>(it->second.size())) << "},";
+			}
+
+			std::cout << "}" << std::endl << std::endl << std::endl;
+			
+			
+			// --- E17 --- //
+			
+			std::cout << "E17 values:" << std::endl << "{";
+			for( std::map< int, std::vector<uint16_t> >::iterator it = e17.begin(); it != e17.end(); ++it )
+			{
+				unsigned long long sum = 0;
+				for( std::size_t i = 0; i < it->second.size(); ++i )
+					sum += it->second[i];
+
+				std::cout << "{" << it->first << "," << (static_cast<double>(sum) / static_cast<double>(it->second.size())) << "},";
+			}
+
+			std::cout << "}" << std::endl << std::endl << std::endl;
+			
+			
+			// --- E18 --- //
+			
+			std::cout << "E18 values:" << std::endl << "{";
+			for( std::map< int, std::vector<uint16_t> >::iterator it = e18.begin(); it != e18.end(); ++it )
+			{
+				unsigned long long sum = 0;
+				for( std::size_t i = 0; i < it->second.size(); ++i )
+					sum += it->second[i];
+
+				std::cout << "{" << it->first << "," << (static_cast<double>(sum) / static_cast<double>(it->second.size())) << "},";
+			}
+
+			std::cout << "}" << std::endl << std::endl << std::endl;
+			
+			
+			// --- E19 --- //
+			
+			std::cout << "E19 values:" << std::endl << "{";
+			for( std::map< int, std::vector<uint16_t> >::iterator it = e19.begin(); it != e19.end(); ++it )
+			{
+				unsigned long long sum = 0;
+				for( std::size_t i = 0; i < it->second.size(); ++i )
+					sum += it->second[i];
+
+				std::cout << "{" << it->first << "," << (static_cast<double>(sum) / static_cast<double>(it->second.size())) << "},";
+			}
+
+			std::cout << "}" << std::endl << std::endl << std::endl;
+			
+			
+			break;
+		}
+
+		case '2':
+		{
+			cFunctionFitNLS f;
+			std::string path = "./data/tdc_electrodes/data_2015_07_30_09_44_43.dat";
+			std::vector<std::string> files;
+			files.push_back(path);
+			f.TrainAgainstDataFiles(files);
+			
 			break;
 		}
 
