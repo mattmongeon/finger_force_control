@@ -10,13 +10,17 @@
 #include <ceres/ceres.h>
 
 
+bool cFunctionFitNLS::mLoggingInitialized = false;
+
+
 ////////////////////////////////////////////////////////////////////////////////
 //  Construction / Destruction
 ////////////////////////////////////////////////////////////////////////////////
 
 cFunctionFitNLS::cFunctionFitNLS()
 {
-
+	if( !mLoggingInitialized )
+		google::InitGoogleLogging("biotac_cal");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -33,38 +37,82 @@ cFunctionFitNLS::~cFunctionFitNLS()
 void cFunctionFitNLS::TrainAgainstDataFiles(const std::vector<std::string>& files)
 {
 	sTdcElectrodeData data = ParseFiles(files);
+	double a, b, c, d;
+	std::cout << "E1:" << std::endl;
+	TrainElectrodeData(data.mE1, a, b, c, d );
+	std::cout << std::endl << std::endl;
 
-	google::InitGoogleLogging("biotac_cal");
+	std::cout << "E2:" << std::endl;
+	TrainElectrodeData(data.mE2, a, b, c, d );
+	std::cout << std::endl << std::endl;
 
-	// double a = -0.0001, b = -3000.0, c = 2.0, d = 3500.0;
-	double a = 0, b = 0, c = 0, d = 0;
-	double init_a = a, init_b = b, init_c = c, init_d = d;
-	ceres::Problem problem;
-	int numDataPoints = data.mE19.size();
-	std::cout << "Number of data points:  " << numDataPoints << std::endl;
-	for( int i = 0; i < numDataPoints; ++i )
-	{
-		std::cout << "Adding data point " << i << "..." << std::endl;
-		problem.AddResidualBlock(
-			new ceres::AutoDiffCostFunction<cExponentialResidual, 1, 1, 1, 1, 1>(
-				new cExponentialResidual( data.mE19[i].first, data.mE19[i].second ) ),
-			NULL,
-			&a, &b, &c, &d );
-	}
+	std::cout << "E3:" << std::endl;
+	TrainElectrodeData(data.mE3, a, b, c, d );
+	std::cout << std::endl << std::endl;
 
-	std::cout << "Setting up options" << std::endl;
-	ceres::Solver::Options options;
-	options.max_num_iterations = 1000;
-	options.linear_solver_type = ceres::DENSE_QR;
-	options.minimizer_progress_to_stdout = true;
+	std::cout << "E4:" << std::endl;
+	TrainElectrodeData(data.mE4, a, b, c, d );
+	std::cout << std::endl << std::endl;
 
-	std::cout << "Solving..." << std::endl;
-	ceres::Solver::Summary summary;
-	ceres::Solve(options, &problem, &summary);
-	std::cout << "\r\n" << summary.FullReport() << "\r\n";
-	std::cout << "Computed for E19:" << "\r\n";
-	std::cout << "Initial a: " << init_a << "\t\t b: " << init_b << "\t\t c: " << init_c << "\t\t d: " << init_d << "\r\n";
-	std::cout << "Final   a: " << a << "\t\t b: " << b << "\t\t c: " << c << "\t\t d: " << d << std::endl;
+	std::cout << "E5:" << std::endl;
+	TrainElectrodeData(data.mE5, a, b, c, d );
+	std::cout << std::endl << std::endl;
+
+	std::cout << "E6:" << std::endl;
+	TrainElectrodeData(data.mE6, a, b, c, d );
+	std::cout << std::endl << std::endl;
+
+	std::cout << "E7:" << std::endl;
+	TrainElectrodeData(data.mE7, a, b, c, d );
+	std::cout << std::endl << std::endl;
+
+	std::cout << "E8:" << std::endl;
+	TrainElectrodeData(data.mE8, a, b, c, d );
+	std::cout << std::endl << std::endl;
+
+	std::cout << "E9:" << std::endl;
+	TrainElectrodeData(data.mE9, a, b, c, d );
+	std::cout << std::endl << std::endl;
+
+	std::cout << "E10:" << std::endl;
+	TrainElectrodeData(data.mE10, a, b, c, d );
+	std::cout << std::endl << std::endl;
+
+	std::cout << "E11:" << std::endl;
+	TrainElectrodeData(data.mE11, a, b, c, d );
+	std::cout << std::endl << std::endl;
+
+	std::cout << "E12:" << std::endl;
+	TrainElectrodeData(data.mE12, a, b, c, d );
+	std::cout << std::endl << std::endl;
+
+	std::cout << "E13:" << std::endl;
+	TrainElectrodeData(data.mE13, a, b, c, d );
+	std::cout << std::endl << std::endl;
+
+	std::cout << "E14:" << std::endl;
+	TrainElectrodeData(data.mE14, a, b, c, d );
+	std::cout << std::endl << std::endl;
+
+	std::cout << "E15:" << std::endl;
+	TrainElectrodeData(data.mE15, a, b, c, d );
+	std::cout << std::endl << std::endl;
+
+	std::cout << "E16:" << std::endl;
+	TrainElectrodeData(data.mE16, a, b, c, d );
+	std::cout << std::endl << std::endl;
+
+	std::cout << "E17:" << std::endl;
+	TrainElectrodeData(data.mE17, a, b, c, d );
+	std::cout << std::endl << std::endl;
+
+	std::cout << "E18:" << std::endl;
+	TrainElectrodeData(data.mE18, a, b, c, d );
+	std::cout << std::endl << std::endl;
+
+	std::cout << "E19:" << std::endl;
+	TrainElectrodeData(data.mE19, a, b, c, d );
+	std::cout << std::endl << std::endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -155,6 +203,34 @@ void cFunctionFitNLS::FillStructMember( std::vector< std::pair<double, double> >
 		std::pair<double, double> p( static_cast<double>(it->first), sum );
 		structData.push_back(p);
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void cFunctionFitNLS::TrainElectrodeData( const std::vector< std::pair<double, double> >& data,
+										  double& a, double& b, double& c, double& d )
+{
+	a = b = c = d = 0;
+	ceres::Problem problem;
+	int numDataPoints = data.size();
+	for( int i = 0; i < numDataPoints; ++i )
+	{
+		problem.AddResidualBlock(
+			new ceres::AutoDiffCostFunction<cExponentialResidual, 1, 1, 1, 1, 1>(
+				new cExponentialResidual( data[i].first, data[i].second ) ),
+			NULL,
+			&a, &b, &c, &d );
+	}
+
+	ceres::Solver::Options options;
+	options.max_num_iterations = 1000;
+	options.linear_solver_type = ceres::DENSE_QR;
+	options.minimizer_progress_to_stdout = false;
+
+	std::cout << "Solving... " << std::endl;
+	ceres::Solver::Summary summary;
+	ceres::Solve(options, &problem, &summary);
+	std::cout << "Final a: " << a << "  b: " << b << "  c: " << c << "  d: " << d << std::endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
