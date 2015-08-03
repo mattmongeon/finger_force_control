@@ -39,7 +39,7 @@ public:
 private:
 
 	//--------------------------------------------------------------------------//
-	//----------------------------  HELPER CLASSES  ----------------------------//
+	//----------------------------  CERES CLASSES  -----------------------------//
 	//--------------------------------------------------------------------------//
 	
 	struct sTdcElectrodeData
@@ -66,10 +66,10 @@ private:
 	};
 
 
-	class cExponentialResidual
+	class cPolynomialResidual
 	{
 	public:
-		cExponentialResidual(double x, double y)
+		cPolynomialResidual(double x, double y)
 			: mX(x), mY(y) {}
 
 		template<typename T> bool operator()( const T* const a,

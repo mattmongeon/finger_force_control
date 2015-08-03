@@ -284,8 +284,8 @@ void cFunctionFitNLS::FitToElectrodeData( const std::vector< std::pair<double, d
 	for( int i = 10; i < numDataPoints; ++i )
 	{
 		problem.AddResidualBlock(
-			new ceres::AutoDiffCostFunction<cExponentialResidual, 1, 1, 1, 1, 1>(
-				new cExponentialResidual( data[i].first, data[i].second ) ),
+			new ceres::AutoDiffCostFunction<cPolynomialResidual, 1, 1, 1, 1, 1>(
+				new cPolynomialResidual( data[i].first, data[i].second ) ),
 			NULL,
 			&a, &b, &c, &d );
 	}
@@ -293,11 +293,12 @@ void cFunctionFitNLS::FitToElectrodeData( const std::vector< std::pair<double, d
 	ceres::Solver::Options options;
 	options.max_num_iterations = 1000;
 	options.linear_solver_type = ceres::DENSE_QR;
-	options.minimizer_progress_to_stdout = true;
+	options.minimizer_progress_to_stdout = false;
 
 	std::cout << "Solving... " << std::endl;
 	ceres::Solver::Summary summary;
 	ceres::Solve(options, &problem, &summary);
+	std::cout << summary.FullReport() << std::endl;
 	std::cout << "Final a: " << a << "  b: " << b << "  c: " << c << "  d: " << d << std::endl;
 }
 
