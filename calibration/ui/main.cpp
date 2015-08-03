@@ -7,6 +7,7 @@
 #include "file_plotter.h"
 #include "function_fit_nn.h"
 #include "function_fit_nls.h"
+#include "function_fit_force_terms.h"
 #include "file_utils.h"
 #include "data_file_reader.h"
 #include "electrode_tdc_compensator.h"
@@ -773,12 +774,12 @@ int main(int argc, char** argv)
 		case '2':
 		{
 			cFunctionFitNLS f;
-			std::string path = "./data/tdc_electrodes/data_2015_07_30_09_44_43.dat";
 			std::vector<std::string> files;
-			files.push_back(path);
+			files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
 			std::vector<cElectrodeTdcCompensator> compensators = f.TrainAgainstDataFiles(files);
 
 			files.clear();
+			files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
 			files.push_back("./data/zero1.dat");
 			files.push_back("./data/zero2.dat");
 			files.push_back("./data/zero3.dat");
@@ -787,6 +788,28 @@ int main(int argc, char** argv)
 			break;
 		}
 
+		case '3':
+		{
+			cFunctionFitNLS f;
+			std::vector<std::string> files;
+			files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
+			std::vector<cElectrodeTdcCompensator> compensators = f.TrainAgainstDataFiles(files);
+
+			files.clear();
+			files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
+			files.push_back("./data/zero1.dat");
+			files.push_back("./data/zero2.dat");
+			files.push_back("./data/zero3.dat");
+			f.TestAgainstDataFiles(files, compensators);
+
+			cFunctionFitForceTerms ffTerms(compensators);
+			files.clear();
+			files.push_back("./data/data_2015_07_30_15_40_25.dat");
+			ffTerms.TrainAgainstDataFiles(files);
+			
+			break;
+		}
+		
 		default:
 			break;
 		}

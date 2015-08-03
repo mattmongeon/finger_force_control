@@ -5,7 +5,7 @@ INCLUDES=-I/usr/local/include/eigen3
 
 SOURCES=main.cpp pic_serial.cpp load_cell.cpp utils.cpp stopwatch.cpp keyboard_thread.cpp biotac.cpp
 SOURCES+=real_time_plot.cpp data_logger.cpp file_plotter.cpp data_file_reader.cpp function_fit_nn.cpp
-SOURCES+=file_utils.cpp function_fit_nls.cpp electrode_tdc_compensator.cpp
+SOURCES+=file_utils.cpp function_fit_nls.cpp electrode_tdc_compensator.cpp function_fit_force_terms.cpp
 
 LFLAGS=-lboost_thread -lboost_system -lboost_timer -lboost_filesystem -lboost_chrono 
 LFLAGS+=-lceres -lgflags -lglog -llapack -lcamd -lamd -lccolamd -lcolamd -lcholmod
