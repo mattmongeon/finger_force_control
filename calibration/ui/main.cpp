@@ -804,11 +804,16 @@ int main(int argc, char** argv)
 
 			cFunctionFitForceTerms ffTerms(compensators);
 			files.clear();
-			files.push_back("./data/data_2015_07_30_15_40_25.dat");
+			//files.push_back("./data/data_2015_07_30_15_40_25.dat");
+			files = nFileUtils::GetFilesInDirectory("./data", ".dat");
+			for( std::size_t i = 0; i < files.size(); ++i )
+				files[i].insert(0, "./data/");
+			
 			cBioTacForceCurve curve = ffTerms.TrainAgainstDataFiles(files);
 
 			files.clear();
 			files.push_back("./data/test/data_2015_07_30_16_35_24.dat");
+			//files.push_back("./data/data_2015_07_30_15_40_25.dat");
 			ffTerms.TestAgainstDataFiles(files, curve);
 			
 			break;
