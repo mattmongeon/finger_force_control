@@ -34,92 +34,156 @@ cFunctionFitNLS::~cFunctionFitNLS()
 //  Interface Functions
 ////////////////////////////////////////////////////////////////////////////////
 
-void cFunctionFitNLS::TrainAgainstDataFiles(const std::vector<std::string>& files)
+std::vector<cElectrodeTdcCompensator> cFunctionFitNLS::TrainAgainstDataFiles(const std::vector<std::string>& files)
 {
 	sTdcElectrodeData data = ParseFiles(files);
+	std::vector<cElectrodeTdcCompensator> retVal;
 	double a, b, c, d;
+	
 	std::cout << "E1:" << std::endl;
-	TrainElectrodeData(data.mE1, a, b, c, d );
+	FitToElectrodeData(data.mE1, a, b, c, d );
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl << std::endl;
 
 	std::cout << "E2:" << std::endl;
-	TrainElectrodeData(data.mE2, a, b, c, d );
+	FitToElectrodeData(data.mE2, a, b, c, d );
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl << std::endl;
 
 	std::cout << "E3:" << std::endl;
-	TrainElectrodeData(data.mE3, a, b, c, d );
+	FitToElectrodeData(data.mE3, a, b, c, d );
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl << std::endl;
 
 	std::cout << "E4:" << std::endl;
-	TrainElectrodeData(data.mE4, a, b, c, d );
+	FitToElectrodeData(data.mE4, a, b, c, d );
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl << std::endl;
 
 	std::cout << "E5:" << std::endl;
-	TrainElectrodeData(data.mE5, a, b, c, d );
+	FitToElectrodeData(data.mE5, a, b, c, d );
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl << std::endl;
 
 	std::cout << "E6:" << std::endl;
-	TrainElectrodeData(data.mE6, a, b, c, d );
+	FitToElectrodeData(data.mE6, a, b, c, d );
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl << std::endl;
 
 	std::cout << "E7:" << std::endl;
-	TrainElectrodeData(data.mE7, a, b, c, d );
+	FitToElectrodeData(data.mE7, a, b, c, d );
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl << std::endl;
 
 	std::cout << "E8:" << std::endl;
-	TrainElectrodeData(data.mE8, a, b, c, d );
+	FitToElectrodeData(data.mE8, a, b, c, d );
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl << std::endl;
 
 	std::cout << "E9:" << std::endl;
-	TrainElectrodeData(data.mE9, a, b, c, d );
+	FitToElectrodeData(data.mE9, a, b, c, d );
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl << std::endl;
 
 	std::cout << "E10:" << std::endl;
-	TrainElectrodeData(data.mE10, a, b, c, d );
+	FitToElectrodeData(data.mE10, a, b, c, d );
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl << std::endl;
 
 	std::cout << "E11:" << std::endl;
-	TrainElectrodeData(data.mE11, a, b, c, d );
+	FitToElectrodeData(data.mE11, a, b, c, d );
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl << std::endl;
 
 	std::cout << "E12:" << std::endl;
-	TrainElectrodeData(data.mE12, a, b, c, d );
+	FitToElectrodeData(data.mE12, a, b, c, d );
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl << std::endl;
 
 	std::cout << "E13:" << std::endl;
-	TrainElectrodeData(data.mE13, a, b, c, d );
+	FitToElectrodeData(data.mE13, a, b, c, d );
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl << std::endl;
 
 	std::cout << "E14:" << std::endl;
-	TrainElectrodeData(data.mE14, a, b, c, d );
+	FitToElectrodeData(data.mE14, a, b, c, d );
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl << std::endl;
 
 	std::cout << "E15:" << std::endl;
-	TrainElectrodeData(data.mE15, a, b, c, d );
+	FitToElectrodeData(data.mE15, a, b, c, d );
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl << std::endl;
 
 	std::cout << "E16:" << std::endl;
-	TrainElectrodeData(data.mE16, a, b, c, d );
+	FitToElectrodeData(data.mE16, a, b, c, d );
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl << std::endl;
 
 	std::cout << "E17:" << std::endl;
-	TrainElectrodeData(data.mE17, a, b, c, d );
+	FitToElectrodeData(data.mE17, a, b, c, d );
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl << std::endl;
 
 	std::cout << "E18:" << std::endl;
-	TrainElectrodeData(data.mE18, a, b, c, d );
+	FitToElectrodeData(data.mE18, a, b, c, d );
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl << std::endl;
 
 	std::cout << "E19:" << std::endl;
-	TrainElectrodeData(data.mE19, a, b, c, d );
+	FitToElectrodeData(data.mE19, a, b, c, d );
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl << std::endl;
+
+	return retVal;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void cFunctionFitNLS::TestAgainstDataFiles(const std::vector<std::string>& files)
+void cFunctionFitNLS::TestAgainstDataFiles(const std::vector<std::string>& files,
+										   const std::vector<cElectrodeTdcCompensator>& compensators)
 {
-	sTdcElectrodeData data = ParseFiles(files);
+	std::vector<double> errors(19);
+	
+	for( std::size_t i = 0; i < files.size(); ++i )
+	{
+		cDataFileReader reader(files[i]);
+		for( std::size_t errorIndex = 0; errorIndex < errors.size(); ++errorIndex )
+			errors[errorIndex] = 0;
+		
+		std::vector<biotac_tune_data> data = reader.GetData();
+		for( std::size_t dataIndex = 0; dataIndex < reader.GetNumDataPoints(); ++dataIndex )
+		{
+			errors[0] += compensators[0].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e1);
+			errors[1] += compensators[1].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e2);
+			errors[2] += compensators[2].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e3);
+			errors[3] += compensators[3].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e4);
+			errors[4] += compensators[4].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e5);
+			errors[5] += compensators[5].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e6);
+			errors[6] += compensators[6].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e7);
+			errors[7] += compensators[7].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e8);
+			errors[8] += compensators[8].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e9);
+			errors[9] += compensators[9].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e10);
+			errors[10] += compensators[10].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e11);
+			errors[11] += compensators[11].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e12);
+			errors[12] += compensators[12].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e13);
+			errors[13] += compensators[13].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e14);
+			errors[14] += compensators[14].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e15);
+			errors[15] += compensators[15].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e16);
+			errors[16] += compensators[16].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e17);
+			errors[17] += compensators[17].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e18);
+			errors[18] += compensators[18].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e19);
+		}
+
+		std::cout << "Average errors for " << files[i] << std::endl;
+		for( std::size_t errorIndex = 0; errorIndex < errors.size(); ++errorIndex )
+		{
+			errors[errorIndex] /= static_cast<double>(reader.GetNumDataPoints());
+			std::cout << "E" << errorIndex << ": " << errors[errorIndex] << ", ";
+		}
+
+		std::cout << std::endl << std::endl;
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -207,7 +271,7 @@ void cFunctionFitNLS::FillStructMember( std::vector< std::pair<double, double> >
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void cFunctionFitNLS::TrainElectrodeData( const std::vector< std::pair<double, double> >& data,
+void cFunctionFitNLS::FitToElectrodeData( const std::vector< std::pair<double, double> >& data,
 										  double& a, double& b, double& c, double& d )
 {
 	a = b = c = d = 0;

@@ -24,6 +24,11 @@ public:
 	//--------------------------  INTERFACE FUNCTIONS  -------------------------//
 	//--------------------------------------------------------------------------//
 
+	// Returns how many data points were contained in the file.
+	//
+	// Returns - The number of data points.
+	std::size_t GetNumDataPoints() const;
+	
 	// Returns a vector of all of the data from the file.
 	//
 	// Returns - A vector of all data points.

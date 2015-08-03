@@ -40,6 +40,13 @@ cDataFileReader::~cDataFileReader()
 //  Interface Functions
 ////////////////////////////////////////////////////////////////////////////////
 
+std::size_t cDataFileReader::GetNumDataPoints() const
+{
+	return mData.size();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 std::vector<biotac_tune_data> cDataFileReader::GetData() const
 {
 	return mData;
