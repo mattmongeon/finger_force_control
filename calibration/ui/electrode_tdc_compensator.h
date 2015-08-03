@@ -15,6 +15,10 @@ public:
 
 	~cElectrodeTdcCompensator();
 
+	cElectrodeTdcCompensator(const cElectrodeTdcCompensator& copyMe);
+
+	cElectrodeTdcCompensator& operator=(const cElectrodeTdcCompensator& rhs);
+
 	
 	//--------------------------------------------------------------------------//
 	//--------------------------  INTERFACE FUNCTIONS  -------------------------//

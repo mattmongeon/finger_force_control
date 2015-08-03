@@ -805,7 +805,11 @@ int main(int argc, char** argv)
 			cFunctionFitForceTerms ffTerms(compensators);
 			files.clear();
 			files.push_back("./data/data_2015_07_30_15_40_25.dat");
-			ffTerms.TrainAgainstDataFiles(files);
+			cBioTacForceCurve curve = ffTerms.TrainAgainstDataFiles(files);
+
+			files.clear();
+			files.push_back("./data/test/data_2015_07_30_16_35_24.dat");
+			ffTerms.TestAgainstDataFiles(files, curve);
 			
 			break;
 		}

@@ -4,6 +4,7 @@
 
 #include "function_fit_nls.h"
 #include "electrode_tdc_compensator.h"
+#include "biotac_force_curve.h"
 #include <cmath>
 
 
@@ -24,13 +25,26 @@ public:
 	//--------------------------  INTERFACE FUNCTIONS  -------------------------//
 	//--------------------------------------------------------------------------//
 
-    void TrainAgainstDataFiles(const std::vector<std::string>& files);
+    cBioTacForceCurve TrainAgainstDataFiles(const std::vector<std::string>& files);
 
-    void TestAgainstDataFiles(const std::vector<std::string>& files);
+    void TestAgainstDataFiles(const std::vector<std::string>& files, const cBioTacForceCurve& curve);
 	
 	
 private:
 
+	//--------------------------------------------------------------------------//
+	//---------------------------  HELPER FUNCTIONS  ---------------------------//
+	//--------------------------------------------------------------------------//
+
+	// Takes in the reference (groundtruth) data and calibration curve output and
+	// plots them along with the error.
+	//
+	// Parameters:
+	// calculated - The output of the calibration curve after passing in BioTac data.
+	// actual - Reference groundtruth value for comparison with calibration curve results.
+	void PlotResults(const std::vector<float>& calculated, const std::vector<float>& actual );
+	
+	
 	//--------------------------------------------------------------------------//
 	//----------------------------  CERES CLASSES  -----------------------------//
 	//--------------------------------------------------------------------------//
