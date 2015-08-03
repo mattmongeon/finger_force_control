@@ -10,6 +10,9 @@
 #include <cmath>
 
 
+class plstream;
+
+
 class cFunctionFitNLS
 {
 public:
@@ -118,14 +121,45 @@ private:
 	// d - [OUT] - An offset applied to the entire result.
 	void FitToElectrodeData( const std::vector< std::pair<double, double> >& data,
 							 double& a, double& b, double& c, double& d );
-	
-	// Takes in the reference (groundtruth) data and the function  output and
-	// plots them along with the error.
+
+	// Takes in an array of vectors (one for each electrode) and plots the errors
+	// at each measurement point.
 	//
 	// Parameters:
-	// calculated - The output of the neural network after passing in BioTac data.
-	// actual - Reference groundtruth value for comparison with function results.
-	void PlotResults(const std::vector<float>& calculated, const std::vector<float>& actual );
+	// errors - Array of vectors containing error differences at each point.
+	void PlotTestingErrors(const std::vector<double>* errors );
+
+	// Plots the errors of electrodes 1 through 5 as a sub-plot of the parameter
+	// plot stream.
+	//
+	// Params:
+	// errors - Array of vectors containing the errors for electrodes 1-5.
+	// plottingStream - The streaming plotting device.
+	void PlotE1ThroughE5(const std::vector<double>* errors, plstream& plottingStream);
+
+	// Plots the errors of electrodes 6 through 10 as a sub-plot of the parameter
+	// plot stream.
+	//
+	// Params:
+	// errors - Array of vectors containing the errors for electrodes 6-10.
+	// plottingStream - The streaming plotting device.
+	void PlotE6ThroughE10(const std::vector<double>* errors, plstream& plottingStream);
+
+	// Plots the errors of electrodes 11 through 15 as a sub-plot of the parameter
+	// plot stream.
+	//
+	// Params:
+	// errors - Array of vectors containing the errors for electrodes 11-15.
+	// plottingStream - The streaming plotting device.
+	void PlotE11ThroughE15(const std::vector<double>* errors, plstream& plottingStream);
+
+	// Plots the errors of electrodes 16 through 19 as a sub-plot of the parameter
+	// plot stream.
+	//
+	// Params:
+	// errors - Array of vectors containing the errors for electrodes 16-19.
+	// plottingStream - The streaming plotting device.
+	void PlotE16ThroughE19(const std::vector<double>* errors, plstream& plottingStream);
 	
 
 	//--------------------------------------------------------------------------//
