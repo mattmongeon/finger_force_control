@@ -9,6 +9,7 @@
 #include "function_fit_nls.h"
 #include "file_utils.h"
 #include "data_file_reader.h"
+#include "electrode_tdc_compensator.h"
 #include <plplot/plplot.h>
 #include <plplot/plstream.h>
 #include <iostream>
@@ -775,7 +776,13 @@ int main(int argc, char** argv)
 			std::string path = "./data/tdc_electrodes/data_2015_07_30_09_44_43.dat";
 			std::vector<std::string> files;
 			files.push_back(path);
-			f.TrainAgainstDataFiles(files);
+			std::vector<cElectrodeTdcCompensator> compensators = f.TrainAgainstDataFiles(files);
+
+			files.clear();
+			files.push_back("./data/zero1.dat");
+			files.push_back("./data/zero2.dat");
+			files.push_back("./data/zero3.dat");
+			f.TestAgainstDataFiles(files, compensators);
 			
 			break;
 		}

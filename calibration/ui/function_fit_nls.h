@@ -1,6 +1,7 @@
 #ifndef INCLUDED_FUNCTION_FIT_NLS_H
 #define INCLUDED_FUNCTION_FIT_NLS_H
 
+#include "electrode_tdc_compensator.h"
 #include <vector>
 #include <string>
 #include <utility>
@@ -26,9 +27,10 @@ public:
 	//--------------------------  INTERFACE FUNCTIONS  -------------------------//
 	//--------------------------------------------------------------------------//
 
-	void TrainAgainstDataFiles(const std::vector<std::string>& files);
+    std::vector<cElectrodeTdcCompensator> TrainAgainstDataFiles(const std::vector<std::string>& files);
 
-	void TestAgainstDataFiles(const std::vector<std::string>& files);
+    void TestAgainstDataFiles(const std::vector<std::string>& files,
+							  const std::vector<cElectrodeTdcCompensator>& compensators);
 	
 	
 private:
@@ -95,10 +97,26 @@ private:
 	// Return - Structure containing all of the data from the file.
 	sTdcElectrodeData ParseFiles(const std::vector<std::string>& files);
 
+	// Takes in a container of raw data that maps TDC values to values for a particular
+	// electrode, averages them per TDC value, and adds them to the parameter object that
+	// is part of the sTdcElectrodeData struct.
+	//
+	// Params:
+	// structData - The container that is part of sTdcElectrodeData that will be filled.
+	// rawData - The measured data to be processed and added to structData.
 	void FillStructMember( std::vector< std::pair<double, double> >& structData,
 						   const std::map< int, std::vector<uint16_t> >& rawData );
 
-	void TrainElectrodeData( const std::vector< std::pair<double, double> >& data,
+	// Uses the Ceres library and the parameter data vector to fit a function and return
+	// the constants.  The function to be fit is of the form a*(TDC+b)^c + d.
+	//
+	// Params:
+	// data - The container of all of the data points to be used for fitting.
+	// a - [OUT] - The scalar applied to the polynomial term.
+	// b - [OUT] - The offset applied to the TDC value before being raised to some power.
+	// c - [OUT] - The exponential term.
+	// d - [OUT] - An offset applied to the entire result.
+	void FitToElectrodeData( const std::vector< std::pair<double, double> >& data,
 							 double& a, double& b, double& c, double& d );
 	
 	// Takes in the reference (groundtruth) data and the function  output and
@@ -114,6 +132,7 @@ private:
 	//-----------------------------  DATA MEMBERS  -----------------------------//
 	//--------------------------------------------------------------------------//
 
+	// A flag to protect against calling google::InitGoogleLogging() more than once.
 	static bool mLoggingInitialized;
 };
 
