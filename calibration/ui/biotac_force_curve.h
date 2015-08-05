@@ -5,6 +5,7 @@
 #include "electrode_tdc_compensator.h"
 #include <vector>
 #include <stdint.h>
+#include <string>
 
 
 class cBioTacForceCurve
@@ -15,8 +16,21 @@ public:
 	//----------------------  CONSTRUCTION / DESTRUCTION  ----------------------//
 	//--------------------------------------------------------------------------//
 
+	// Takes in the tdc/electrode compensators and the S terms for the force vector
+	// equation and fills its own data members.
+	//
+	// Params:
+	// compensators - The vector of all 19 TDC/electrode compensators.
+	// sx - The Sx term of the force vector.
+	// sy - The Sy term of the force vector.
+	// sz - The Sz term of the force vector.
 	cBioTacForceCurve( const std::vector<cElectrodeTdcCompensator>& compensators,
 					   double sx, double sy, double sz );
+
+	// Takes in the path to the file containing the saved coefficients.
+	//
+	// filePath - The path to the file containing the saved data.
+	cBioTacForceCurve( const std::string& filePath );
 
 	~cBioTacForceCurve();
 
@@ -34,10 +48,32 @@ public:
 	//
 	// Return - The associated force in grams.
 	double GetForce_g(const std::vector<uint16_t>& electrodes, uint16_t tdc) const;
+
+	// Writes the coefficients of the compensators and as well as the S terms for
+	// this object to file.
+	//
+	// Params:
+	// file - The path to the file to be written.
+	void SaveFitTermsToFile(const std::string& file);
 	
 	
 private:
 
+	//--------------------------------------------------------------------------//
+	//---------------------------  HELPER FUNCTIONS ----------------------------//
+	//--------------------------------------------------------------------------//
+
+	// Initializes the data members of this class with the given parameters.
+	//
+	// Params:
+	// compensators - The vector of all 19 TDC/electrode compensators.
+	// sx - The Sx term of the force vector.
+	// sy - The Sy term of the force vector.
+	// sz - The Sz term of the force vector.
+	void InitMembers( const std::vector<cElectrodeTdcCompensator>& compensators,
+					  double sx, double sy, double sz );
+	
+	
 	//--------------------------------------------------------------------------//
 	//-----------------------------  DATA MEMBERS  -----------------------------//
 	//--------------------------------------------------------------------------//

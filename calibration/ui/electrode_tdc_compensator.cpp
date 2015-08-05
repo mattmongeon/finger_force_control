@@ -55,4 +55,12 @@ double cElectrodeTdcCompensator::GetUnforcedElectrodeValue(double tdc) const
 	return mA*pow(tdc+mB, mC) + mD;
 }
 
+////////////////////////////////////////////////////////////////////////////////
 
+void cElectrodeTdcCompensator::GetCoefficients(double& a, double& b, double& c, double& d) const
+{
+	a = mA;
+	b = mB;
+	c = mC;
+	d = mD;
+}
