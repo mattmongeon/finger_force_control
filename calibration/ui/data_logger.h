@@ -2,9 +2,9 @@
 #define INCLUDED_DATA_LOGGER_H
 
 #include <boost/thread/thread.hpp>
+#include <string>
 #include <queue>
 #include <fstream>
-#include <cstring>
 
 
 // Writes data to file in a binary format.  The file contains a header which gives
@@ -18,7 +18,7 @@ public:
 	//--------------------------------------------------------------------------//
 
 	// Constructor.  Opens the output file and starts the real-time thread.
-	cDataLogger();
+	cDataLogger(const std::string& fileName = "");
 
 	
 	// Destructor.  Stops and cleans up the real-time thread, and closes the
