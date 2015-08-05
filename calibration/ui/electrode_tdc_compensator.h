@@ -45,6 +45,15 @@ public:
 	// Return - The electrode normalizing value.
 	double GetUnforcedElectrodeValue(double tdc) const;
 
+	// Takes references as parameters and fills them with the coefficient values.
+	//
+	// Params:
+	// a - [OUT] - The reference to receive the a coefficient.
+	// b - [OUT] - The reference to receive the b coefficient.
+	// c - [OUT] - The reference to receive the c coefficient.
+	// d - [OUT] - The reference to receive the d coefficient.
+	void GetCoefficients(double& a, double& b, double& c, double& d) const;
+
 	
 private:
 

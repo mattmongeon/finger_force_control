@@ -19,6 +19,7 @@
 #include <cmath>
 #include <cstdio>
 #include <map>
+#include <fstream>
 
 
 static bool noSerial = false;
@@ -773,43 +774,71 @@ int main(int argc, char** argv)
 
 		case '2':
 		{
+			// --- Train For Fit --- //
+			
 			cFunctionFitNLS f;
 			std::vector<std::string> files;
 			files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
 			std::vector<cElectrodeTdcCompensator> compensators = f.TrainAgainstDataFiles(files);
 
+
+			// --- Test The Fit --- //
+			
 			files.clear();
 			files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
-			files.push_back("./data/zero1.dat");
-			files.push_back("./data/zero2.dat");
-			files.push_back("./data/zero3.dat");
+			files.push_back("./data/tdc_electrodes/zero1.dat");
+			files.push_back("./data/tdc_electrodes/zero2.dat");
+			files.push_back("./data/tdc_electrodes/zero3.dat");
 			f.TestAgainstDataFiles(files, compensators);
+
+
+			// --- Write Coefficients To File --- //
+			
+			std::ofstream file("./data/tdc_electrodes/tdc_electrode_curve.dat", std::ios::binary | std::ios::out);
+			double a, b, c, d;
+			for( std::size_t i = 0; i < compensators.size(); ++i )
+			{
+				compensators[i].GetCoefficients(a, b, c, d);
+				file.write(reinterpret_cast<const char*>(&a), sizeof(double));
+				file.write(reinterpret_cast<const char*>(&b), sizeof(double));
+				file.write(reinterpret_cast<const char*>(&c), sizeof(double));
+				file.write(reinterpret_cast<const char*>(&d), sizeof(double));
+			}
 			
 			break;
 		}
 
 		case '3':
 		{
-			cFunctionFitNLS f;
-			std::vector<std::string> files;
-			files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
-			std::vector<cElectrodeTdcCompensator> compensators = f.TrainAgainstDataFiles(files);
+			// --- Load TDC vs Electrode Coefficients From File --- //
+			
+			std::vector<cElectrodeTdcCompensator> compensators;
+			compensators.clear();
+			std::ifstream file("./data/tdc_electrodes/tdc_electrode_curve.dat", std::ios::binary | std::ios::in);
+			double a, b, c, d;
+			for( std::size_t i = 0; i < 19; ++i )
+			{
+				file.read(reinterpret_cast<char*>(&a), sizeof(double));
+				file.read(reinterpret_cast<char*>(&b), sizeof(double));
+				file.read(reinterpret_cast<char*>(&c), sizeof(double));
+				file.read(reinterpret_cast<char*>(&d), sizeof(double));
 
-			files.clear();
-			files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
-			files.push_back("./data/zero1.dat");
-			files.push_back("./data/zero2.dat");
-			files.push_back("./data/zero3.dat");
-			f.TestAgainstDataFiles(files, compensators);
+				compensators.push_back( cElectrodeTdcCompensator(a, b, c, d) );
+			}
+			
 
+			// --- Train Fit For Force Equation --- //
+			
 			cFunctionFitForceTerms ffTerms(compensators);
-			files.clear();
-			files = nFileUtils::GetFilesInDirectory("./data", ".dat");
+			std::vector<std::string> files = nFileUtils::GetFilesInDirectory("./data", ".dat");
 			for( std::size_t i = 0; i < files.size(); ++i )
 				files[i].insert(0, "./data/");
 			
 			cBioTacForceCurve curve = ffTerms.TrainAgainstDataFiles(files);
 
+
+			// --- Test Fit --- //
+			
 			files.clear();
 			files.push_back("./data/test/data_2015_07_30_16_35_24.dat");
 			files.push_back("./data/test/data_2015_07_29_14_44_14.dat");
