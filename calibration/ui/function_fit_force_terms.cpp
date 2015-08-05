@@ -115,7 +115,7 @@ cBioTacForceCurve cFunctionFitForceTerms::TrainAgainstDataFiles(const std::vecto
 		cDataFileReader reader(*it);
 
 		std::vector<biotac_tune_data> data = reader.GetData();
-		for( std::size_t i = 0; i < data.size(); ++i )
+		for( std::size_t i = 100; i < data.size(); ++i )
 		{
 			std::vector<uint16_t> electrodes;
 			electrodes.push_back(data[i].mData.e1);
@@ -156,6 +156,7 @@ cBioTacForceCurve cFunctionFitForceTerms::TrainAgainstDataFiles(const std::vecto
 	options.max_num_iterations = 1000;
 	options.linear_solver_type = ceres::DENSE_QR;
 	options.minimizer_progress_to_stdout = true;
+	options.function_tolerance = 1.0e-12;
 
 	std::cout << "Solving... " << std::endl;
 	ceres::Solver::Summary summary;
@@ -252,7 +253,7 @@ void cFunctionFitForceTerms::PlotResults(const std::vector<float>& calculated, c
 
 	plottingStream.col0(nUtils::enumPLplotColor_RED);
 	plottingStream.env(0, calculated.size(), ymin, ymax*1.01, 0, 0);
-	plottingStream.lab("Samples", "Magnitude", "Neural Network Analysis");
+	plottingStream.lab("Samples", "Magnitude", "Function Fit Analysis");
 
 	plottingStream.col0(nUtils::enumPLplotColor_BLUE);
 	plottingStream.line(calculated.size(), pX, pCalculated);
