@@ -10,3 +10,5 @@ calibration/ui/data
 calibration/ui/nn
 *.nndat
 calibration/ui/obj
+*.bak
+
