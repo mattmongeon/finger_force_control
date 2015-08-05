@@ -75,11 +75,27 @@ void cBioTac::ReadContinuous() const
 
 	// --- Set Up --- //
 
-	cRealTimePlot plotter("Load Cell", "Sample", "Force (g)", "Force (g)", "", "", "", 2500.0);
 	cDataLogger* pLogger = NULL;
 	if( recording )
-		pLogger = new cDataLogger();
+	{
+		nUtils::ClearConsole();
+		std::cout << "Enter file name (just press ENTER for default name): " << std::flush;
+		std::cin.clear();
 
+		// Ignore leftover '\n' characters so that we don't always automatically end up with a
+		// blank file name every time.
+		std::cin.ignore(1);
+		std::string fileName;
+		std::getline( std::cin, fileName );
+
+		std::cout << "length:  " << fileName.size() << std::endl;
+		std::cout << "name:    " << fileName << std::endl;
+		
+		pLogger = new cDataLogger(fileName);
+	}
+
+	cRealTimePlot plotter("Load Cell", "Sample", "Force (g)", "Force (g)", "", "", "", 2500.0);
+	
 	
 	cKeyboardThread::Instance()->StartDetection();
 

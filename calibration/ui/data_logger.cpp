@@ -12,44 +12,40 @@
 //  Construction / Destruction
 ////////////////////////////////////////////////////////////////////////////////
 
-cDataLogger::cDataLogger()
+cDataLogger::cDataLogger(const std::string& fileName)
 {
 	nFileUtils::CreateDirectory("./data");
 	
 	time_t curTime = time(NULL);
 	tm* t = localtime(&curTime);
 	std::ostringstream s;
-	s << "./data/data_" << t->tm_year + 1900 << "_"
-	  << std::setw(2) << std::setfill('0')
-	  << t->tm_mon + 1 << "_"
-	  << std::setw(2) << std::setfill('0')
-	  << t->tm_mday << "_"
-	  << std::setw(2) << std::setfill('0')
-	  << t->tm_hour << "_"
-	  << std::setw(2) << std::setfill('0')
-	  << t->tm_min << "_"
-	  << std::setw(2) << std::setfill('0')
-	  << t->tm_sec << ".dat";
-	s << std::flush;
+	if( fileName == "" )
+	{
+		s << "./data/data_" << t->tm_year + 1900 << "_"
+		  << std::setw(2) << std::setfill('0')
+		  << t->tm_mon + 1 << "_"
+		  << std::setw(2) << std::setfill('0')
+		  << t->tm_mday << "_"
+		  << std::setw(2) << std::setfill('0')
+		  << t->tm_hour << "_"
+		  << std::setw(2) << std::setfill('0')
+		  << t->tm_min << "_"
+		  << std::setw(2) << std::setfill('0')
+		  << t->tm_sec << ".dat";
+		s << std::flush;
+	}
+	else
+	{
+		s << "./data/" << fileName << ".dat" << std::flush;
+	}
 	
 	mOutFile.open(s.str().c_str(), std::ios::binary | std::ios::out);
 
-	s.str("");
-	s.clear();
-	s << "./data/data_" << t->tm_year + 1900 << "_"
-	  << std::setw(2) << std::setfill('0')
-	  << t->tm_mon + 1 << "_"
-	  << std::setw(2) << std::setfill('0')
-	  << t->tm_mday << "_"
-	  << std::setw(2) << std::setfill('0')
-	  << t->tm_hour << "_"
-	  << std::setw(2) << std::setfill('0')
-	  << t->tm_min << "_"
-	  << std::setw(2) << std::setfill('0')
-	  << t->tm_sec << ".dat.text";
 	
+	s << ".text" << std::flush;
 	mTextFile.open(s.str().c_str());
 
+	
 	mLoopRunning = true;
 	mThread = boost::thread(ThreadFunc, this);
 }
