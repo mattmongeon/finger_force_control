@@ -44,101 +44,101 @@ std::vector<cElectrodeTdcCompensator> cFunctionFitNLS::TrainAgainstDataFiles(con
 	// --- Fit Against Data --- //
 	
 	std::vector<cElectrodeTdcCompensator> retVal;
-	double a, b, c, d;
+	double a, b, c, d, e, f, g;
 	
 	std::cout << "E1:" << std::endl;
-	FitToElectrodeData(data.mE1, a, b, c, d);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
+	FitToElectrodeData(data.mE1, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E2:" << std::endl;
-	FitToElectrodeData(data.mE2, a, b, c, d);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
+	FitToElectrodeData(data.mE2, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E3:" << std::endl;
-	FitToElectrodeData(data.mE3, a, b, c, d);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
+	FitToElectrodeData(data.mE3, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E4:" << std::endl;
-	FitToElectrodeData(data.mE4, a, b, c, d);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
+	FitToElectrodeData(data.mE4, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E5:" << std::endl;
-	FitToElectrodeData(data.mE5, a, b, c, d);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
+	FitToElectrodeData(data.mE5, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E6:" << std::endl;
-	FitToElectrodeData(data.mE6, a, b, c, d);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
+	FitToElectrodeData(data.mE6, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E7:" << std::endl;
-	FitToElectrodeData(data.mE7, a, b, c, d);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
+	FitToElectrodeData(data.mE7, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E8:" << std::endl;
-	FitToElectrodeData(data.mE8, a, b, c, d);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
+	FitToElectrodeData(data.mE8, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E9:" << std::endl;
-	FitToElectrodeData(data.mE9, a, b, c, d);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
+	FitToElectrodeData(data.mE9, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E10:" << std::endl;
-	FitToElectrodeData(data.mE10, a, b, c, d);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
+	FitToElectrodeData(data.mE10, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E11:" << std::endl;
-	FitToElectrodeData(data.mE11, a, b, c, d);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
+	FitToElectrodeData(data.mE11, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E12:" << std::endl;
-	FitToElectrodeData(data.mE12, a, b, c, d);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
+	FitToElectrodeData(data.mE12, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E13:" << std::endl;
-	FitToElectrodeData(data.mE13, a, b, c, d);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
+	FitToElectrodeData(data.mE13, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E14:" << std::endl;
-	FitToElectrodeData(data.mE14, a, b, c, d);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
+	FitToElectrodeData(data.mE14, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E15:" << std::endl;
-	FitToElectrodeData(data.mE15, a, b, c, d);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
+	FitToElectrodeData(data.mE15, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E16:" << std::endl;
-	FitToElectrodeData(data.mE16, a, b, c, d);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
+	FitToElectrodeData(data.mE16, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E17:" << std::endl;
-	FitToElectrodeData(data.mE17, a, b, c, d);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
+	FitToElectrodeData(data.mE17, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E18:" << std::endl;
-	FitToElectrodeData(data.mE18, a, b, c, d);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
+	FitToElectrodeData(data.mE18, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E19:" << std::endl;
-	FitToElectrodeData(data.mE19, a, b, c, d);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
+	FitToElectrodeData(data.mE19, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	return retVal;
@@ -165,25 +165,25 @@ void cFunctionFitNLS::TestAgainstDataFiles(const std::vector<std::string>& files
 		std::vector<biotac_tune_data> data = reader.GetData();
 		for( std::size_t dataIndex = 10; dataIndex < reader.GetNumDataPoints(); ++dataIndex )
 		{
-			errors[0].push_back(compensators[0].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e1));
-			errors[1].push_back(compensators[1].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e2));
-			errors[2].push_back(compensators[2].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e3));
-			errors[3].push_back(compensators[3].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e4));
-			errors[4].push_back(compensators[4].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e5));
-			errors[5].push_back(compensators[5].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e6));
-			errors[6].push_back(compensators[6].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e7));
-			errors[7].push_back(compensators[7].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e8));
-			errors[8].push_back(compensators[8].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e9));
-			errors[9].push_back(compensators[9].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e10));
-			errors[10].push_back(compensators[10].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e11));
-			errors[11].push_back(compensators[11].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e12));
-			errors[12].push_back(compensators[12].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e13));
-			errors[13].push_back(compensators[13].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e14));
-			errors[14].push_back(compensators[14].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e15));
-			errors[15].push_back(compensators[15].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e16));
-			errors[16].push_back(compensators[16].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e17));
-			errors[17].push_back(compensators[17].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e18));
-			errors[18].push_back(compensators[18].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.e19));
+			errors[0].push_back(compensators[0].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e1));
+			errors[1].push_back(compensators[1].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e2));
+			errors[2].push_back(compensators[2].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e3));
+			errors[3].push_back(compensators[3].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e4));
+			errors[4].push_back(compensators[4].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e5));
+			errors[5].push_back(compensators[5].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e6));
+			errors[6].push_back(compensators[6].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e7));
+			errors[7].push_back(compensators[7].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e8));
+			errors[8].push_back(compensators[8].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e9));
+			errors[9].push_back(compensators[9].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e10));
+			errors[10].push_back(compensators[10].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e11));
+			errors[11].push_back(compensators[11].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e12));
+			errors[12].push_back(compensators[12].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e13));
+			errors[13].push_back(compensators[13].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e14));
+			errors[14].push_back(compensators[14].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e15));
+			errors[15].push_back(compensators[15].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e16));
+			errors[16].push_back(compensators[16].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e17));
+			errors[17].push_back(compensators[17].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e18));
+			errors[18].push_back(compensators[18].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e19));
 		}
 
 
@@ -239,7 +239,7 @@ cFunctionFitNLS::sTdcElectrodeData cFunctionFitNLS::ParseFiles(const std::vector
 		cDataFileReader reader(files[i]);
 		std::vector<biotac_tune_data> readerData = reader.GetData();
 		std::size_t numDataPoints = readerData.size();
-		for( std::size_t dataIndex = 0; dataIndex < numDataPoints; ++dataIndex )
+		for( std::size_t dataIndex = 100; dataIndex < numDataPoints; ++dataIndex )
 		{
 			e1.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e1) );
 			e2.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e2) );
@@ -329,30 +329,32 @@ void cFunctionFitNLS::FillStructMember( std::vector<cFunctionFitNLS::sDataPoint>
 ////////////////////////////////////////////////////////////////////////////////
 
 void cFunctionFitNLS::FitToElectrodeData( const std::vector<cFunctionFitNLS::sDataPoint>& data,
-										  double& a, double& b, double& c, double& d )
+										  double& a, double& b, double& c, double& d,
+										  double& e, double& f, double& g )
 {
-	a = b = c = d = 0;
+	a = b = c = d = e = f = g = 0;
 	ceres::Problem problem;
 	int numDataPoints = data.size();
 	for( int i = 10; i < numDataPoints; ++i )
 	{
 		problem.AddResidualBlock(
-			new ceres::AutoDiffCostFunction<cPolynomialResidual, 1, 1, 1, 1, 1>(
-				new cPolynomialResidual( data[i].mTDC, data[i].mAvgElectrode ) ),
+			new ceres::AutoDiffCostFunction<cPolynomialResidual, 1, 1, 1, 1, 1, 1, 1, 1>(
+				new cPolynomialResidual( data[i].mTDC, data[i].mAvgTAC, data[i].mAvgElectrode ) ),
 			NULL,
-			&a, &b, &c, &d );
+			&a, &b, &c, &d, &e, &f, &g );
 	}
 
 	ceres::Solver::Options options;
 	options.max_num_iterations = 10000;
 	options.linear_solver_type = ceres::DENSE_QR;
-	options.minimizer_progress_to_stdout = false;
+	options.minimizer_progress_to_stdout = true;
 
 	std::cout << "Solving... " << std::endl;
 	ceres::Solver::Summary summary;
 	ceres::Solve(options, &problem, &summary);
 	std::cout << summary.FullReport() << std::endl;
-	std::cout << "Final a: " << a << "  b: " << b << "  c: " << c << "  d: " << d << std::endl;
+	std::cout << "Final a: " << a << "  b: " << b << "  c: " << c << "  d: " << d
+			  << "  e: " << e << "  f: " << f << "  g: " << g << std::endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

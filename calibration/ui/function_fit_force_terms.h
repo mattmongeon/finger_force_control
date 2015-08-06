@@ -53,9 +53,9 @@ private:
 	{
 	public:
 		cTrainingResidual(const std::vector<uint16_t>& electrodes,
-						  uint16_t tdc, double force,
+						  uint16_t tdc, uint16_t tac, double force,
 						  const std::vector<cElectrodeTdcCompensator>* const pCompensators)
-			: mpCompensators(pCompensators), mElectrodes(electrodes), mTDC(tdc), mForce(force)
+			: mpCompensators(pCompensators), mElectrodes(electrodes), mTDC(tdc), mTAC(tac), mForce(force)
 			{
 				mElectrodeNormalVectors[0][0] = 0.196;
 				mElectrodeNormalVectors[0][1] = -0.953;
@@ -142,9 +142,9 @@ private:
 				T x(0.0), y(0.0), z(0.0);
 				for( std::size_t i = 0; i < 19; ++i )
 				{
-					x += T(mElectrodeNormalVectors[i][0]) * T((*mpCompensators)[i].CompensateTdc(mTDC, mElectrodes[i]));
-					y += T(mElectrodeNormalVectors[i][1]) * T((*mpCompensators)[i].CompensateTdc(mTDC, mElectrodes[i]));
-					z += T(mElectrodeNormalVectors[i][2]) * T((*mpCompensators)[i].CompensateTdc(mTDC, mElectrodes[i]));
+					x += T(mElectrodeNormalVectors[i][0]) * T((*mpCompensators)[i].CompensateTdc(mTDC, mTAC, mElectrodes[i]));
+					y += T(mElectrodeNormalVectors[i][1]) * T((*mpCompensators)[i].CompensateTdc(mTDC, mTAC, mElectrodes[i]));
+					z += T(mElectrodeNormalVectors[i][2]) * T((*mpCompensators)[i].CompensateTdc(mTDC, mTAC, mElectrodes[i]));
 				}
 
 				T result = T(sqrt(s1[0]*s1[0]*x*x + s2[0]*s2[0]*y*y + s3[0]*s3[0]*z*z));
@@ -159,6 +159,7 @@ private:
 		double mElectrodeNormalVectors[19][3];
 		std::vector<uint16_t> mElectrodes;
 		uint16_t mTDC;
+		uint16_t mTAC;
 		double mForce;
 	};
 

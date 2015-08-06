@@ -47,7 +47,7 @@ public:
 	// tdc - The associated TDC measurement.
 	//
 	// Return - The associated force in grams.
-	double GetForce_g(const std::vector<uint16_t>& electrodes, uint16_t tdc) const;
+	double GetForce_g(const std::vector<uint16_t>& electrodes, uint16_t tdc, uint16_t tac) const;
 
 	// Writes the coefficients of the compensators and as well as the S terms for
 	// this object to file.
