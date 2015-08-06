@@ -202,8 +202,8 @@ void cFunctionFitNLS::TestAgainstDataFiles(const std::vector<std::string>& files
 
 cFunctionFitNLS::sTdcElectrodeData cFunctionFitNLS::ParseFiles(const std::vector<std::string>& files)
 {
-	std::map< int, std::vector<uint16_t> > e1, e2, e3, e4, e5, e6, e7, e8, e9, e10,
-		                                   e11, e12, e13, e14, e15, e16, e17, e18, e19;
+	std::vector<sDataPoint> e1, e2, e3, e4, e5, e6, e7, e8, e9, e10,
+		e11, e12, e13, e14, e15, e16, e17, e18, e19;
 	sTdcElectrodeData data;
 
 	// Read all of the data from file. For each electrode associate individual TDC values
@@ -241,25 +241,25 @@ cFunctionFitNLS::sTdcElectrodeData cFunctionFitNLS::ParseFiles(const std::vector
 		std::size_t numDataPoints = readerData.size();
 		for( std::size_t dataIndex = 0; dataIndex < numDataPoints; ++dataIndex )
 		{
-			e1[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e1 );
-			e2[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e2 );
-			e3[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e3 );
-			e4[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e4 );
-			e5[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e5 );
-			e6[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e6 );
-			e7[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e7 );
-			e8[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e8 );
-			e9[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e9 );
-			e10[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e10 );
-			e11[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e11 );
-			e12[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e12 );
-			e13[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e13 );
-			e14[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e14 );
-			e15[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e15 );
-			e16[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e16 );
-			e17[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e17 );
-			e18[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e18 );
-			e19[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e19 );
+			e1.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e1) );
+			e2.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e2) );
+			e3.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e3) );
+			e4.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e4) );
+			e5.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e5) );
+			e6.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e6) );
+			e7.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e7) );
+			e8.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e8) );
+			e9.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e9) );
+			e10.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e10) );
+			e11.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e11) );
+			e12.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e12) );
+			e13.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e13) );
+			e14.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e14) );
+			e15.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e15) );
+			e16.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e16) );
+			e17.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e17) );
+			e18.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e18) );
+			e19.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e19) );
 		}
 
 
@@ -292,20 +292,36 @@ cFunctionFitNLS::sTdcElectrodeData cFunctionFitNLS::ParseFiles(const std::vector
 ////////////////////////////////////////////////////////////////////////////////
 
 void cFunctionFitNLS::FillStructMember( std::vector<cFunctionFitNLS::sDataPoint>& structData,
-					   const std::map< int, std::vector<uint16_t> >& rawData )
+					   const std::vector<cFunctionFitNLS::sDataPoint>& rawData )
 {
-	for( std::map< int, std::vector<uint16_t> >::const_iterator it = rawData.begin();
+	// First sort all of the data according to the TDC value.
+	std::map<int, std::vector<sDataPoint> > eData;
+	for( std::vector<cFunctionFitNLS::sDataPoint>::const_iterator it = rawData.begin();
 		 it != rawData.end();
 		 ++it )
 	{
-		// Calculate the average of all of the electrode values per TDC value.
-		double sum = std::accumulate(it->second.begin(), it->second.end(), 0);
-		sum /= static_cast<double>(it->second.size());
+		eData[it->mTDC].push_back( sDataPoint(it->mTDC, it->mAvgTAC, it->mAvgElectrode) );
+	}
+	
 
-		// Generate a data pair which consists of <TDC value, electrode average>
+	// Now generate the actual data points by averaging the vector of associated TAC and electrode values.
+	for( std::map<int, std::vector<sDataPoint> >::iterator it = eData.begin();
+		 it != eData.end();
+		 ++it )
+	{
+		// Calculate the average of all of the electrode and TAC values per TDC value.
+		double tacSum = 0, electrodeSum = 0;
+		for( std::size_t i = 0; i < it->second.size(); ++i )
+		{
+			tacSum += it->second[i].mAvgTAC;
+			electrodeSum += it->second[i].mAvgElectrode;
+		}
+		
+		// Generate a data point which consists of TDC value and electrode average.
 		sDataPoint p;
 		p.mTDC = static_cast<double>(it->first);
-		p.mAvgElectrode = sum;
+		p.mAvgTAC = tacSum / static_cast<double>(it->second.size());
+		p.mAvgElectrode = electrodeSum / static_cast<double>(it->second.size());
 		structData.push_back(p);
 	}
 }

@@ -44,7 +44,15 @@ private:
 
 	struct sDataPoint
 	{
+		sDataPoint()
+			{}
+		
+		sDataPoint( double tdc, double avgTac, double avgE )
+			: mTDC(tdc), mAvgTAC(avgTac), mAvgElectrode(avgE)
+			{}
+		
 		double mTDC;
+		double mAvgTAC;
 		double mAvgElectrode;
 	};
 	
@@ -76,8 +84,8 @@ private:
 	class cPolynomialResidual
 	{
 	public:
-		cPolynomialResidual(double x, double y)
-			: mX(x), mY(y) {}
+		cPolynomialResidual(double tdc, double electrode)
+			: mTDC(tdc), mElectrode(electrode) {}
 
 		template<typename T> bool operator()( const T* const a,
 											  const T* const b,
@@ -85,13 +93,13 @@ private:
 											  const T* const d,
 											  T* residual ) const
 			{
-				residual[0] = T(mY) - (a[0]*pow(T(mX)+b[0], c[0]) + d[0]);
+				residual[0] = T(mElectrode) - (a[0]*pow(T(mTDC)+b[0], c[0]) + d[0]);
 				return true;
 			}
 
 	private:
-		const double mX;
-		const double mY;
+		const double mTDC;
+		const double mElectrode;
 	};
 	
 	
@@ -114,8 +122,7 @@ private:
 	// Params:
 	// structData - The container that is part of sTdcElectrodeData that will be filled.
 	// rawData - The measured data to be processed and added to structData.
-	void FillStructMember( std::vector<sDataPoint>& structData,
-						   const std::map< int, std::vector<uint16_t> >& rawData );
+	void FillStructMember( std::vector<sDataPoint>& structData, const std::vector<sDataPoint>& rawData );
 
 	// Uses the Ceres library and the parameter data vector to fit a function and return
 	// the constants.  The function to be fit is of the form a*(TDC+b)^c + d.
