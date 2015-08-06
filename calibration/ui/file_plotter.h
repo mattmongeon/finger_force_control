@@ -30,13 +30,13 @@ private:
 	//---------------------------  HELPER FUNCTIONS  ---------------------------//
 	//--------------------------------------------------------------------------//
 
-	void ConfigureAndPlotForce(const std::vector<biotac_tune_data>& data, const std::string& fileName);
+	void ConfigureAndPlotForce(const std::vector<biotac_tune_data>& data);
 
-	void ConfigureAndPlotPressTemp(const std::vector<biotac_tune_data>& data, const std::string& fileName);
+	void ConfigureAndPlotPressTemp(const std::vector<biotac_tune_data>& data);
 
-	void ConfigureAndPlotElectrodes1(const std::vector<biotac_tune_data>& data, const std::string& fileName);
+	void ConfigureAndPlotElectrodes1(const std::vector<biotac_tune_data>& data);
 
-	void ConfigureAndPlotElectrodes2(const std::vector<biotac_tune_data>& data, const std::string& fileName);
+	void ConfigureAndPlotElectrodes2(const std::vector<biotac_tune_data>& data);
 	
 	
 	//--------------------------------------------------------------------------//

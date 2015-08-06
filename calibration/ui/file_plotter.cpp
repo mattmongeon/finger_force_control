@@ -1,4 +1,5 @@
 #include "file_plotter.h"
+#include "data_file_reader.h"
 #include "../common/biotac_comm.h"
 #include "utils.h"
 #include <fstream>
@@ -26,21 +27,8 @@ cFilePlotter::cFilePlotter(const std::string& file)
 {
 	// --- Read Data File --- //
 
-	std::ifstream inFile(file.c_str());
-	if( !inFile.is_open() )
-	{
-		std::cout << "Could not open file \'" << file << "\' for plotting!" << std::endl;
-		throw std::invalid_argument("Could not open file for plotting!");
-	}
-
-	inFile.seekg(0, std::ios::end);
-	std::streampos fileSize = inFile.tellg();
-	inFile.seekg(0, std::ios::beg);
-	
-	std::vector<biotac_tune_data> fileData(fileSize/sizeof(biotac_tune_data));
-	inFile.read( reinterpret_cast<char*>(&(fileData[0])), fileSize);
-	
-	inFile.close();
+	cDataFileReader reader(file.c_str());
+	std::vector<biotac_tune_data> fileData = reader.GetData();
 
 
 	// --- Initialize Plotting --- //
@@ -50,10 +38,10 @@ cFilePlotter::cFilePlotter(const std::string& file)
 	
 	// --- Plot Data --- //
 
-	ConfigureAndPlotForce(fileData, file);
-	ConfigureAndPlotPressTemp(fileData, file);
-	ConfigureAndPlotElectrodes1(fileData, file);
-	ConfigureAndPlotElectrodes2(fileData, file);
+	ConfigureAndPlotForce(fileData);
+	ConfigureAndPlotPressTemp(fileData);
+	ConfigureAndPlotElectrodes1(fileData);
+	ConfigureAndPlotElectrodes2(fileData);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -67,8 +55,7 @@ cFilePlotter::~cFilePlotter()
 //  Helper Functions
 ////////////////////////////////////////////////////////////////////////////////
 
-void cFilePlotter::ConfigureAndPlotForce(const std::vector<biotac_tune_data>& data,
-										 const std::string& fileName)
+void cFilePlotter::ConfigureAndPlotForce(const std::vector<biotac_tune_data>& data)
 {
 	PLFLT* pX = new PLFLT[data.size()];
 	PLFLT* pLoadCell = new PLFLT[data.size()];
@@ -155,8 +142,7 @@ void cFilePlotter::ConfigureAndPlotForce(const std::vector<biotac_tune_data>& da
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void cFilePlotter::ConfigureAndPlotPressTemp(const std::vector<biotac_tune_data>& data,
-											 const std::string& fileName)
+void cFilePlotter::ConfigureAndPlotPressTemp(const std::vector<biotac_tune_data>& data)
 {
 	PLFLT* pX = new PLFLT[data.size()];
 	PLFLT* pPDC = new PLFLT[data.size()];
@@ -267,8 +253,7 @@ void cFilePlotter::ConfigureAndPlotPressTemp(const std::vector<biotac_tune_data>
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void cFilePlotter::ConfigureAndPlotElectrodes1(const std::vector<biotac_tune_data>& data,
-											   const std::string& fileName)
+void cFilePlotter::ConfigureAndPlotElectrodes1(const std::vector<biotac_tune_data>& data)
 {
 	PLFLT* pX = new PLFLT[data.size()];
 	PLFLT* pE1 = new PLFLT[data.size()];
@@ -457,8 +442,7 @@ void cFilePlotter::ConfigureAndPlotElectrodes1(const std::vector<biotac_tune_dat
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void cFilePlotter::ConfigureAndPlotElectrodes2(const std::vector<biotac_tune_data>& data,
-											   const std::string& fileName)
+void cFilePlotter::ConfigureAndPlotElectrodes2(const std::vector<biotac_tune_data>& data)
 {
 	PLFLT* pX = new PLFLT[data.size()];
 	PLFLT* pE10 = new PLFLT[data.size()];
