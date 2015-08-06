@@ -84,21 +84,26 @@ private:
 	class cPolynomialResidual
 	{
 	public:
-		cPolynomialResidual(double tdc, double electrode)
-			: mTDC(tdc), mElectrode(electrode) {}
+		cPolynomialResidual(double tdc, double tac, double electrode)
+			: mTDC(tdc), mTAC(tac), mElectrode(electrode) {}
 
 		template<typename T> bool operator()( const T* const a,
 											  const T* const b,
 											  const T* const c,
 											  const T* const d,
+											  const T* const e,
+											  const T* const f,
+											  const T* const g,
 											  T* residual ) const
 			{
-				residual[0] = T(mElectrode) - (a[0]*pow(T(mTDC)+b[0], c[0]) + d[0]);
+				residual[0] = T(mElectrode) -
+					(a[0]*pow(T(mTDC)+b[0], c[0]) + d[0]*pow(T(mTAC)+e[0], f[0]) + g[0]);
 				return true;
 			}
 
 	private:
 		const double mTDC;
+		const double mTAC;
 		const double mElectrode;
 	};
 	
@@ -134,7 +139,8 @@ private:
 	// c - [OUT] - The exponential term.
 	// d - [OUT] - An offset applied to the entire result.
 	void FitToElectrodeData( const std::vector<sDataPoint>& data,
-							 double& a, double& b, double& c, double& d );
+							 double& a, double& b, double& c, double& d,
+							 double& e, double& f, double& g );
 
 	// Takes in an array of vectors (one for each electrode) and plots the errors
 	// at each measurement point.

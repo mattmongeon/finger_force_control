@@ -781,6 +781,7 @@ int main(int argc, char** argv)
 			cFunctionFitNLS fit;
 			std::vector<std::string> files;
 			files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
+			files.push_back("./data/tdc_electrodes/cooling_down_from_high.dat");
 			files.push_back("./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
 			files.push_back("./data/tdc_electrodes/data_2015_08_04_16_15_04.dat");
 			files.push_back("./data/tdc_electrodes/heating_up.dat");
@@ -791,7 +792,6 @@ int main(int argc, char** argv)
 			// --- Test The Fit --- //
 			
 			files.clear();
-			files.push_back("./data/tdc_electrodes/cooling_down_from_high.dat");
 			files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
 			files.push_back("./data/tdc_electrodes/zero1.dat");
 			files.push_back("./data/tdc_electrodes/zero2.dat");
@@ -876,15 +876,17 @@ int main(int argc, char** argv)
 			// files.push_back("./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
 			// files.push_back("./data/tdc_electrodes/data_2015_08_04_16_15_04.dat");
 			// files.push_back("./data/tdc_electrodes/cooling_down_from_high.dat");
-			files.push_back("./data/tdc_electrodes/heating_up.dat");
-			files.push_back("./data/tdc_electrodes/high_temp.dat");
+			// files.push_back("./data/tdc_electrodes/heating_up.dat");
+			// files.push_back("./data/tdc_electrodes/high_temp.dat");
 			// files.push_back("./data/tdc_electrodes/zero1.dat");
 			// files.push_back("./data/tdc_electrodes/zero2.dat");
 			// files.push_back("./data/tdc_electrodes/zero3.dat");
+
+			std::string file = nFileUtils::GetFileSelectionInDirectory("./data/tdc_electrodes", ".dat");
+			files.push_back(file);
 			
 			curve.PlotElectrodeCurveAgainstFileData(files, electrode);
 			
-			// std::string file = nFileUtils::GetFileSelectionInDirectory("./data/tdc_electrodes", ".dat");
 			
 			// curve.PlotElectrodeCurveAgainstFileData(file, electrode);
 
