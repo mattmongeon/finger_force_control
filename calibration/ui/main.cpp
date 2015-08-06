@@ -80,7 +80,9 @@ void printMenu()
 	std::cout << "v:  Send force trajectory" << std::endl;
 	std::cout << "q:  Quit" << std::endl;
 	std::cout << "z:  Continuous raw load cell" << std::endl;
-	std::cout << "2:  Curve fitting" << std::endl;
+	std::cout << "2:  Fit curve for TDC vs Electrodes" << std::endl;
+	std::cout << "3:  Fit curve for force vector coefficients" << std::endl;
+	std::cout << "4:  Test TDC vs Electrode curve" << std::endl;
 	std::cout << std::endl;
 }
 
@@ -776,33 +778,33 @@ int main(int argc, char** argv)
 		{
 			// --- Train For Fit --- //
 			
-			cFunctionFitNLS f;
+			cFunctionFitNLS fit;
 			std::vector<std::string> files;
 			files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
-			std::vector<cElectrodeTdcCompensator> compensators = f.TrainAgainstDataFiles(files);
+			files.push_back("./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
+			files.push_back("./data/tdc_electrodes/data_2015_08_04_16_15_04.dat");
+			files.push_back("./data/tdc_electrodes/heating_up.dat");
+			files.push_back("./data/tdc_electrodes/high_temp.dat");
+			std::vector<cElectrodeTdcCompensator> compensators = fit.TrainAgainstDataFiles(files);
 
 
 			// --- Test The Fit --- //
 			
 			files.clear();
+			files.push_back("./data/tdc_electrodes/cooling_down_from_high.dat");
 			files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
 			files.push_back("./data/tdc_electrodes/zero1.dat");
 			files.push_back("./data/tdc_electrodes/zero2.dat");
 			files.push_back("./data/tdc_electrodes/zero3.dat");
-			f.TestAgainstDataFiles(files, compensators);
+			fit.TestAgainstDataFiles(files, compensators);
 
 
 			// --- Write Coefficients To File --- //
 			
-			std::ofstream file("./data/tdc_electrodes/tdc_electrode_curve.dat", std::ios::binary | std::ios::out);
-			double a, b, c, d;
+			std::ofstream file("./data/tdc_electrodes/tdc_electrode_curve.coeff", std::ios::binary | std::ios::out);
 			for( std::size_t i = 0; i < compensators.size(); ++i )
 			{
-				compensators[i].GetCoefficients(a, b, c, d);
-				file.write(reinterpret_cast<const char*>(&a), sizeof(double));
-				file.write(reinterpret_cast<const char*>(&b), sizeof(double));
-				file.write(reinterpret_cast<const char*>(&c), sizeof(double));
-				file.write(reinterpret_cast<const char*>(&d), sizeof(double));
+				compensators[i].SaveCoefficientsToFile(file);
 			}
 			
 			break;
@@ -814,16 +816,10 @@ int main(int argc, char** argv)
 			
 			std::vector<cElectrodeTdcCompensator> compensators;
 			compensators.clear();
-			std::ifstream file("./data/tdc_electrodes/tdc_electrode_curve.dat", std::ios::binary | std::ios::in);
-			double a, b, c, d;
+			std::ifstream file("./data/tdc_electrodes/tdc_electrode_curve.coeff", std::ios::binary | std::ios::in);
 			for( std::size_t i = 0; i < 19; ++i )
 			{
-				file.read(reinterpret_cast<char*>(&a), sizeof(double));
-				file.read(reinterpret_cast<char*>(&b), sizeof(double));
-				file.read(reinterpret_cast<char*>(&c), sizeof(double));
-				file.read(reinterpret_cast<char*>(&d), sizeof(double));
-
-				compensators.push_back( cElectrodeTdcCompensator(a, b, c, d) );
+				compensators.push_back( cElectrodeTdcCompensator(file) );
 			}
 			
 
@@ -843,7 +839,55 @@ int main(int argc, char** argv)
 			files.push_back("./data/test/data_2015_07_30_16_35_24.dat");
 			files.push_back("./data/test/data_2015_07_29_14_44_14.dat");
 			ffTerms.TestAgainstDataFiles(files, curve);
+
+
+			// --- Write Trained Curve To File --- //
+
+			curve.SaveFitTermsToFile("./coefficients.bio");
 			
+			break;
+		}
+
+
+		case '4':
+		{
+			cBioTacForceCurve curve("./coefficients.bio");
+
+			nUtils::ClearConsole();
+			int electrode = 0;
+			while( true )
+			{
+				std::cout << "Select electrode: " << std::flush;
+				std::cin >> electrode;
+				if( (electrode >= 1) && (electrode <= 19) )
+				{
+					break;
+				}
+				else
+				{
+					std::cout << "Invalid selection: " << electrode << "!" << std::endl;
+					std::cout << "Selection must be in the range 1-19" << std::endl;
+					std::cout << std::endl;
+				}
+			}
+
+			std::vector<std::string> files;
+			// files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
+			// files.push_back("./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
+			// files.push_back("./data/tdc_electrodes/data_2015_08_04_16_15_04.dat");
+			// files.push_back("./data/tdc_electrodes/cooling_down_from_high.dat");
+			files.push_back("./data/tdc_electrodes/heating_up.dat");
+			files.push_back("./data/tdc_electrodes/high_temp.dat");
+			// files.push_back("./data/tdc_electrodes/zero1.dat");
+			// files.push_back("./data/tdc_electrodes/zero2.dat");
+			// files.push_back("./data/tdc_electrodes/zero3.dat");
+			
+			curve.PlotElectrodeCurveAgainstFileData(files, electrode);
+			
+			// std::string file = nFileUtils::GetFileSelectionInDirectory("./data/tdc_electrodes", ".dat");
+			
+			// curve.PlotElectrodeCurveAgainstFileData(file, electrode);
+
 			break;
 		}
 		

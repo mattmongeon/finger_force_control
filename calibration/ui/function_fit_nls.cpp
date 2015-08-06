@@ -36,102 +36,108 @@ cFunctionFitNLS::~cFunctionFitNLS()
 
 std::vector<cElectrodeTdcCompensator> cFunctionFitNLS::TrainAgainstDataFiles(const std::vector<std::string>& files)
 {
+	// --- Parse Data Files --- //
+	
 	sTdcElectrodeData data = ParseFiles(files);
+
+
+	// --- Fit Against Data --- //
+	
 	std::vector<cElectrodeTdcCompensator> retVal;
 	double a, b, c, d;
 	
 	std::cout << "E1:" << std::endl;
-	FitToElectrodeData(data.mE1, a, b, c, d );
+	FitToElectrodeData(data.mE1, a, b, c, d);
 	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl;
 
 	std::cout << "E2:" << std::endl;
-	FitToElectrodeData(data.mE2, a, b, c, d );
+	FitToElectrodeData(data.mE2, a, b, c, d);
 	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl;
 
 	std::cout << "E3:" << std::endl;
-	FitToElectrodeData(data.mE3, a, b, c, d );
+	FitToElectrodeData(data.mE3, a, b, c, d);
 	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl;
 
 	std::cout << "E4:" << std::endl;
-	FitToElectrodeData(data.mE4, a, b, c, d );
+	FitToElectrodeData(data.mE4, a, b, c, d);
 	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl;
 
 	std::cout << "E5:" << std::endl;
-	FitToElectrodeData(data.mE5, a, b, c, d );
+	FitToElectrodeData(data.mE5, a, b, c, d);
 	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl;
 
 	std::cout << "E6:" << std::endl;
-	FitToElectrodeData(data.mE6, a, b, c, d );
+	FitToElectrodeData(data.mE6, a, b, c, d);
 	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl;
 
 	std::cout << "E7:" << std::endl;
-	FitToElectrodeData(data.mE7, a, b, c, d );
+	FitToElectrodeData(data.mE7, a, b, c, d);
 	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl;
 
 	std::cout << "E8:" << std::endl;
-	FitToElectrodeData(data.mE8, a, b, c, d );
+	FitToElectrodeData(data.mE8, a, b, c, d);
 	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl;
 
 	std::cout << "E9:" << std::endl;
-	FitToElectrodeData(data.mE9, a, b, c, d );
+	FitToElectrodeData(data.mE9, a, b, c, d);
 	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl;
 
 	std::cout << "E10:" << std::endl;
-	FitToElectrodeData(data.mE10, a, b, c, d );
+	FitToElectrodeData(data.mE10, a, b, c, d);
 	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl;
 
 	std::cout << "E11:" << std::endl;
-	FitToElectrodeData(data.mE11, a, b, c, d );
+	FitToElectrodeData(data.mE11, a, b, c, d);
 	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl;
 
 	std::cout << "E12:" << std::endl;
-	FitToElectrodeData(data.mE12, a, b, c, d );
+	FitToElectrodeData(data.mE12, a, b, c, d);
 	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl;
 
 	std::cout << "E13:" << std::endl;
-	FitToElectrodeData(data.mE13, a, b, c, d );
+	FitToElectrodeData(data.mE13, a, b, c, d);
 	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl;
 
 	std::cout << "E14:" << std::endl;
-	FitToElectrodeData(data.mE14, a, b, c, d );
+	FitToElectrodeData(data.mE14, a, b, c, d);
 	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl;
 
 	std::cout << "E15:" << std::endl;
-	FitToElectrodeData(data.mE15, a, b, c, d );
+	FitToElectrodeData(data.mE15, a, b, c, d);
 	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl;
 
 	std::cout << "E16:" << std::endl;
-	FitToElectrodeData(data.mE16, a, b, c, d );
+	FitToElectrodeData(data.mE16, a, b, c, d);
 	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl;
 
 	std::cout << "E17:" << std::endl;
-	FitToElectrodeData(data.mE17, a, b, c, d );
+	FitToElectrodeData(data.mE17, a, b, c, d);
 	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl;
 
 	std::cout << "E18:" << std::endl;
-	FitToElectrodeData(data.mE18, a, b, c, d );
+	FitToElectrodeData(data.mE18, a, b, c, d);
 	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl;
 
 	std::cout << "E19:" << std::endl;
-	FitToElectrodeData(data.mE19, a, b, c, d );
+	FitToElectrodeData(data.mE19, a, b, c, d);
 	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d));
 	std::cout << std::endl;
 
@@ -196,63 +202,89 @@ void cFunctionFitNLS::TestAgainstDataFiles(const std::vector<std::string>& files
 
 cFunctionFitNLS::sTdcElectrodeData cFunctionFitNLS::ParseFiles(const std::vector<std::string>& files)
 {
-	// --- Parse Files --- //
-	
 	std::map< int, std::vector<uint16_t> > e1, e2, e3, e4, e5, e6, e7, e8, e9, e10,
 		                                   e11, e12, e13, e14, e15, e16, e17, e18, e19;
+	sTdcElectrodeData data;
 
+	// Read all of the data from file. For each electrode associate individual TDC values
+	// with a vector of electrode readings.  All files will be parsed first and sorted in
+	// this way before moving on.
 	for( std::size_t i = 0; i < files.size(); ++i )
 	{
+		// --- Prepare Data Containers --- //
+
+		e1.clear();
+		e2.clear();
+		e3.clear();
+		e4.clear();
+		e5.clear();
+		e6.clear();
+		e7.clear();
+		e8.clear();
+		e9.clear();
+		e10.clear();
+		e11.clear();
+		e12.clear();
+		e13.clear();
+		e14.clear();
+		e15.clear();
+		e16.clear();
+		e17.clear();
+		e18.clear();
+		e19.clear();
+		
+		
+		// --- Parse File --- //
+		
 		cDataFileReader reader(files[i]);
-		std::vector<biotac_tune_data> data = reader.GetData();
-		std::size_t numDataPoints = data.size();
+		std::vector<biotac_tune_data> readerData = reader.GetData();
+		std::size_t numDataPoints = readerData.size();
 		for( std::size_t dataIndex = 0; dataIndex < numDataPoints; ++dataIndex )
 		{
-			e1[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e1);
-			e2[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e2);
-			e3[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e3);
-			e4[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e4);
-			e5[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e5);
-			e6[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e6);
-			e7[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e7);
-			e8[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e8);
-			e9[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e9);
-			e10[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e10);
-			e11[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e11);
-			e12[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e12);
-			e13[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e13);
-			e14[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e14);
-			e15[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e15);
-			e16[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e16);
-			e17[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e17);
-			e18[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e18);
-			e19[data[dataIndex].mData.tdc].push_back(data[dataIndex].mData.e19);
+			e1[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e1 );
+			e2[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e2 );
+			e3[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e3 );
+			e4[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e4 );
+			e5[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e5 );
+			e6[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e6 );
+			e7[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e7 );
+			e8[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e8 );
+			e9[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e9 );
+			e10[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e10 );
+			e11[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e11 );
+			e12[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e12 );
+			e13[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e13 );
+			e14[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e14 );
+			e15[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e15 );
+			e16[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e16 );
+			e17[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e17 );
+			e18[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e18 );
+			e19[readerData[dataIndex].mData.tdc].push_back( readerData[dataIndex].mData.e19 );
 		}
+
+
+		// --- Generate Data Points --- //
+
+		FillStructMember( data.mE1, e1 );
+		FillStructMember( data.mE2, e2 );
+		FillStructMember( data.mE3, e3 );
+		FillStructMember( data.mE4, e4 );
+		FillStructMember( data.mE5, e5 );
+		FillStructMember( data.mE6, e6 );
+		FillStructMember( data.mE7, e7 );
+		FillStructMember( data.mE8, e8 );
+		FillStructMember( data.mE9, e9 );
+		FillStructMember( data.mE10, e10 );
+		FillStructMember( data.mE11, e11 );
+		FillStructMember( data.mE12, e12 );
+		FillStructMember( data.mE13, e13 );
+		FillStructMember( data.mE14, e14 );
+		FillStructMember( data.mE15, e15 );
+		FillStructMember( data.mE16, e16 );
+		FillStructMember( data.mE17, e17 );
+		FillStructMember( data.mE18, e18 );
+		FillStructMember( data.mE19, e19 );		
 	}
-
-
-	// --- Generate Data --- //
-
-	sTdcElectrodeData data;
-	FillStructMember( data.mE1, e1 );
-	FillStructMember( data.mE2, e2 );
-	FillStructMember( data.mE3, e3 );
-	FillStructMember( data.mE4, e4 );
-	FillStructMember( data.mE5, e5 );
-	FillStructMember( data.mE6, e6 );
-	FillStructMember( data.mE7, e7 );
-	FillStructMember( data.mE8, e8 );
-	FillStructMember( data.mE9, e9 );
-	FillStructMember( data.mE10, e10 );
-	FillStructMember( data.mE11, e11 );
-	FillStructMember( data.mE12, e12 );
-	FillStructMember( data.mE13, e13 );
-	FillStructMember( data.mE14, e14 );
-	FillStructMember( data.mE15, e15 );
-	FillStructMember( data.mE16, e16 );
-	FillStructMember( data.mE17, e17 );
-	FillStructMember( data.mE18, e18 );
-	FillStructMember( data.mE19, e19 );
 
 	return data;
 }
@@ -266,8 +298,11 @@ void cFunctionFitNLS::FillStructMember( std::vector< std::pair<double, double> >
 		 it != rawData.end();
 		 ++it )
 	{
+		// Calculate the average of all of the electrode values per TDC value.
 		double sum = std::accumulate(it->second.begin(), it->second.end(), 0);
 		sum /= static_cast<double>(it->second.size());
+
+		// Generate a data pair which consists of <TDC value, electrode average>
 		std::pair<double, double> p( static_cast<double>(it->first), sum );
 		structData.push_back(p);
 	}
@@ -291,7 +326,7 @@ void cFunctionFitNLS::FitToElectrodeData( const std::vector< std::pair<double, d
 	}
 
 	ceres::Solver::Options options;
-	options.max_num_iterations = 1000;
+	options.max_num_iterations = 10000;
 	options.linear_solver_type = ceres::DENSE_QR;
 	options.minimizer_progress_to_stdout = false;
 
