@@ -291,7 +291,7 @@ cFunctionFitNLS::sTdcElectrodeData cFunctionFitNLS::ParseFiles(const std::vector
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void cFunctionFitNLS::FillStructMember( std::vector< std::pair<double, double> >& structData,
+void cFunctionFitNLS::FillStructMember( std::vector<cFunctionFitNLS::sDataPoint>& structData,
 					   const std::map< int, std::vector<uint16_t> >& rawData )
 {
 	for( std::map< int, std::vector<uint16_t> >::const_iterator it = rawData.begin();
@@ -303,14 +303,16 @@ void cFunctionFitNLS::FillStructMember( std::vector< std::pair<double, double> >
 		sum /= static_cast<double>(it->second.size());
 
 		// Generate a data pair which consists of <TDC value, electrode average>
-		std::pair<double, double> p( static_cast<double>(it->first), sum );
+		sDataPoint p;
+		p.mTDC = static_cast<double>(it->first);
+		p.mAvgElectrode = sum;
 		structData.push_back(p);
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void cFunctionFitNLS::FitToElectrodeData( const std::vector< std::pair<double, double> >& data,
+void cFunctionFitNLS::FitToElectrodeData( const std::vector<cFunctionFitNLS::sDataPoint>& data,
 										  double& a, double& b, double& c, double& d )
 {
 	a = b = c = d = 0;
@@ -320,7 +322,7 @@ void cFunctionFitNLS::FitToElectrodeData( const std::vector< std::pair<double, d
 	{
 		problem.AddResidualBlock(
 			new ceres::AutoDiffCostFunction<cPolynomialResidual, 1, 1, 1, 1, 1>(
-				new cPolynomialResidual( data[i].first, data[i].second ) ),
+				new cPolynomialResidual( data[i].mTDC, data[i].mAvgElectrode ) ),
 			NULL,
 			&a, &b, &c, &d );
 	}

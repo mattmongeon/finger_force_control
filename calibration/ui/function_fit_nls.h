@@ -41,28 +41,35 @@ private:
 	//--------------------------------------------------------------------------//
 	//----------------------------  CERES CLASSES  -----------------------------//
 	//--------------------------------------------------------------------------//
+
+	struct sDataPoint
+	{
+		double mTDC;
+		double mAvgElectrode;
+	};
+	
 	
 	struct sTdcElectrodeData
 	{
-		std::vector< std::pair<double, double> > mE1;
-		std::vector< std::pair<double, double> > mE2;
-		std::vector< std::pair<double, double> > mE3;
-		std::vector< std::pair<double, double> > mE4;
-		std::vector< std::pair<double, double> > mE5;
-		std::vector< std::pair<double, double> > mE6;
-		std::vector< std::pair<double, double> > mE7;
-		std::vector< std::pair<double, double> > mE8;
-		std::vector< std::pair<double, double> > mE9;
-		std::vector< std::pair<double, double> > mE10;
-		std::vector< std::pair<double, double> > mE11;
-		std::vector< std::pair<double, double> > mE12;
-		std::vector< std::pair<double, double> > mE13;
-		std::vector< std::pair<double, double> > mE14;
-		std::vector< std::pair<double, double> > mE15;
-		std::vector< std::pair<double, double> > mE16;
-		std::vector< std::pair<double, double> > mE17;
-		std::vector< std::pair<double, double> > mE18;
-		std::vector< std::pair<double, double> > mE19;
+		std::vector<sDataPoint> mE1;
+		std::vector<sDataPoint> mE2;
+		std::vector<sDataPoint> mE3;
+		std::vector<sDataPoint> mE4;
+		std::vector<sDataPoint> mE5;
+		std::vector<sDataPoint> mE6;
+		std::vector<sDataPoint> mE7;
+		std::vector<sDataPoint> mE8;
+		std::vector<sDataPoint> mE9;
+		std::vector<sDataPoint> mE10;
+		std::vector<sDataPoint> mE11;
+		std::vector<sDataPoint> mE12;
+		std::vector<sDataPoint> mE13;
+		std::vector<sDataPoint> mE14;
+		std::vector<sDataPoint> mE15;
+		std::vector<sDataPoint> mE16;
+		std::vector<sDataPoint> mE17;
+		std::vector<sDataPoint> mE18;
+		std::vector<sDataPoint> mE19;
 	};
 
 
@@ -107,7 +114,7 @@ private:
 	// Params:
 	// structData - The container that is part of sTdcElectrodeData that will be filled.
 	// rawData - The measured data to be processed and added to structData.
-	void FillStructMember( std::vector< std::pair<double, double> >& structData,
+	void FillStructMember( std::vector<sDataPoint>& structData,
 						   const std::map< int, std::vector<uint16_t> >& rawData );
 
 	// Uses the Ceres library and the parameter data vector to fit a function and return
@@ -119,7 +126,7 @@ private:
 	// b - [OUT] - The offset applied to the TDC value before being raised to some power.
 	// c - [OUT] - The exponential term.
 	// d - [OUT] - An offset applied to the entire result.
-	void FitToElectrodeData( const std::vector< std::pair<double, double> >& data,
+	void FitToElectrodeData( const std::vector<sDataPoint>& data,
 							 double& a, double& b, double& c, double& d );
 
 	// Takes in an array of vectors (one for each electrode) and plots the errors
