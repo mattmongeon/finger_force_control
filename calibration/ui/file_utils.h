@@ -13,7 +13,7 @@ namespace nFileUtils
 	//
 	// Params:
 	// path - The path to be created.
-	void CreateDirectory(const std::string path);
+	void CreateDirectory(const std::string& path);
 
 
 	// Returns a vector containing the names of all of the files in the parameter directory,
@@ -25,7 +25,9 @@ namespace nFileUtils
 	// extension - Optional file extension used for filtering the results.
 	//
 	// Return - A vector of the names of all of the files.
-	std::vector<std::string> GetFilesInDirectory(const std::string path, const std::string extension = "");
+	std::vector<std::string> GetFilesInDirectory(const std::string& path, const std::string& extension = "");
+
+	std::string GetFileSelectionInDirectory(const std::string& path, const std::string& extension = "");
 }
 
 
