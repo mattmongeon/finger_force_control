@@ -2,6 +2,10 @@
 #define INCLUDED_ELECTRODE_TDC_COMPENSATOR_H
 
 
+#include <string>
+#include <fstream>
+
+
 // This class handles removing temperature effects on the electrodes.
 class cElectrodeTdcCompensator
 {
@@ -12,6 +16,8 @@ public:
 	//--------------------------------------------------------------------------//
 	
 	cElectrodeTdcCompensator(double a, double b, double c, double d);
+
+	cElectrodeTdcCompensator(std::ifstream& inFile);
 
 	~cElectrodeTdcCompensator();
 
@@ -44,19 +50,19 @@ public:
 	//
 	// Return - The electrode normalizing value.
 	double GetUnforcedElectrodeValue(double tdc) const;
-
-	// Takes references as parameters and fills them with the coefficient values.
-	//
-	// Params:
-	// a - [OUT] - The reference to receive the a coefficient.
-	// b - [OUT] - The reference to receive the b coefficient.
-	// c - [OUT] - The reference to receive the c coefficient.
-	// d - [OUT] - The reference to receive the d coefficient.
-	void GetCoefficients(double& a, double& b, double& c, double& d) const;
+	
+	void SaveCoefficientsToFile(std::ofstream& outFile) const;
 
 	
 private:
 
+	//--------------------------------------------------------------------------//
+	//---------------------------  HELPER FUNCTIONS ----------------------------//
+	//--------------------------------------------------------------------------//
+
+	void InitMembers( double a, double b, double c, double d );
+
+	
 	//--------------------------------------------------------------------------//
 	//-----------------------------  DATA MEMBERS  -----------------------------//
 	//--------------------------------------------------------------------------//
@@ -66,6 +72,7 @@ private:
 	double mB;
 	double mC;
 	double mD;
+
 };
 
 

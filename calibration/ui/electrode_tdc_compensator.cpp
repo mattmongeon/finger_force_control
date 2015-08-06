@@ -1,5 +1,8 @@
 #include "electrode_tdc_compensator.h"
+#include "data_file_reader.h"
 #include <cmath>
+#include <plplot/plplot.h>
+#include <plplot/plstream.h>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -7,9 +10,21 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 cElectrodeTdcCompensator::cElectrodeTdcCompensator(double a, double b, double c, double d)
-	: mA(a), mB(b), mC(c), mD(d)
 {
+	InitMembers(a, b, c, d);
+}
 
+////////////////////////////////////////////////////////////////////////////////
+
+cElectrodeTdcCompensator::cElectrodeTdcCompensator(std::ifstream& inFile)
+{
+	double a, b, c, d;
+	inFile.read(reinterpret_cast<char*>(&a), sizeof(double));
+	inFile.read(reinterpret_cast<char*>(&b), sizeof(double));
+	inFile.read(reinterpret_cast<char*>(&c), sizeof(double));
+	inFile.read(reinterpret_cast<char*>(&d), sizeof(double));
+
+	InitMembers(a, b, c, d);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -22,19 +37,15 @@ cElectrodeTdcCompensator::~cElectrodeTdcCompensator()
 ////////////////////////////////////////////////////////////////////////////////
 
 cElectrodeTdcCompensator::cElectrodeTdcCompensator(const cElectrodeTdcCompensator& copyMe)
-	: mA(copyMe.mA), mB(copyMe.mB), mC(copyMe.mC), mD(copyMe.mD)
 {
-
+	InitMembers(copyMe.mA, copyMe.mB, copyMe.mC, copyMe.mD);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 cElectrodeTdcCompensator& cElectrodeTdcCompensator::operator=(const cElectrodeTdcCompensator& rhs)
 {
-	mA = rhs.mA;
-	mB = rhs.mB;
-	mC = rhs.mC;
-	mD = rhs.mD;
+	InitMembers(rhs.mA, rhs.mB, rhs.mC, rhs.mD);
 
 	return *this;
 }
@@ -57,10 +68,24 @@ double cElectrodeTdcCompensator::GetUnforcedElectrodeValue(double tdc) const
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void cElectrodeTdcCompensator::GetCoefficients(double& a, double& b, double& c, double& d) const
+void cElectrodeTdcCompensator::SaveCoefficientsToFile(std::ofstream& outFile) const
 {
-	a = mA;
-	b = mB;
-	c = mC;
-	d = mD;
+	outFile.write(reinterpret_cast<const char*>(&mA), sizeof(double));
+	outFile.write(reinterpret_cast<const char*>(&mB), sizeof(double));
+	outFile.write(reinterpret_cast<const char*>(&mC), sizeof(double));
+	outFile.write(reinterpret_cast<const char*>(&mD), sizeof(double));
 }
+
+////////////////////////////////////////////////////////////////////////////////
+//  Helper Functions
+////////////////////////////////////////////////////////////////////////////////
+
+void cElectrodeTdcCompensator::InitMembers( double a, double b, double c, double d )
+{
+	mA = a;
+	mB = b;
+	mC = c;
+	mD = d;
+}
+
+

@@ -55,6 +55,16 @@ public:
 	// Params:
 	// file - The path to the file to be written.
 	void SaveFitTermsToFile(const std::string& file);
+
+	// Reads in the data contained in the file specified by the parameter string
+	// and plots the TDC-electrode compensation curve based on the file's TDC
+	// for comparison.
+	//
+	// Params:
+	// filePath - The path to the file to be parsed.
+	// electrodeNum - The number of the electrode to compare.
+	// void PlotElectrodeCurveAgainstFileData(const std::string& filePath, int electrodeNum);
+	void PlotElectrodeCurveAgainstFileData(const std::vector<std::string>& files, int electrodeNum);
 	
 	
 private:
