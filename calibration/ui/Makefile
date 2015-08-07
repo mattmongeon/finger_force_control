@@ -1,6 +1,6 @@
 PROG=biotac_cal
 CC=g++
-CPPFLAGS=-c -Wall
+CPPFLAGS=-c -Wall -fopenmp
 INCLUDES=-I/usr/local/include/eigen3
 
 SOURCES=main.cpp pic_serial.cpp load_cell.cpp utils.cpp stopwatch.cpp keyboard_thread.cpp biotac.cpp
