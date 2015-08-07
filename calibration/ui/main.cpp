@@ -13,6 +13,7 @@
 #include "electrode_tdc_compensator.h"
 #include <plplot/plplot.h>
 #include <plplot/plstream.h>
+#include <ceres/ceres.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -180,6 +181,7 @@ int main(int argc, char** argv)
 	
 	std::cout << "Setting up thread for keyboard input" << std::endl;
 	cKeyboardThread::Instance();
+	google::InitGoogleLogging("biotac_cal");
 	
 
 	// --- Main State Machine --- //
@@ -780,24 +782,30 @@ int main(int argc, char** argv)
 			
 			cFunctionFitNLS fit;
 			std::vector<std::string> files;
-			files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
+			// files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
 			files.push_back("./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
 			files.push_back("./data/tdc_electrodes/data_2015_08_04_16_15_04.dat");
 			files.push_back("./data/tdc_electrodes/cooling_down_from_high.dat");
 			files.push_back("./data/tdc_electrodes/heating_up.dat");
 			files.push_back("./data/tdc_electrodes/high_temp.dat");
+			files.push_back("./data/tdc_electrodes/zero1.dat");
+			files.push_back("./data/tdc_electrodes/zero2.dat");
+			files.push_back("./data/tdc_electrodes/zero3.dat");
 			std::vector<cElectrodeTdcCompensator> compensators = fit.TrainAgainstDataFiles(files);
 
 
 			// --- Test The Fit --- //
 			
 			files.clear();
-			files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
-			// files.push_back("./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
-			// files.push_back("./data/tdc_electrodes/data_2015_08_04_16_15_04.dat");
-			// files.push_back("./data/tdc_electrodes/cooling_down_from_high.dat");
-			// files.push_back("./data/tdc_electrodes/heating_up.dat");
-			// files.push_back("./data/tdc_electrodes/high_temp.dat");
+			// files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
+			files.push_back("./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
+			files.push_back("./data/tdc_electrodes/data_2015_08_04_16_15_04.dat");
+			files.push_back("./data/tdc_electrodes/cooling_down_from_high.dat");
+			files.push_back("./data/tdc_electrodes/heating_up.dat");
+			files.push_back("./data/tdc_electrodes/high_temp.dat");
+			files.push_back("./data/tdc_electrodes/zero1.dat");
+			files.push_back("./data/tdc_electrodes/zero2.dat");
+			files.push_back("./data/tdc_electrodes/zero3.dat");
 			fit.TestAgainstDataFiles(files, compensators);
 
 

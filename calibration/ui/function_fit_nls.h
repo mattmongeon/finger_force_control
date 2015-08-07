@@ -94,15 +94,22 @@ private:
 											  const T* const e,
 											  const T* const f,
 											  const T* const g,
-											  const T* const h,
-											  const T* const i,
-											  const T* const j,
 											  T* residual ) const
 			{
 				residual[0] = T(mElectrode) -
-					T(a[0]*pow((mTDC+b[0]), c[0]) +
-					  d[0]*pow((mTAC+e[0]), f[0]) +
-					  g[0]);
+					(a[0]*pow((mTDC+b[0]), 5.0) +
+					 a[1]*pow((mTDC+b[1]), 4.0) +
+					 a[2]*pow((mTDC+b[2]), 3.0) +
+					 a[3]*pow((mTDC+b[3]), 2.0) +
+					 a[4]*pow((mTDC+b[4]), 1.0) +
+					 
+					 d[0]*pow((mTAC+e[0]), 5.0) +
+					 d[1]*pow((mTAC+e[1]), 4.0) +
+					 d[2]*pow((mTAC+e[2]), 3.0) +
+					 d[3]*pow((mTAC+e[3]), 2.0) +
+					 d[4]*pow((mTAC+e[4]), 1.0) +
+
+					 g[0]);
 				
 				return true;
 			}
@@ -145,9 +152,8 @@ private:
 	// c - [OUT] - The exponential term.
 	// d - [OUT] - An offset applied to the entire result.
 	void FitToElectrodeData( const std::vector<sDataPoint>& data,
-							 double& a, double& b, double& c, double& d,
-							 double& e, double& f, double& g, double& h,
-							 double& i, double& j );
+							 double* pA, double* pB, double* pC, double* pD,
+							 double* pE, double* pF, double* pG );
 
 	// Takes in an array of vectors (one for each electrode) and plots the errors
 	// at each measurement point.
@@ -188,13 +194,6 @@ private:
 	// plottingStream - The streaming plotting device.
 	void PlotE16ThroughE19(const std::vector<double>* errors, plstream& plottingStream);
 	
-
-	//--------------------------------------------------------------------------//
-	//-----------------------------  DATA MEMBERS  -----------------------------//
-	//--------------------------------------------------------------------------//
-
-	// A flag to protect against calling google::InitGoogleLogging() more than once.
-	static bool mLoggingInitialized;
 };
 
 

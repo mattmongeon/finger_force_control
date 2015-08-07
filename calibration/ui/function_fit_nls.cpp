@@ -10,17 +10,13 @@
 #include <ceres/ceres.h>
 
 
-bool cFunctionFitNLS::mLoggingInitialized = false;
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //  Construction / Destruction
 ////////////////////////////////////////////////////////////////////////////////
 
 cFunctionFitNLS::cFunctionFitNLS()
 {
-	if( !mLoggingInitialized )
-		google::InitGoogleLogging("biotac_cal");
+	
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -44,104 +40,110 @@ std::vector<cElectrodeTdcCompensator> cFunctionFitNLS::TrainAgainstDataFiles(con
 	// --- Fit Against Data --- //
 	
 	std::vector<cElectrodeTdcCompensator> retVal;
-	double a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0, i = 0, j = 0;
+	double a[5] = {0,0,0,0,0};
+	double b[5] = {0,0,0,0,0};
+	double c[5] = {0,0,0,0,0};
+	double d[5] = {0,0,0,0,0};
+	double e[5] = {0,0,0,0,0};
+	double f[5] = {0,0,0,0,0};
+	double g[5] = {0,0,0,0,0};
 	
 	std::cout << "E1:" << std::endl;
-	FitToElectrodeData(data.mE1, a, b, c, d, e, f, g, h, i, j);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
+	FitToElectrodeData(data.mE1, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E2:" << std::endl;
-	FitToElectrodeData(data.mE2, a, b, c, d, e, f, g, h, i, j);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
+	FitToElectrodeData(data.mE2, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E3:" << std::endl;
-	FitToElectrodeData(data.mE3, a, b, c, d, e, f, g, h, i, j);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
+	FitToElectrodeData(data.mE3, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E4:" << std::endl;
-	FitToElectrodeData(data.mE4, a, b, c, d, e, f, g, h, i, j);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
+	FitToElectrodeData(data.mE4, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E5:" << std::endl;
-	FitToElectrodeData(data.mE5, a, b, c, d, e, f, g, h, i, j);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
+	FitToElectrodeData(data.mE5, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E6:" << std::endl;
-	FitToElectrodeData(data.mE6, a, b, c, d, e, f, g, h, i, j);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
+	FitToElectrodeData(data.mE6, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E7:" << std::endl;
-	FitToElectrodeData(data.mE7, a, b, c, d, e, f, g, h, i, j);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
+	FitToElectrodeData(data.mE7, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E8:" << std::endl;
-	FitToElectrodeData(data.mE8, a, b, c, d, e, f, g, h, i, j);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
+	FitToElectrodeData(data.mE8, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E9:" << std::endl;
-	FitToElectrodeData(data.mE9, a, b, c, d, e, f, g, h, i, j);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
+	FitToElectrodeData(data.mE9, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E10:" << std::endl;
-	FitToElectrodeData(data.mE10, a, b, c, d, e, f, g, h, i, j);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
+	FitToElectrodeData(data.mE10, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E11:" << std::endl;
-	FitToElectrodeData(data.mE11, a, b, c, d, e, f, g, h, i, j);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
+	FitToElectrodeData(data.mE11, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E12:" << std::endl;
-	FitToElectrodeData(data.mE12, a, b, c, d, e, f, g, h, i, j);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
+	FitToElectrodeData(data.mE12, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E13:" << std::endl;
-	FitToElectrodeData(data.mE13, a, b, c, d, e, f, g, h, i, j);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
+	FitToElectrodeData(data.mE13, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E14:" << std::endl;
-	FitToElectrodeData(data.mE14, a, b, c, d, e, f, g, h, i, j);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
+	FitToElectrodeData(data.mE14, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E15:" << std::endl;
-	FitToElectrodeData(data.mE15, a, b, c, d, e, f, g, h, i, j);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
+	FitToElectrodeData(data.mE15, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E16:" << std::endl;
-	FitToElectrodeData(data.mE16, a, b, c, d, e, f, g, h, i, j);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
+	FitToElectrodeData(data.mE16, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E17:" << std::endl;
-	FitToElectrodeData(data.mE17, a, b, c, d, e, f, g, h, i, j);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
+	FitToElectrodeData(data.mE17, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E18:" << std::endl;
-	FitToElectrodeData(data.mE18, a, b, c, d, e, f, g, h, i, j);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
+	FitToElectrodeData(data.mE18, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
 	std::cout << "E19:" << std::endl;
-	FitToElectrodeData(data.mE19, a, b, c, d, e, f, g, h, i, j);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
+	FitToElectrodeData(data.mE19, a, b, c, d, e, f, g);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
 	std::cout << std::endl;
 
-	std::cout << "POW TDC, EXP TDC, CONSTANT" << std::endl << std::endl;
+	std::cout << "POW TDC, EXP TDC, CONSTANT" << std::endl;
 
 	return retVal;
 }
@@ -165,7 +167,7 @@ void cFunctionFitNLS::TestAgainstDataFiles(const std::vector<std::string>& files
 		// --- Test Againts All Data Points --- //
 		
 		std::vector<biotac_tune_data> data = reader.GetData();
-		for( std::size_t dataIndex = 10; dataIndex < reader.GetNumDataPoints(); ++dataIndex )
+		for( std::size_t dataIndex = 200; dataIndex < reader.GetNumDataPoints(); ++dataIndex )
 		{
 			errors[0].push_back(compensators[0].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e1));
 			errors[1].push_back(compensators[1].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e2));
@@ -241,7 +243,7 @@ cFunctionFitNLS::sTdcElectrodeData cFunctionFitNLS::ParseFiles(const std::vector
 		cDataFileReader reader(files[i]);
 		std::vector<biotac_tune_data> readerData = reader.GetData();
 		std::size_t numDataPoints = readerData.size();
-		for( std::size_t dataIndex = 100; dataIndex < numDataPoints; ++dataIndex )
+		for( std::size_t dataIndex = 200; dataIndex < numDataPoints; ++dataIndex )
 		{
 			e1.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e1) );
 			e2.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e2) );
@@ -331,19 +333,18 @@ void cFunctionFitNLS::FillStructMember( std::vector<cFunctionFitNLS::sDataPoint>
 ////////////////////////////////////////////////////////////////////////////////
 
 void cFunctionFitNLS::FitToElectrodeData( const std::vector<cFunctionFitNLS::sDataPoint>& data,
-										  double& a, double& b, double& c, double& d,
-										  double& e, double& f, double& g, double& h,
-										  double& i, double& j )
+										  double* pA, double* pB, double* pC, double* pD,
+										  double* pE, double* pF, double* pG )
 {
 	ceres::Problem problem;
 	int numDataPoints = data.size();
-	for( int index = 10; index < numDataPoints; ++index )
+	for( int index = 0; index < numDataPoints; ++index )
 	{
 		problem.AddResidualBlock(
-			new ceres::AutoDiffCostFunction<cPolynomialResidual, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1>(
+			new ceres::AutoDiffCostFunction<cPolynomialResidual, 1, 5, 5, 5, 5, 5, 5, 5>(
 				new cPolynomialResidual( data[index].mTDC, data[index].mAvgTAC, data[index].mAvgElectrode ) ),
 			NULL,
-			&a, &b, &c, &d, &e, &f, &g, &h, &i, &j );
+			pA, pB, pC, pD, pE, pF, pG );
 	}
 
 	ceres::Solver::Options options;
