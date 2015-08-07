@@ -15,8 +15,9 @@ public:
 	//----------------------  CONSTRUCTION / DESTRUCTION  ----------------------//
 	//--------------------------------------------------------------------------//
 	
-	cElectrodeTdcCompensator(double a, double b, double c, double d, double e, double f, double g,
-							 double h, double i, double j);
+	cElectrodeTdcCompensator(double* pA, double* pB, double* pC,
+							 double* pD, double* pE, double* pF,
+							 double* pG);
 
 	cElectrodeTdcCompensator(std::ifstream& inFile);
 
@@ -61,8 +62,9 @@ private:
 	//---------------------------  HELPER FUNCTIONS ----------------------------//
 	//--------------------------------------------------------------------------//
 
-	void InitMembers( double a, double b, double c, double d, double e, double f, double g,
-					  double h, double i, double j );
+	void InitMembers( const double* pA, const double* pB, const double* pC,
+					  const double* pD, const double* pE, const double* pF,
+					  const double* pG );
 
 	
 	//--------------------------------------------------------------------------//
@@ -70,16 +72,13 @@ private:
 	//--------------------------------------------------------------------------//
 
 	// The values that are part of the equation that maps TDC to electrode values.
-	double mA;
-	double mB;
-	double mC;
-	double mD;
-	double mE;
-	double mF;
-	double mG;
-	double mH;
-	double mI;
-	double mJ;
+	double mA[5];
+	double mB[5];
+	double mC[5];
+	double mD[5];
+	double mE[5];
+	double mF[5];
+	double mG[5];
 	
 };
 
