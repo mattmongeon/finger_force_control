@@ -243,7 +243,7 @@ cFunctionFitNLS::sTdcElectrodeData cFunctionFitNLS::ParseFiles(const std::vector
 		cDataFileReader reader(files[i]);
 		std::vector<biotac_tune_data> readerData = reader.GetData();
 		std::size_t numDataPoints = readerData.size();
-		for( std::size_t dataIndex = 200; dataIndex < numDataPoints; ++dataIndex )
+		for( std::size_t dataIndex = 0; dataIndex < numDataPoints; ++dataIndex )
 		{
 			e1.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e1) );
 			e2.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e2) );

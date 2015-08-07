@@ -153,11 +153,12 @@ cBioTacForceCurve cFunctionFitForceTerms::TrainAgainstDataFiles(const std::vecto
 
 	// --- Start Training --- //
 
-	ceres::Solver::Options options;
-	options.max_num_iterations = 1000;
-	options.linear_solver_type = ceres::DENSE_QR;
-	options.minimizer_progress_to_stdout = true;
-	options.function_tolerance = 1.0e-12;
+ 	ceres::Solver::Options options;
+	options.max_num_iterations = 10000;
+ 	options.linear_solver_type = ceres::DENSE_QR;
+ 	options.minimizer_progress_to_stdout = true;
+	options.num_threads = 8;
+ 	options.function_tolerance = 1.0e-12;
 
 	std::cout << "Solving... " << std::endl;
 	ceres::Solver::Summary summary;
