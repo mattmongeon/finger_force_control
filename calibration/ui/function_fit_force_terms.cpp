@@ -105,7 +105,7 @@ cBioTacForceCurve cFunctionFitForceTerms::TrainAgainstDataFiles(const std::vecto
 {
 	// --- Parse Files --- //
 
-	double s1 = 1.0, s2 = 1.0, s3 = 1.0;
+	double s1 = 1, s2 = 1, s3 = 1;
 	ceres::Problem problem;
 	
 	// We will parse the files to set up all of our training data, and then we will start
