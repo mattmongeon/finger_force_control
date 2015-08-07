@@ -11,6 +11,7 @@
 #include "file_utils.h"
 #include "data_file_reader.h"
 #include "electrode_tdc_compensator.h"
+#include "data_file_editor.h"
 #include <plplot/plplot.h>
 #include <plplot/plstream.h>
 #include <ceres/ceres.h>
@@ -782,25 +783,27 @@ int main(int argc, char** argv)
 			
 			cFunctionFitNLS fit;
 			std::vector<std::string> files;
+			files.push_back("./data/tdc_electrodes/cold_start.dat");
+			files.push_back("./data/tdc_electrodes/cooling_down_from_high.dat");
 			// files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
 			files.push_back("./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
 			files.push_back("./data/tdc_electrodes/data_2015_08_04_16_15_04.dat");
-			files.push_back("./data/tdc_electrodes/cooling_down_from_high.dat");
 			files.push_back("./data/tdc_electrodes/heating_up.dat");
 			files.push_back("./data/tdc_electrodes/high_temp.dat");
-			files.push_back("./data/tdc_electrodes/zero1.dat");
-			files.push_back("./data/tdc_electrodes/zero2.dat");
-			files.push_back("./data/tdc_electrodes/zero3.dat");
+			// files.push_back("./data/tdc_electrodes/zero1.dat");
+			// files.push_back("./data/tdc_electrodes/zero2.dat");
+			// files.push_back("./data/tdc_electrodes/zero3.dat");
 			std::vector<cElectrodeTdcCompensator> compensators = fit.TrainAgainstDataFiles(files);
 
 
 			// --- Test The Fit --- //
 			
 			files.clear();
-			// files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
+			files.push_back("./data/tdc_electrodes/cold_start.dat");
+			files.push_back("./data/tdc_electrodes/cooling_down_from_high.dat");
+			files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
 			files.push_back("./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
 			files.push_back("./data/tdc_electrodes/data_2015_08_04_16_15_04.dat");
-			files.push_back("./data/tdc_electrodes/cooling_down_from_high.dat");
 			files.push_back("./data/tdc_electrodes/heating_up.dat");
 			files.push_back("./data/tdc_electrodes/high_temp.dat");
 			files.push_back("./data/tdc_electrodes/zero1.dat");
@@ -848,6 +851,10 @@ int main(int argc, char** argv)
 			files.clear();
 			files.push_back("./data/test/data_2015_07_30_16_35_24.dat");
 			files.push_back("./data/test/data_2015_07_29_14_44_14.dat");
+			files.push_back("./data/test/data_2015_07_23_09_57_11.dat");
+			// files.push_back("./data/data_2015_07_23_09_50_24.dat");
+			// files.push_back("./data/data_2015_07_23_09_55_36.dat");
+			// files.push_back("./data/data_2015_07_23_09_55_48.dat");
 			ffTerms.TestAgainstDataFiles(files, curve);
 
 
@@ -900,6 +907,22 @@ int main(int argc, char** argv)
 			
 			// curve.PlotElectrodeCurveAgainstFileData(file, electrode);
 
+			break;
+		}
+
+		case '5':
+		{
+			cDataFileEditor("./data/tdc_electrodes/original/cold_start.dat", "./data/tdc_electrodes/cold_start.dat");
+			// cDataFileEditor("./data/tdc_electrodes/original/cooling_down_from_high.dat", "./data/tdc_electrodes/cooling_down_from_high.dat");
+			// cDataFileEditor("./data/tdc_electrodes/original/data_2015_07_30_09_44_43.dat", "./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
+			cDataFileEditor("./data/tdc_electrodes/original/data_2015_08_04_15_27_33.dat", "./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
+			// cDataFileEditor("./data/tdc_electrodes/original/data_2015_08_04_16_15_04.dat", "./data/tdc_electrodes/data_2015_08_04_16_15_04.dat");
+			// cDataFileEditor("./data/tdc_electrodes/original/heating_up.dat", "./data/tdc_electrodes/heating_up.dat");
+			cDataFileEditor("./data/tdc_electrodes/original/high_temp.dat", "./data/tdc_electrodes/high_temp.dat");
+			// cDataFileEditor("./data/tdc_electrodes/original/zero1.dat", "./data/tdc_electrodes/zero1.dat");
+			// cDataFileEditor("./data/tdc_electrodes/original/zero2.dat", "./data/tdc_electrodes/zero2.dat");
+			// cDataFileEditor("./data/tdc_electrodes/original/zero3.dat", "./data/tdc_electrodes/zero3.dat");
+			
 			break;
 		}
 		
