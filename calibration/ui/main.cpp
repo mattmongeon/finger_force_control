@@ -781,9 +781,9 @@ int main(int argc, char** argv)
 			cFunctionFitNLS fit;
 			std::vector<std::string> files;
 			files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
-			files.push_back("./data/tdc_electrodes/cooling_down_from_high.dat");
 			files.push_back("./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
 			files.push_back("./data/tdc_electrodes/data_2015_08_04_16_15_04.dat");
+			files.push_back("./data/tdc_electrodes/cooling_down_from_high.dat");
 			files.push_back("./data/tdc_electrodes/heating_up.dat");
 			files.push_back("./data/tdc_electrodes/high_temp.dat");
 			std::vector<cElectrodeTdcCompensator> compensators = fit.TrainAgainstDataFiles(files);
@@ -793,9 +793,11 @@ int main(int argc, char** argv)
 			
 			files.clear();
 			files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
-			files.push_back("./data/tdc_electrodes/zero1.dat");
-			files.push_back("./data/tdc_electrodes/zero2.dat");
-			files.push_back("./data/tdc_electrodes/zero3.dat");
+			// files.push_back("./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
+			// files.push_back("./data/tdc_electrodes/data_2015_08_04_16_15_04.dat");
+			// files.push_back("./data/tdc_electrodes/cooling_down_from_high.dat");
+			// files.push_back("./data/tdc_electrodes/heating_up.dat");
+			// files.push_back("./data/tdc_electrodes/high_temp.dat");
 			fit.TestAgainstDataFiles(files, compensators);
 
 

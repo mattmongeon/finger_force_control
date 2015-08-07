@@ -44,102 +44,104 @@ std::vector<cElectrodeTdcCompensator> cFunctionFitNLS::TrainAgainstDataFiles(con
 	// --- Fit Against Data --- //
 	
 	std::vector<cElectrodeTdcCompensator> retVal;
-	double a, b, c, d, e, f, g;
+	double a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0, i = 0, j = 0;
 	
 	std::cout << "E1:" << std::endl;
-	FitToElectrodeData(data.mE1, a, b, c, d, e, f, g);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
+	FitToElectrodeData(data.mE1, a, b, c, d, e, f, g, h, i, j);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
 	std::cout << std::endl;
 
 	std::cout << "E2:" << std::endl;
-	FitToElectrodeData(data.mE2, a, b, c, d, e, f, g);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
+	FitToElectrodeData(data.mE2, a, b, c, d, e, f, g, h, i, j);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
 	std::cout << std::endl;
 
 	std::cout << "E3:" << std::endl;
-	FitToElectrodeData(data.mE3, a, b, c, d, e, f, g);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
+	FitToElectrodeData(data.mE3, a, b, c, d, e, f, g, h, i, j);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
 	std::cout << std::endl;
 
 	std::cout << "E4:" << std::endl;
-	FitToElectrodeData(data.mE4, a, b, c, d, e, f, g);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
+	FitToElectrodeData(data.mE4, a, b, c, d, e, f, g, h, i, j);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
 	std::cout << std::endl;
 
 	std::cout << "E5:" << std::endl;
-	FitToElectrodeData(data.mE5, a, b, c, d, e, f, g);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
+	FitToElectrodeData(data.mE5, a, b, c, d, e, f, g, h, i, j);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
 	std::cout << std::endl;
 
 	std::cout << "E6:" << std::endl;
-	FitToElectrodeData(data.mE6, a, b, c, d, e, f, g);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
+	FitToElectrodeData(data.mE6, a, b, c, d, e, f, g, h, i, j);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
 	std::cout << std::endl;
 
 	std::cout << "E7:" << std::endl;
-	FitToElectrodeData(data.mE7, a, b, c, d, e, f, g);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
+	FitToElectrodeData(data.mE7, a, b, c, d, e, f, g, h, i, j);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
 	std::cout << std::endl;
 
 	std::cout << "E8:" << std::endl;
-	FitToElectrodeData(data.mE8, a, b, c, d, e, f, g);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
+	FitToElectrodeData(data.mE8, a, b, c, d, e, f, g, h, i, j);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
 	std::cout << std::endl;
 
 	std::cout << "E9:" << std::endl;
-	FitToElectrodeData(data.mE9, a, b, c, d, e, f, g);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
+	FitToElectrodeData(data.mE9, a, b, c, d, e, f, g, h, i, j);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
 	std::cout << std::endl;
 
 	std::cout << "E10:" << std::endl;
-	FitToElectrodeData(data.mE10, a, b, c, d, e, f, g);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
+	FitToElectrodeData(data.mE10, a, b, c, d, e, f, g, h, i, j);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
 	std::cout << std::endl;
 
 	std::cout << "E11:" << std::endl;
-	FitToElectrodeData(data.mE11, a, b, c, d, e, f, g);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
+	FitToElectrodeData(data.mE11, a, b, c, d, e, f, g, h, i, j);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
 	std::cout << std::endl;
 
 	std::cout << "E12:" << std::endl;
-	FitToElectrodeData(data.mE12, a, b, c, d, e, f, g);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
+	FitToElectrodeData(data.mE12, a, b, c, d, e, f, g, h, i, j);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
 	std::cout << std::endl;
 
 	std::cout << "E13:" << std::endl;
-	FitToElectrodeData(data.mE13, a, b, c, d, e, f, g);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
+	FitToElectrodeData(data.mE13, a, b, c, d, e, f, g, h, i, j);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
 	std::cout << std::endl;
 
 	std::cout << "E14:" << std::endl;
-	FitToElectrodeData(data.mE14, a, b, c, d, e, f, g);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
+	FitToElectrodeData(data.mE14, a, b, c, d, e, f, g, h, i, j);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
 	std::cout << std::endl;
 
 	std::cout << "E15:" << std::endl;
-	FitToElectrodeData(data.mE15, a, b, c, d, e, f, g);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
+	FitToElectrodeData(data.mE15, a, b, c, d, e, f, g, h, i, j);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
 	std::cout << std::endl;
 
 	std::cout << "E16:" << std::endl;
-	FitToElectrodeData(data.mE16, a, b, c, d, e, f, g);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
+	FitToElectrodeData(data.mE16, a, b, c, d, e, f, g, h, i, j);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
 	std::cout << std::endl;
 
 	std::cout << "E17:" << std::endl;
-	FitToElectrodeData(data.mE17, a, b, c, d, e, f, g);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
+	FitToElectrodeData(data.mE17, a, b, c, d, e, f, g, h, i, j);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
 	std::cout << std::endl;
 
 	std::cout << "E18:" << std::endl;
-	FitToElectrodeData(data.mE18, a, b, c, d, e, f, g);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
+	FitToElectrodeData(data.mE18, a, b, c, d, e, f, g, h, i, j);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
 	std::cout << std::endl;
 
 	std::cout << "E19:" << std::endl;
-	FitToElectrodeData(data.mE19, a, b, c, d, e, f, g);
-	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g));
+	FitToElectrodeData(data.mE19, a, b, c, d, e, f, g, h, i, j);
+	retVal.push_back(cElectrodeTdcCompensator(a, b, c, d, e, f, g, h, i, j));
 	std::cout << std::endl;
+
+	std::cout << "POW TDC, EXP TDC, CONSTANT" << std::endl << std::endl;
 
 	return retVal;
 }
@@ -189,11 +191,11 @@ void cFunctionFitNLS::TestAgainstDataFiles(const std::vector<std::string>& files
 
 		// --- Plot Errors --- //
 
+		std::cout << "Plotting file \'" << files[i] << "\'" << std::endl << std::endl;
 		PlotTestingErrors(errors);
-
-
-		std::cout << std::endl << std::endl;
 	}
+	
+	std::cout << std::endl << std::endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -330,18 +332,18 @@ void cFunctionFitNLS::FillStructMember( std::vector<cFunctionFitNLS::sDataPoint>
 
 void cFunctionFitNLS::FitToElectrodeData( const std::vector<cFunctionFitNLS::sDataPoint>& data,
 										  double& a, double& b, double& c, double& d,
-										  double& e, double& f, double& g )
+										  double& e, double& f, double& g, double& h,
+										  double& i, double& j )
 {
-	a = b = c = d = e = f = g = 0;
 	ceres::Problem problem;
 	int numDataPoints = data.size();
-	for( int i = 10; i < numDataPoints; ++i )
+	for( int index = 10; index < numDataPoints; ++index )
 	{
 		problem.AddResidualBlock(
-			new ceres::AutoDiffCostFunction<cPolynomialResidual, 1, 1, 1, 1, 1, 1, 1, 1>(
-				new cPolynomialResidual( data[i].mTDC, data[i].mAvgTAC, data[i].mAvgElectrode ) ),
+			new ceres::AutoDiffCostFunction<cPolynomialResidual, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1>(
+				new cPolynomialResidual( data[index].mTDC, data[index].mAvgTAC, data[index].mAvgElectrode ) ),
 			NULL,
-			&a, &b, &c, &d, &e, &f, &g );
+			&a, &b, &c, &d, &e, &f, &g, &h, &i, &j );
 	}
 
 	ceres::Solver::Options options;
@@ -353,8 +355,6 @@ void cFunctionFitNLS::FitToElectrodeData( const std::vector<cFunctionFitNLS::sDa
 	ceres::Solver::Summary summary;
 	ceres::Solve(options, &problem, &summary);
 	std::cout << summary.FullReport() << std::endl;
-	std::cout << "Final a: " << a << "  b: " << b << "  c: " << c << "  d: " << d
-			  << "  e: " << e << "  f: " << f << "  g: " << g << std::endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -417,7 +417,7 @@ void cFunctionFitNLS::PlotE1ThroughE5(const std::vector<double>* errors, plstrea
 
 	plottingStream.col0(nUtils::enumPLplotColor_RED);
 	plottingStream.env(0, errors[0].size() / 100.0, ymin*0.99, ymax*1.01, 0, 0);
-	plottingStream.lab("Time (s)", "Electrode Measurement", "Electrodes 1-5");
+	plottingStream.lab("Time (s)", "Error", "Electrodes 1-5");
 
 	plottingStream.col0(nUtils::enumPLplotColor_RED);
 	plottingStream.line(errors[0].size(), pX, pE1);
@@ -539,7 +539,7 @@ void cFunctionFitNLS::PlotE6ThroughE10(const std::vector<double>* errors, plstre
 
 	plottingStream.col0(nUtils::enumPLplotColor_RED);
 	plottingStream.env(0, errors[0].size() / 100.0, ymin*0.99, ymax*1.01, 0, 0);
-	plottingStream.lab("Time (s)", "Electrode Measurement", "Electrodes 6-10");
+	plottingStream.lab("Time (s)", "Error", "Electrodes 6-10");
 
 	plottingStream.col0(nUtils::enumPLplotColor_RED);
 	plottingStream.line(errors[0].size(), pX, pE6);
@@ -661,7 +661,7 @@ void cFunctionFitNLS::PlotE11ThroughE15(const std::vector<double>* errors, plstr
 
 	plottingStream.col0(nUtils::enumPLplotColor_RED);
 	plottingStream.env(0, errors[0].size() / 100.0, ymin*0.99, ymax*1.01, 0, 0);
-	plottingStream.lab("Time (s)", "Electrode Measurement", "Electrodes 11-15");
+	plottingStream.lab("Time (s)", "Error", "Electrodes 11-15");
 
 	plottingStream.col0(nUtils::enumPLplotColor_RED);
 	plottingStream.line(errors[0].size(), pX, pE11);
@@ -779,7 +779,7 @@ void cFunctionFitNLS::PlotE16ThroughE19(const std::vector<double>* errors, plstr
 
 	plottingStream.col0(nUtils::enumPLplotColor_RED);
 	plottingStream.env(0, errors[0].size() / 100.0, ymin*0.99, ymax*1.01, 0, 0);
-	plottingStream.lab("Time (s)", "Electrode Measurement", "Electrodes 16-19");
+	plottingStream.lab("Time (s)", "Error", "Electrodes 16-19");
 
 	plottingStream.col0(nUtils::enumPLplotColor_RED);
 	plottingStream.line(errors[0].size(), pX, pE16);

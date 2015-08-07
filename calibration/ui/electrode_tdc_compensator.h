@@ -15,7 +15,8 @@ public:
 	//----------------------  CONSTRUCTION / DESTRUCTION  ----------------------//
 	//--------------------------------------------------------------------------//
 	
-	cElectrodeTdcCompensator(double a, double b, double c, double d, double e, double f, double g);
+	cElectrodeTdcCompensator(double a, double b, double c, double d, double e, double f, double g,
+							 double h, double i, double j);
 
 	cElectrodeTdcCompensator(std::ifstream& inFile);
 
@@ -60,7 +61,8 @@ private:
 	//---------------------------  HELPER FUNCTIONS ----------------------------//
 	//--------------------------------------------------------------------------//
 
-	void InitMembers( double a, double b, double c, double d, double e, double f, double g );
+	void InitMembers( double a, double b, double c, double d, double e, double f, double g,
+					  double h, double i, double j );
 
 	
 	//--------------------------------------------------------------------------//
@@ -75,6 +77,9 @@ private:
 	double mE;
 	double mF;
 	double mG;
+	double mH;
+	double mI;
+	double mJ;
 	
 };
 

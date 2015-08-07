@@ -139,12 +139,12 @@ private:
 											  const T* const s3,
 											  T* residual ) const
 			{
-				T x(0.0), y(0.0), z(0.0);
+				double x(0.0), y(0.0), z(0.0);
 				for( std::size_t i = 0; i < 19; ++i )
 				{
-					x += T(mElectrodeNormalVectors[i][0]) * T((*mpCompensators)[i].CompensateTdc(mTDC, mTAC, mElectrodes[i]));
-					y += T(mElectrodeNormalVectors[i][1]) * T((*mpCompensators)[i].CompensateTdc(mTDC, mTAC, mElectrodes[i]));
-					z += T(mElectrodeNormalVectors[i][2]) * T((*mpCompensators)[i].CompensateTdc(mTDC, mTAC, mElectrodes[i]));
+					x += mElectrodeNormalVectors[i][0] * (*mpCompensators)[i].CompensateTdc(mTDC, mTAC, mElectrodes[i]);
+					y += mElectrodeNormalVectors[i][1] * (*mpCompensators)[i].CompensateTdc(mTDC, mTAC, mElectrodes[i]);
+					z += mElectrodeNormalVectors[i][2] * (*mpCompensators)[i].CompensateTdc(mTDC, mTAC, mElectrodes[i]);
 				}
 
 				T result = T(sqrt(s1[0]*s1[0]*x*x + s2[0]*s2[0]*y*y + s3[0]*s3[0]*z*z));
