@@ -216,41 +216,22 @@ void cBioTacForceCurve::SaveFitTermsToFile(const std::string& file)
 #define PLOT_DRIVER "xcairo"
 #endif	
 	
-	plstream plottingStream(1, 1, 255, 255, 255, PLOT_DRIVER);
-	plottingStream.init();
-	plottingStream.col0(nUtils::enumPLplotColor_RED);
-	plottingStream.env( organizedData.begin()->first, organizedData.rbegin()->first, ymin*0.99, ymax*1.01, 0, 0);
-	std::ostringstream title;
-	title << "Compensation Curve vs File Data - Electrode " << electrodeNum;
-	plottingStream.lab("TDC", "Electrode", title.str().c_str());
-
-
 	// First plot the electrode and TAC values per TDC value.
+	std::vector< std::pair<PLFLT*, int> > xVector, tacVector, eVector;
 	for( std::map< uint16_t, std::vector< std::pair<uint16_t, uint16_t> > >::iterator it = organizedData.begin(); it != organizedData.end(); ++it )
 	{
-		PLFLT* pX = new PLFLT[it->second.size()];
-		PLFLT* pTAC = new PLFLT[it->second.size()];
-		PLFLT* pE = new PLFLT[it->second.size()];
+		xVector.push_back( std::pair<PLFLT*, int>(new PLFLT[it->second.size()], it->second.size()) );
+		tacVector.push_back( std::pair<PLFLT*, int>(new PLFLT[it->second.size()], it->second.size()) );
+		eVector.push_back( std::pair<PLFLT*, int>(new PLFLT[it->second.size()], it->second.size()) );
 
 		for( std::size_t i = 0; i < it->second.size(); ++i )
 		{
-			pX[i] = it->first;
-			pTAC[i] = it->second[i].first;
-			pE[i] = it->second[i].second;
+			xVector[xVector.size()-1].first[i] = it->first;
+			tacVector[tacVector.size()-1].first[i] = it->second[i].first;
+			eVector[eVector.size()-1].first[i] = it->second[i].second;
 		}
-
-		plottingStream.col0(nUtils::enumPLplotColor_MAGENTA);
-		plottingStream.poin( it->second.size(), pX, pTAC, 9 );
-
-		plottingStream.col0(nUtils::enumPLplotColor_RED);
-		plottingStream.poin( it->second.size(), pX, pE, 9 );
-
-		delete[] pX;
-		delete[] pTAC;
-		delete[] pE;
 	}
 
-	
 	// Now plot the data from the curve.
 	cElectrodeTdcCompensator* pComp = &(mCompensators[electrodeNum-1]);
 	PLFLT* pX = new PLFLT[organizedData.size()];
@@ -272,10 +253,37 @@ void cBioTacForceCurve::SaveFitTermsToFile(const std::string& file)
 		pAvgFileE[index] /= it->second.size();
 
 		pCompOut[index] = pComp->GetUnforcedElectrodeValue(it->first, avgTac);
+
+		ymax = std::max<PLFLT>(ymax, pCompOut[index]);
+		ymax = std::max<PLFLT>(ymax, pAvgFileE[index]);
+			
+		ymin = std::min<PLFLT>(ymin, pCompOut[index]);
+		ymin = std::min<PLFLT>(ymin, pAvgFileE[index]);
 		
 		++index;
 	}
 
+	plstream plottingStream(1, 1, 255, 255, 255, PLOT_DRIVER);
+	plottingStream.init();
+	plottingStream.col0(nUtils::enumPLplotColor_RED);
+	plottingStream.env( organizedData.begin()->first, organizedData.rbegin()->first, ymin*0.99, ymax*1.01, 0, 0);
+	std::ostringstream title;
+	title << "Compensation Curve vs File Data - Electrode " << electrodeNum;
+	plottingStream.lab("TDC", "Electrode", title.str().c_str());
+
+	for( std::size_t i = 0; i < xVector.size(); ++i )
+	{
+		plottingStream.col0(nUtils::enumPLplotColor_MAGENTA);
+		plottingStream.poin( xVector[i].second, xVector[i].first, tacVector[i].first, 9 );
+
+		plottingStream.col0(nUtils::enumPLplotColor_RED);
+		plottingStream.poin( xVector[i].second, xVector[i].first, eVector[i].first, 9 );
+
+		delete[] xVector[i].first;
+		delete[] tacVector[i].first;
+		delete[] eVector[i].first;
+	}
+	
 	plottingStream.col0(nUtils::enumPLplotColor_BLUE);
 	plottingStream.line( organizedData.size(), pX, pCompOut );
 
