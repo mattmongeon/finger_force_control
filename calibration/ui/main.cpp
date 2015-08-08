@@ -1250,6 +1250,39 @@ int main(int argc, char** argv)
 			
 			break;
 		}
+
+		case '8':
+		{
+			cBioTacForceCurve curve("./coefficients.bio");
+			
+			// --- Load TDC vs Electrode Coefficients From File --- //
+			
+			std::vector<cElectrodeTdcCompensator> compensators;
+			compensators.clear();
+			std::ifstream file("./data/tdc_electrodes/tdc_electrode_curve.coeff", std::ios::binary | std::ios::in);
+			for( std::size_t i = 0; i < 19; ++i )
+			{
+				compensators.push_back( cElectrodeTdcCompensator(file) );
+			}
+			
+
+			// --- Train Fit For Force Equation --- //
+			
+			cFunctionFitForceTerms ffTerms(compensators);
+
+			std::vector<std::string> files;
+			files.push_back("./data/test/data_2015_07_30_16_35_24.dat");
+			files.push_back("./data/test/data_2015_07_29_14_44_14.dat");
+			files.push_back("./data/test/data_2015_07_23_09_57_11.dat");
+			files.push_back("./data/zero_force_01.dat");
+			files.push_back("./data/zero_force_02.dat");
+			// files.push_back("./data/data_2015_07_23_09_50_24.dat");
+			// files.push_back("./data/data_2015_07_23_09_55_36.dat");
+			// files.push_back("./data/data_2015_07_23_09_55_48.dat");
+			ffTerms.TestAgainstDataFiles(files, curve);
+
+			break;
+		}
 		
 		default:
 			break;
