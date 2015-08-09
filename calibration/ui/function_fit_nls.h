@@ -102,14 +102,18 @@ private:
 					 a[2]*pow((mTDC+b[2]), 3.0) +
 					 a[3]*pow((mTDC+b[3]), 2.0) +
 					 a[4]*pow((mTDC+b[4]), 1.0) +
-					 
-					 d[0]*pow((mTAC+e[0]), 5.0) +
-					 d[1]*pow((mTAC+e[1]), 4.0) +
-					 d[2]*pow((mTAC+e[2]), 3.0) +
-					 d[3]*pow((mTAC+e[3]), 2.0) +
-					 d[4]*pow((mTAC+e[4]), 1.0) +
 
-					 g[0]);
+					 // To try:
+					 // 1. d*pow( tdc+g*exp(e*tac+f)+c, #) + ... [PRETTY GOOD FORCE TRACKING, weird spikes every now and then]
+					 // 2. d*pow( tdc+g*pow(tac+e,f)+c, #) + ...
+					 // 3. d*pow( tdc+g*exp(e*tac+f), #) + ... 
+					 // 4. d*pow( tdc+exp(e*tac+f), #) + ...
+					 // 5. d*pow( tdc+(c*tac+d)+b), #) + ...
+					 d[0]*pow( mTDC+g[0]*exp(e[0]*mTAC+f[0])+c[0], 5.0 ) + 
+					 d[1]*pow( mTDC+g[1]*exp(e[1]*mTAC+f[1])+c[1], 4.0 ) + 
+					 d[2]*pow( mTDC+g[2]*exp(e[2]*mTAC+f[2])+c[2], 3.0 ) + 
+					 d[3]*pow( mTDC+g[3]*exp(e[3]*mTAC+f[3])+c[3], 2.0 ) + 
+					 d[4]*pow( mTDC+g[4]*exp(e[4]*mTAC+f[4])+c[4], 1.0 ) );
 				
 				return true;
 			}
