@@ -12,10 +12,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 cElectrodeTdcCompensator::cElectrodeTdcCompensator(double* pA, double* pB, double* pC,
-												   double* pD, double* pE, double* pF,
-												   double* pG, double* pH)
+												   double* pD, double* pE, double* pF )
 {
-	InitMembers(pA, pB, pC, pD, pE, pF, pG, pH);
+	InitMembers(pA, pB, pC, pD, pE, pF);
 
 	std::cout << "a[0]: " << mA[0] << ", b[0]: " << mB[0] << ", c[0]: " << mC[0] << std::endl
 			  << "a[1]: " << mA[1] << ", b[1]: " << mB[1] << ", c[1]: " << mC[1] << std::endl
@@ -26,17 +25,15 @@ cElectrodeTdcCompensator::cElectrodeTdcCompensator(double* pA, double* pB, doubl
 
 cElectrodeTdcCompensator::cElectrodeTdcCompensator(std::ifstream& inFile)
 {
-	double a[5], b[5], c[5], d[5], e[5], f[5], g[5], h[5];
+	double a[5], b[5], c[5], d[5], e[5], f[5];
 	inFile.read(reinterpret_cast<char*>(&a[0]), sizeof(double)*5);
 	inFile.read(reinterpret_cast<char*>(&b[0]), sizeof(double)*5);
 	inFile.read(reinterpret_cast<char*>(&c[0]), sizeof(double)*5);
 	inFile.read(reinterpret_cast<char*>(&d[0]), sizeof(double)*5);
 	inFile.read(reinterpret_cast<char*>(&e[0]), sizeof(double)*5);
 	inFile.read(reinterpret_cast<char*>(&f[0]), sizeof(double)*5);
-	inFile.read(reinterpret_cast<char*>(&g[0]), sizeof(double)*5);
-	inFile.read(reinterpret_cast<char*>(&h[0]), sizeof(double)*5);
 
-	InitMembers(a, b, c, d, e, f, g, h);
+	InitMembers(a, b, c, d, e, f);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -51,8 +48,7 @@ cElectrodeTdcCompensator::~cElectrodeTdcCompensator()
 cElectrodeTdcCompensator::cElectrodeTdcCompensator(const cElectrodeTdcCompensator& copyMe)
 {
 	InitMembers(copyMe.mA, copyMe.mB, copyMe.mC,
-				copyMe.mD, copyMe.mE, copyMe.mF,
-				copyMe.mG, copyMe.mH);
+				copyMe.mD, copyMe.mE, copyMe.mF);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -60,8 +56,7 @@ cElectrodeTdcCompensator::cElectrodeTdcCompensator(const cElectrodeTdcCompensato
 cElectrodeTdcCompensator& cElectrodeTdcCompensator::operator=(const cElectrodeTdcCompensator& rhs)
 {
 	InitMembers(rhs.mA, rhs.mB, rhs.mC,
-				rhs.mD, rhs.mE, rhs.mF,
-				rhs.mG, rhs.mH);
+				rhs.mD, rhs.mE, rhs.mF);
 
 	return *this;
 }
@@ -111,8 +106,6 @@ void cElectrodeTdcCompensator::SaveCoefficientsToFile(std::ofstream& outFile) co
 	outFile.write(reinterpret_cast<const char*>(&mD[0]), sizeof(double)*5);
 	outFile.write(reinterpret_cast<const char*>(&mE[0]), sizeof(double)*5);
 	outFile.write(reinterpret_cast<const char*>(&mF[0]), sizeof(double)*5);
-	outFile.write(reinterpret_cast<const char*>(&mG[0]), sizeof(double)*5);
-	outFile.write(reinterpret_cast<const char*>(&mH[0]), sizeof(double)*5);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -120,8 +113,7 @@ void cElectrodeTdcCompensator::SaveCoefficientsToFile(std::ofstream& outFile) co
 ////////////////////////////////////////////////////////////////////////////////
 
 void cElectrodeTdcCompensator::InitMembers( const double* pA, const double* pB, const double* pC,
-											const double* pD, const double* pE, const double* pF,
-											const double* pG, const double* pH )
+											const double* pD, const double* pE, const double* pF )
 {
 	memcpy(&mA[0], pA, sizeof(double)*5);
 	memcpy(&mB[0], pB, sizeof(double)*5);
@@ -129,8 +121,6 @@ void cElectrodeTdcCompensator::InitMembers( const double* pA, const double* pB, 
 	memcpy(&mD[0], pD, sizeof(double)*5);
 	memcpy(&mE[0], pE, sizeof(double)*5);
 	memcpy(&mF[0], pF, sizeof(double)*5);
-	memcpy(&mG[0], pG, sizeof(double)*5);
-	memcpy(&mH[0], pH, sizeof(double)*5);
 }
 
 
