@@ -4,6 +4,7 @@
 #include <plplot/plplot.h>
 #include <plplot/plstream.h>
 #include <string.h>
+#include <iostream>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -12,16 +13,20 @@
 
 cElectrodeTdcCompensator::cElectrodeTdcCompensator(double* pA, double* pB, double* pC,
 												   double* pD, double* pE, double* pF,
-												   double* pG)
+												   double* pG, double* pH)
 {
-	InitMembers(pA, pB, pC, pD, pE, pF, pG);
+	InitMembers(pA, pB, pC, pD, pE, pF, pG, pH);
+
+	std::cout << "a[0]: " << mA[0] << ", b[0]: " << mB[0] << ", c[0]: " << mC[0] << std::endl
+			  << "a[1]: " << mA[1] << ", b[1]: " << mB[1] << ", c[1]: " << mC[1] << std::endl
+			  << "d[0]: " << mD[0] << std::endl << std::endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 cElectrodeTdcCompensator::cElectrodeTdcCompensator(std::ifstream& inFile)
 {
-	double a[5], b[5], c[5], d[5], e[5], f[5], g[5];
+	double a[5], b[5], c[5], d[5], e[5], f[5], g[5], h[5];
 	inFile.read(reinterpret_cast<char*>(&a[0]), sizeof(double)*5);
 	inFile.read(reinterpret_cast<char*>(&b[0]), sizeof(double)*5);
 	inFile.read(reinterpret_cast<char*>(&c[0]), sizeof(double)*5);
@@ -29,8 +34,9 @@ cElectrodeTdcCompensator::cElectrodeTdcCompensator(std::ifstream& inFile)
 	inFile.read(reinterpret_cast<char*>(&e[0]), sizeof(double)*5);
 	inFile.read(reinterpret_cast<char*>(&f[0]), sizeof(double)*5);
 	inFile.read(reinterpret_cast<char*>(&g[0]), sizeof(double)*5);
+	inFile.read(reinterpret_cast<char*>(&h[0]), sizeof(double)*5);
 
-	InitMembers(a, b, c, d, e, f, g);
+	InitMembers(a, b, c, d, e, f, g, h);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -46,7 +52,7 @@ cElectrodeTdcCompensator::cElectrodeTdcCompensator(const cElectrodeTdcCompensato
 {
 	InitMembers(copyMe.mA, copyMe.mB, copyMe.mC,
 				copyMe.mD, copyMe.mE, copyMe.mF,
-				copyMe.mG);
+				copyMe.mG, copyMe.mH);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -55,7 +61,7 @@ cElectrodeTdcCompensator& cElectrodeTdcCompensator::operator=(const cElectrodeTd
 {
 	InitMembers(rhs.mA, rhs.mB, rhs.mC,
 				rhs.mD, rhs.mE, rhs.mF,
-				rhs.mG);
+				rhs.mG, rhs.mH);
 
 	return *this;
 }
@@ -74,6 +80,13 @@ double cElectrodeTdcCompensator::CompensateTdc(double tdc, double tac, double el
 double cElectrodeTdcCompensator::GetUnforcedElectrodeValue(double tdc, double tac) const
 {
 	return
+		mA[0]*pow(tdc + mB[0], mC[0]) +
+					 
+		mA[1]*exp(mB[1]*tac + mC[1]) +
+
+		mD[0];
+	
+/*
 		mA[0]*pow((tdc+mB[0]), 5.0) +
 		mA[1]*pow((tdc+mB[1]), 4.0) +
 		mA[2]*pow((tdc+mB[2]), 3.0) +
@@ -85,6 +98,7 @@ double cElectrodeTdcCompensator::GetUnforcedElectrodeValue(double tdc, double ta
 		mD[2]*pow( tdc+mG[2]*exp(mE[2]*tac+mF[2])+mC[2], 3.0) +
 		mD[3]*pow( tdc+mG[3]*exp(mE[3]*tac+mF[3])+mC[3], 2.0) +
 		mD[4]*pow( tdc+mG[4]*exp(mE[4]*tac+mF[4])+mC[4], 1.0);
+		*/
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -98,6 +112,7 @@ void cElectrodeTdcCompensator::SaveCoefficientsToFile(std::ofstream& outFile) co
 	outFile.write(reinterpret_cast<const char*>(&mE[0]), sizeof(double)*5);
 	outFile.write(reinterpret_cast<const char*>(&mF[0]), sizeof(double)*5);
 	outFile.write(reinterpret_cast<const char*>(&mG[0]), sizeof(double)*5);
+	outFile.write(reinterpret_cast<const char*>(&mH[0]), sizeof(double)*5);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -106,7 +121,7 @@ void cElectrodeTdcCompensator::SaveCoefficientsToFile(std::ofstream& outFile) co
 
 void cElectrodeTdcCompensator::InitMembers( const double* pA, const double* pB, const double* pC,
 											const double* pD, const double* pE, const double* pF,
-											const double* pG )
+											const double* pG, const double* pH )
 {
 	memcpy(&mA[0], pA, sizeof(double)*5);
 	memcpy(&mB[0], pB, sizeof(double)*5);
@@ -115,6 +130,7 @@ void cElectrodeTdcCompensator::InitMembers( const double* pA, const double* pB, 
 	memcpy(&mE[0], pE, sizeof(double)*5);
 	memcpy(&mF[0], pF, sizeof(double)*5);
 	memcpy(&mG[0], pG, sizeof(double)*5);
+	memcpy(&mH[0], pH, sizeof(double)*5);
 }
 
 
