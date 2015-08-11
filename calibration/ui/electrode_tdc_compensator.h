@@ -16,8 +16,7 @@ public:
 	//--------------------------------------------------------------------------//
 	
 	cElectrodeTdcCompensator(double* pA, double* pB, double* pC,
-							 double* pD, double* pE, double* pF,
-							 double* pG, double* pH);
+							 double* pD, double* pE, double* pF);
 
 	cElectrodeTdcCompensator(std::ifstream& inFile);
 
@@ -63,8 +62,7 @@ private:
 	//--------------------------------------------------------------------------//
 
 	void InitMembers( const double* pA, const double* pB, const double* pC,
-					  const double* pD, const double* pE, const double* pF,
-					  const double* pG, const double* pH );
+					  const double* pD, const double* pE, const double* pF );
 
 	
 	//--------------------------------------------------------------------------//
@@ -78,8 +76,6 @@ private:
 	double mD[5];
 	double mE[5];
 	double mF[5];
-	double mG[5];
-	double mH[5];
 	
 };
 

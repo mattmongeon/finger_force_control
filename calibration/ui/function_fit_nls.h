@@ -93,8 +93,6 @@ private:
 											  const T* const d,
 											  const T* const e,
 											  const T* const f,
-											  const T* const g,
-											  const T* const h,
 											  T* residual ) const
 			{
 				residual[0] = T(mElectrode) -
@@ -170,8 +168,8 @@ private:
 	// c - [OUT] - The exponential term.
 	// d - [OUT] - An offset applied to the entire result.
 	void FitToElectrodeData( const std::vector<sDataPoint>& data,
-							 double* pA, double* pB, double* pC, double* pD,
-							 double* pE, double* pF, double* pG, double* pH );
+							 double* pA, double* pB, double* pC,
+							 double* pD, double* pE, double* pF );
 
 	// Takes in an array of vectors (one for each electrode) and plots the errors
 	// at each measurement point.
