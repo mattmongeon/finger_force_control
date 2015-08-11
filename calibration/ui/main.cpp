@@ -852,8 +852,8 @@ int main(int argc, char** argv)
 			files.push_back("./data/test/data_2015_07_30_16_35_24.dat");
 			files.push_back("./data/test/data_2015_07_29_14_44_14.dat");
 			files.push_back("./data/test/data_2015_07_23_09_57_11.dat");
-			files.push_back("./data/zero_force_01.dat");
-			files.push_back("./data/zero_force_02.dat");
+			// files.push_back("./data/zero_force_01.dat");
+			// files.push_back("./data/zero_force_02.dat");
 			// files.push_back("./data/data_2015_07_23_09_50_24.dat");
 			// files.push_back("./data/data_2015_07_23_09_55_36.dat");
 			// files.push_back("./data/data_2015_07_23_09_55_48.dat");
@@ -914,13 +914,15 @@ int main(int argc, char** argv)
 
 		case '5':
 		{
-			cDataFileEditor("./data/tdc_electrodes/original/cold_start.dat", "./data/tdc_electrodes/cold_start.dat");
+			// --- Edit Files --- //
+			
+			cDataFileEditor("./data/data_2015_08_10_12_25_24.dat", "./data/data_2015_08_10_12_25_24.dat");
 			// cDataFileEditor("./data/tdc_electrodes/original/cooling_down_from_high.dat", "./data/tdc_electrodes/cooling_down_from_high.dat");
 			// cDataFileEditor("./data/tdc_electrodes/original/data_2015_07_30_09_44_43.dat", "./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
-			cDataFileEditor("./data/tdc_electrodes/original/data_2015_08_04_15_27_33.dat", "./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
+			// cDataFileEditor("./data/tdc_electrodes/original/data_2015_08_04_15_27_33.dat", "./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
 			// cDataFileEditor("./data/tdc_electrodes/original/data_2015_08_04_16_15_04.dat", "./data/tdc_electrodes/data_2015_08_04_16_15_04.dat");
 			// cDataFileEditor("./data/tdc_electrodes/original/heating_up.dat", "./data/tdc_electrodes/heating_up.dat");
-			cDataFileEditor("./data/tdc_electrodes/original/high_temp.dat", "./data/tdc_electrodes/high_temp.dat");
+			// cDataFileEditor("./data/tdc_electrodes/original/high_temp.dat", "./data/tdc_electrodes/high_temp.dat");
 			// cDataFileEditor("./data/tdc_electrodes/original/zero1.dat", "./data/tdc_electrodes/zero1.dat");
 			// cDataFileEditor("./data/tdc_electrodes/original/zero2.dat", "./data/tdc_electrodes/zero2.dat");
 			// cDataFileEditor("./data/tdc_electrodes/original/zero3.dat", "./data/tdc_electrodes/zero3.dat");
@@ -930,11 +932,13 @@ int main(int argc, char** argv)
 
 		case '6':
 		{
-			cDataFileReader f1("./data/tdc_electrodes/zero3.dat");
-			cDataFileReader f2("./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
+			// --- Print To CSV --- //
+			
+			cDataFileReader f1("./data/tdc_electrodes/cold_start.dat");
+			// cDataFileReader f2("./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
 
 			std::vector<biotac_tune_data> data1(f1.GetData());
-			std::vector<biotac_tune_data> data2(f2.GetData());
+			// std::vector<biotac_tune_data> data2(f2.GetData());
 
 			std::ofstream out1("e1.csv");
 			std::ofstream out2("e2.csv");
@@ -1035,6 +1039,7 @@ int main(int argc, char** argv)
 					 << data1[i].mData.e19 << std::endl;
 			}
 
+			/*
 			for( std::size_t i = 0; i < data2.size(); ++i )
 			{
 				out1 << data2[i].mData.tac << ", " << data2[i].mData.tdc << ", "
@@ -1113,6 +1118,7 @@ int main(int argc, char** argv)
 					<< data2[i].mData.pac << ", " << data2[i].mData.pdc << ", "
 					<< data2[i].mData.e19 << std::endl;	
 			}
+			*/
 
 			out1.close();
 			out2.close();
@@ -1201,11 +1207,11 @@ int main(int argc, char** argv)
 			files.push_back("./data/test/data_2015_07_30_16_35_24.dat");
 			files.push_back("./data/test/data_2015_07_29_14_44_14.dat");
 			files.push_back("./data/test/data_2015_07_23_09_57_11.dat");
-			files.push_back("./data/zero_force_01.dat");
-			files.push_back("./data/zero_force_02.dat");
-			// files.push_back("./data/data_2015_07_23_09_50_24.dat");
-			// files.push_back("./data/data_2015_07_23_09_55_36.dat");
-			// files.push_back("./data/data_2015_07_23_09_55_48.dat");
+			// files.push_back("./data/zero_force_01.dat");
+			// files.push_back("./data/zero_force_02.dat");
+			files.push_back("./data/data_2015_07_23_09_50_24.dat");
+			files.push_back("./data/data_2015_07_23_09_55_36.dat");
+			files.push_back("./data/data_2015_07_23_09_55_48.dat");
 			ffTerms.TestAgainstDataFiles(files, curve);
 
 			
@@ -1266,16 +1272,20 @@ int main(int argc, char** argv)
 			}
 			
 
-			// --- Train Fit For Force Equation --- //
+			// --- Test Force Fit --- //
 			
 			cFunctionFitForceTerms ffTerms(compensators);
 
-			std::vector<std::string> files;
+			// std::vector<std::string> files;
+			std::vector<std::string> files = nFileUtils::GetFilesInDirectory("./data", ".dat");
+			for( std::size_t i = 0; i < files.size(); ++i )
+			{
+				files[i].insert(0, "./data/");
+			}
+			
 			files.push_back("./data/test/data_2015_07_30_16_35_24.dat");
 			files.push_back("./data/test/data_2015_07_29_14_44_14.dat");
 			files.push_back("./data/test/data_2015_07_23_09_57_11.dat");
-			files.push_back("./data/zero_force_01.dat");
-			files.push_back("./data/zero_force_02.dat");
 			// files.push_back("./data/data_2015_07_23_09_50_24.dat");
 			// files.push_back("./data/data_2015_07_23_09_55_36.dat");
 			// files.push_back("./data/data_2015_07_23_09_55_48.dat");
