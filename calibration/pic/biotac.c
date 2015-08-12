@@ -27,6 +27,8 @@ static int force_trajectory_g[10 * LOOP_RATE_HZ];
 static volatile int force_trajectory_index = 0;
 static int num_force_trajectory_samples = 10 * LOOP_RATE_HZ;
 
+static electrode_compensator compensators[19];
+
 
 // --- BioTac Sampling Commands --- //
 
@@ -98,6 +100,10 @@ static int num_force_trajectory_samples = 10 * LOOP_RATE_HZ;
 	(var) = (((var) & 0x00FF) >> 3) | (((var) & 0xFE00) >> 4);	\
 																\
 	wait_usec(10);
+
+
+#define COMP_ELECTRODE(comp,e,tdc)				\
+	(e) - ((comp).a*(1.0-exp(((tdc)+(comp).b)*(comp).c)) + (comp).d);
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -237,9 +243,109 @@ void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_reader_int()
 
 void biotac_init()
 {
+	// --- Initialize BioTac Communication --- //
+	
 	spi_init();
 	biotac_configure();
 
+
+	// --- Initialize Compensators --- //
+
+	compensators[0].a = 398.615;
+	compensators[0].b = -1232.17;
+	compensators[0].c = -0.00152345;
+	compensators[0].d = 2818.41;
+
+	compensators[1].a = 526.55;
+	compensators[1].b = -764.712;
+	compensators[1].c = -0.0023338;
+	compensators[1].d = 3000.48;
+
+	compensators[2].a = 529.63;
+	compensators[2].b = -766.768;
+	compensators[2].c = -0.00268468;
+	compensators[2].d = 3001.55;
+
+	compensators[3].a = 670.453;
+	compensators[3].b = -752.5;
+	compensators[3].c = -0.00281257;
+	compensators[3].d = 2729.95;
+
+	compensators[4].a = 533.689;
+	compensators[4].b = -791.039;
+	compensators[4].c = -0.00269191;
+	compensators[4].d = 2995.86;
+
+	compensators[5].a = 691.525;
+	compensators[5].b = -767.93;
+	compensators[5].c = -0.00251413;
+	compensators[5].d = 2733.18;
+
+	compensators[6].a = 705.889;
+	compensators[6].b = -818.915;
+	compensators[6].c = -0.00142316;
+	compensators[6].d = 2586.5;
+	
+	compensators[7].a = 676.765;
+	compensators[7].b = -775.942;
+	compensators[7].c = -0.00164395;
+	compensators[7].d = 2679.84;
+
+	compensators[8].a = 686.158;
+	compensators[8].b = -748.538;
+	compensators[8].c = -0.0016712;
+	compensators[8].d = 2679.12;
+
+	compensators[9].a = 627.525;
+	compensators[9].b = -762.805;
+	compensators[9].c = -0.001872;
+	compensators[9].d = 2788.79;
+
+	compensators[10].a = 476.722;
+	compensators[10].b = -1091.05;
+	compensators[10].c = -0.00152282;
+	compensators[10].d = 2681.74;
+
+	compensators[11].a = 629.794;
+	compensators[11].b = -677.452;
+	compensators[11].c = -0.00237826;
+	compensators[11].d = 2867.54;
+
+	compensators[12].a = 633.253;
+	compensators[12].b = -694.829;
+	compensators[12].c = -0.00271722;
+	compensators[12].d = 2864.8;
+
+	compensators[13].a = 468.709;
+	compensators[13].b = -871.527;
+	compensators[13].c = -0.00292024;
+	compensators[13].d = 2864.48;
+
+	compensators[14].a = 627.331;
+	compensators[14].b = -730.641;
+	compensators[14].c = -0.00278862;
+	compensators[14].d = 2853.57;
+
+	compensators[15].a = 493.346;
+	compensators[15].b = -883.858;
+	compensators[15].c = -0.00269728;
+	compensators[15].d = 2865.7;
+
+	compensators[16].a = 664.641;
+	compensators[16].b = -682.099;
+	compensators[16].c = -0.00218528;
+	compensators[16].d = 2810.61;
+
+	compensators[17].a = 695.038;
+	compensators[17].b = -675.955;
+	compensators[17].c = -0.00257467;
+	compensators[17].d = 2825.06;
+
+	compensators[18].a = 669.269;
+	compensators[18].b = -702.581;
+	compensators[18].c = -0.0025263;
+	compensators[18].d = 2807.38;
+		
 	
 	// --- Set Up Timer 3 Interrupt --- //
 
