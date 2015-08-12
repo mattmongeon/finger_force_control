@@ -45,5 +45,12 @@ void biotac_set_time_length(int seconds);
 unsigned int biotac_receive_force_trajectory();
 
 
+// Returns the force in grams measured by the BioTac sensors as derived based on the
+// incoming BioTac data.
+//
+// Return - The force value in grams.
+int biotac_get_force_g();
+
+
 #endif  // INCLUDED_BIOTAC_H
 
