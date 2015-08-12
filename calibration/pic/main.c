@@ -95,6 +95,13 @@ int main()
 			break;
 		}
 
+		case 'e':
+		{
+			system_set_state(BIOTAC_TRACK);
+			
+			break;
+		}
+
 		case 'f':
 		{
 			// --- Hold Commanded Force --- //
