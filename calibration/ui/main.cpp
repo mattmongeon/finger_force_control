@@ -785,10 +785,10 @@ int main(int argc, char** argv)
 			std::vector<std::string> files;
 			files.push_back("./data/tdc_electrodes/cold_start.dat");
 			// files.push_back("./data/tdc_electrodes/cooling_down_from_high.dat");
-			files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
+			// files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
 			files.push_back("./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
 			files.push_back("./data/tdc_electrodes/data_2015_08_04_16_15_04.dat");
-			files.push_back("./data/tdc_electrodes/heating_up.dat");
+			// files.push_back("./data/tdc_electrodes/heating_up.dat");
 			files.push_back("./data/tdc_electrodes/high_temp.dat");
 			// files.push_back("./data/tdc_electrodes/zero1.dat");
 			// files.push_back("./data/tdc_electrodes/zero2.dat");
@@ -933,212 +933,40 @@ int main(int argc, char** argv)
 		case '6':
 		{
 			// --- Print To CSV --- //
-			
-			cDataFileReader f1("./data/tdc_electrodes/cold_start.dat");
-			// cDataFileReader f2("./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
 
-			std::vector<biotac_tune_data> data1(f1.GetData());
-			// std::vector<biotac_tune_data> data2(f2.GetData());
+			std::vector<std::string> files;
+			files.push_back("./data/tdc_electrodes/cold_start.dat");
+			// files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
+			files.push_back("./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
+			files.push_back("./data/tdc_electrodes/data_2015_08_04_16_15_04.dat");
+			// files.push_back("./data/tdc_electrodes/heating_up.dat");
+			files.push_back("./data/tdc_electrodes/high_temp.dat");
 
-			std::ofstream out1("e1.csv");
-			std::ofstream out2("e2.csv");
-			std::ofstream out3("e3.csv");
-			std::ofstream out4("e4.csv");
-			std::ofstream out5("e5.csv");
-			std::ofstream out6("e6.csv");
-			std::ofstream out7("e7.csv");
-			std::ofstream out8("e8.csv");
-			std::ofstream out9("e9.csv");
-			std::ofstream out10("e10.csv");
-			std::ofstream out11("e11.csv");
-			std::ofstream out12("e12.csv");
-			std::ofstream out13("e13.csv");
-			std::ofstream out14("e14.csv");
-			std::ofstream out15("e15.csv");
-			std::ofstream out16("e16.csv");
-			std::ofstream out17("e17.csv");
-			std::ofstream out18("e18.csv");
-			std::ofstream out19("e19.csv");
-			
-			for( std::size_t i = 0; i < data1.size(); ++i )
+			std::ofstream out("out.csv");
+
+			for( std::size_t fileIndex = 0; fileIndex < files.size(); ++fileIndex )
 			{
-				out1 << data1[i].mData.tac << ", " << data1[i].mData.tdc << ", "
-					 << data1[i].mData.pac << ", " << data1[i].mData.pdc << ", "
-					 << data1[i].mData.e1 << std::endl;
-
-				out2 << data1[i].mData.tac << ", " << data1[i].mData.tdc << ", "
-					 << data1[i].mData.pac << ", " << data1[i].mData.pdc << ", "
-					 << data1[i].mData.e2 << std::endl;
-
-				out3 << data1[i].mData.tac << ", " << data1[i].mData.tdc << ", "
-					 << data1[i].mData.pac << ", " << data1[i].mData.pdc << ", "
-					 << data1[i].mData.e3 << std::endl;
-
-				out4 << data1[i].mData.tac << ", " << data1[i].mData.tdc << ", "
-					 << data1[i].mData.pac << ", " << data1[i].mData.pdc << ", "
-					 << data1[i].mData.e4 << std::endl;
-
-				out5 << data1[i].mData.tac << ", " << data1[i].mData.tdc << ", "
-					 << data1[i].mData.pac << ", " << data1[i].mData.pdc << ", "
-					 << data1[i].mData.e5 << std::endl;
-
-				out6 << data1[i].mData.tac << ", " << data1[i].mData.tdc << ", "
-					 << data1[i].mData.pac << ", " << data1[i].mData.pdc << ", "
-					 << data1[i].mData.e6 << std::endl;
-
-				out7 << data1[i].mData.tac << ", " << data1[i].mData.tdc << ", "
-					 << data1[i].mData.pac << ", " << data1[i].mData.pdc << ", "
-					 << data1[i].mData.e7 << std::endl;
-
-				out8 << data1[i].mData.tac << ", " << data1[i].mData.tdc << ", "
-					 << data1[i].mData.pac << ", " << data1[i].mData.pdc << ", "
-					 << data1[i].mData.e8 << std::endl;
-
-				out9 << data1[i].mData.tac << ", " << data1[i].mData.tdc << ", "
-					 << data1[i].mData.pac << ", " << data1[i].mData.pdc << ", "
-					 << data1[i].mData.e9 << std::endl;
-
-				out10 << data1[i].mData.tac << ", " << data1[i].mData.tdc << ", "
-					 << data1[i].mData.pac << ", " << data1[i].mData.pdc << ", "
-					 << data1[i].mData.e10 << std::endl;
-
-				out11 << data1[i].mData.tac << ", " << data1[i].mData.tdc << ", "
-					 << data1[i].mData.pac << ", " << data1[i].mData.pdc << ", "
-					 << data1[i].mData.e11 << std::endl;
-
-				out12 << data1[i].mData.tac << ", " << data1[i].mData.tdc << ", "
-					 << data1[i].mData.pac << ", " << data1[i].mData.pdc << ", "
-					 << data1[i].mData.e12 << std::endl;
-
-				out13 << data1[i].mData.tac << ", " << data1[i].mData.tdc << ", "
-					 << data1[i].mData.pac << ", " << data1[i].mData.pdc << ", "
-					 << data1[i].mData.e13 << std::endl;
-
-				out14 << data1[i].mData.tac << ", " << data1[i].mData.tdc << ", "
-					 << data1[i].mData.pac << ", " << data1[i].mData.pdc << ", "
-					 << data1[i].mData.e14 << std::endl;
-
-				out15 << data1[i].mData.tac << ", " << data1[i].mData.tdc << ", "
-					 << data1[i].mData.pac << ", " << data1[i].mData.pdc << ", "
-					 << data1[i].mData.e15 << std::endl;
-
-				out16 << data1[i].mData.tac << ", " << data1[i].mData.tdc << ", "
-					 << data1[i].mData.pac << ", " << data1[i].mData.pdc << ", "
-					 << data1[i].mData.e16 << std::endl;
-
-				out17 << data1[i].mData.tac << ", " << data1[i].mData.tdc << ", "
-					 << data1[i].mData.pac << ", " << data1[i].mData.pdc << ", "
-					 << data1[i].mData.e17 << std::endl;
-
-				out18 << data1[i].mData.tac << ", " << data1[i].mData.tdc << ", "
-					 << data1[i].mData.pac << ", " << data1[i].mData.pdc << ", "
-					 << data1[i].mData.e18 << std::endl;
-
-				out19 << data1[i].mData.tac << ", " << data1[i].mData.tdc << ", "
-					 << data1[i].mData.pac << ", " << data1[i].mData.pdc << ", "
-					 << data1[i].mData.e19 << std::endl;
+				cDataFileReader outFile(files[fileIndex]);
+				std::vector<biotac_tune_data> data(outFile.GetData());
+				
+				for( std::size_t i = 0; i < data.size(); ++i )
+				{
+					out << data[i].mData.e1 << ", " << data[i].mData.e2 << ", "
+						<< data[i].mData.e3 << ", " << data[i].mData.e4 << ", "
+						<< data[i].mData.e5 << ", " << data[i].mData.e6 << ", "
+						<< data[i].mData.e7 << ", " << data[i].mData.e8 << ", "
+						<< data[i].mData.e9 << ", " << data[i].mData.e10 << ", "
+						<< data[i].mData.e11 << ", " << data[i].mData.e12 << ", "
+						<< data[i].mData.e13 << ", " << data[i].mData.e14 << ", "
+						<< data[i].mData.e15 << ", " << data[i].mData.e16 << ", "
+						<< data[i].mData.e17 << ", " << data[i].mData.e18 << ", "
+						<< data[i].mData.e19 << ", " << data[i].mData.tac << ", "
+						<< data[i].mData.tdc << ", " << data[i].mData.pac << ", "
+						<< data[i].mData.pdc << std::endl;
+				}
 			}
 
-			/*
-			for( std::size_t i = 0; i < data2.size(); ++i )
-			{
-				out1 << data2[i].mData.tac << ", " << data2[i].mData.tdc << ", "
-					<< data2[i].mData.pac << ", " << data2[i].mData.pdc << ", "
-					<< data2[i].mData.e1 << std::endl;
-				
-				out2 << data2[i].mData.tac << ", " << data2[i].mData.tdc << ", "
-					<< data2[i].mData.pac << ", " << data2[i].mData.pdc << ", "
-					<< data2[i].mData.e2 << std::endl;
-				
-				out3 << data2[i].mData.tac << ", " << data2[i].mData.tdc << ", "
-					<< data2[i].mData.pac << ", " << data2[i].mData.pdc << ", "
-					<< data2[i].mData.e3 << std::endl;
-				
-				out4 << data2[i].mData.tac << ", " << data2[i].mData.tdc << ", "
-					<< data2[i].mData.pac << ", " << data2[i].mData.pdc << ", "
-					<< data2[i].mData.e4 << std::endl;
-				
-				out5 << data2[i].mData.tac << ", " << data2[i].mData.tdc << ", "
-					<< data2[i].mData.pac << ", " << data2[i].mData.pdc << ", "
-					<< data2[i].mData.e5 << std::endl;
-				
-				out6 << data2[i].mData.tac << ", " << data2[i].mData.tdc << ", "
-					<< data2[i].mData.pac << ", " << data2[i].mData.pdc << ", "
-					<< data2[i].mData.e6 << std::endl;
-				
-				out7 << data2[i].mData.tac << ", " << data2[i].mData.tdc << ", "
-					<< data2[i].mData.pac << ", " << data2[i].mData.pdc << ", "
-					<< data2[i].mData.e7 << std::endl;
-				
-				out8 << data2[i].mData.tac << ", " << data2[i].mData.tdc << ", "
-					<< data2[i].mData.pac << ", " << data2[i].mData.pdc << ", "
-					<< data2[i].mData.e8 << std::endl;
-				
-				out9 << data2[i].mData.tac << ", " << data2[i].mData.tdc << ", "
-					<< data2[i].mData.pac << ", " << data2[i].mData.pdc << ", "
-					<< data2[i].mData.e9 << std::endl;
-				
-				out10 << data2[i].mData.tac << ", " << data2[i].mData.tdc << ", "
-					<< data2[i].mData.pac << ", " << data2[i].mData.pdc << ", "
-					<< data2[i].mData.e10 << std::endl;
-				
-				out11 << data2[i].mData.tac << ", " << data2[i].mData.tdc << ", "
-					<< data2[i].mData.pac << ", " << data2[i].mData.pdc << ", "
-					<< data2[i].mData.e11 << std::endl;
-				
-				out12 << data2[i].mData.tac << ", " << data2[i].mData.tdc << ", "
-					<< data2[i].mData.pac << ", " << data2[i].mData.pdc << ", "
-					<< data2[i].mData.e12 << std::endl;
-				
-				out13 << data2[i].mData.tac << ", " << data2[i].mData.tdc << ", "
-					<< data2[i].mData.pac << ", " << data2[i].mData.pdc << ", "
-					<< data2[i].mData.e13 << std::endl;
-				
-				out14 << data2[i].mData.tac << ", " << data2[i].mData.tdc << ", "
-					<< data2[i].mData.pac << ", " << data2[i].mData.pdc << ", "
-					<< data2[i].mData.e14 << std::endl;
-				
-				out15 << data2[i].mData.tac << ", " << data2[i].mData.tdc << ", "
-					<< data2[i].mData.pac << ", " << data2[i].mData.pdc << ", "
-					<< data2[i].mData.e15 << std::endl;
-				
-				out16 << data2[i].mData.tac << ", " << data2[i].mData.tdc << ", "
-					<< data2[i].mData.pac << ", " << data2[i].mData.pdc << ", "
-					<< data2[i].mData.e16 << std::endl;
-				
-				out17 << data2[i].mData.tac << ", " << data2[i].mData.tdc << ", "
-					<< data2[i].mData.pac << ", " << data2[i].mData.pdc << ", "
-					<< data2[i].mData.e17 << std::endl;
-				
-				out18 << data2[i].mData.tac << ", " << data2[i].mData.tdc << ", "
-					<< data2[i].mData.pac << ", " << data2[i].mData.pdc << ", "
-					<< data2[i].mData.e18 << std::endl;
-				
-				out19 << data2[i].mData.tac << ", " << data2[i].mData.tdc << ", "
-					<< data2[i].mData.pac << ", " << data2[i].mData.pdc << ", "
-					<< data2[i].mData.e19 << std::endl;	
-			}
-			*/
-
-			out1.close();
-			out2.close();
-			out3.close();
-			out4.close();
-			out5.close();
-			out6.close();
-			out7.close();
-			out8.close();
-			out9.close();
-			out10.close();
-			out11.close();
-			out12.close();
-			out13.close();
-			out14.close();
-			out15.close();
-			out16.close();
-			out17.close();
-			out18.close();
-			out19.close();
+			out.close();
 			
 			break;
 		}
@@ -1151,10 +979,10 @@ int main(int argc, char** argv)
 			std::vector<std::string> files;
 			files.push_back("./data/tdc_electrodes/cold_start.dat");
 			// files.push_back("./data/tdc_electrodes/cooling_down_from_high.dat");
-			files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
+			// files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
 			files.push_back("./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
 			files.push_back("./data/tdc_electrodes/data_2015_08_04_16_15_04.dat");
-			files.push_back("./data/tdc_electrodes/heating_up.dat");
+			// files.push_back("./data/tdc_electrodes/heating_up.dat");
 			files.push_back("./data/tdc_electrodes/high_temp.dat");
 			// files.push_back("./data/tdc_electrodes/zero1.dat");
 			// files.push_back("./data/tdc_electrodes/zero2.dat");
