@@ -181,6 +181,14 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) torque_controller()
 		break;
 	}
 
+	case BIOTAC_CONTINUOUS_READ:
+	{
+		// HACK - SEE COMMENTS IN BIOTAC TIMER LOOP
+		saved_load_cell_g = load_cell_read_grams();
+		
+		break;
+	}
+
 	case IDLE:
 		motor_pwm_set(0);
 		torqueTuneSamples = 0;
