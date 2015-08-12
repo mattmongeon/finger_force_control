@@ -6,6 +6,7 @@
 #include "load_cell.h"
 #include "torque_control.h"
 #include "NU32.h"
+#include <math.h>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -28,6 +29,10 @@ static volatile int force_trajectory_index = 0;
 static int num_force_trajectory_samples = 10 * LOOP_RATE_HZ;
 
 static electrode_compensator compensators[19];
+static float electrode_normals[19][3];
+static float force_terms[3];
+
+static int biotac_force_g = 0;
 
 
 // --- BioTac Sampling Commands --- //
@@ -103,7 +108,7 @@ static electrode_compensator compensators[19];
 
 
 #define COMP_ELECTRODE(comp,e,tdc)				\
-	(e) - ((comp).a*(1.0-exp(((tdc)+(comp).b)*(comp).c)) + (comp).d);
+	(e) -= ((comp).a*(1.0-exp(((tdc)+(comp).b)*(comp).c)) + (comp).d);
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -194,6 +199,104 @@ void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_reader_int()
 			system_set_state(IDLE);
 		}
 
+		break;
+	}
+
+	case BIOTAC_TRACK:
+	{
+		static biotac_data data;
+
+		// Read from the BioTac
+		read_biotac(&data);
+		
+		// Run through the compensators
+		COMP_ELECTRODE(compensators[0], data.e1, data.tdc)
+		COMP_ELECTRODE(compensators[1], data.e2, data.tdc)
+		COMP_ELECTRODE(compensators[2], data.e3, data.tdc)
+		COMP_ELECTRODE(compensators[3], data.e4, data.tdc)
+		COMP_ELECTRODE(compensators[4], data.e5, data.tdc)
+		COMP_ELECTRODE(compensators[5], data.e6, data.tdc)
+		COMP_ELECTRODE(compensators[6], data.e7, data.tdc)
+		COMP_ELECTRODE(compensators[7], data.e8, data.tdc)
+		COMP_ELECTRODE(compensators[8], data.e9, data.tdc)
+		COMP_ELECTRODE(compensators[9], data.e10, data.tdc)
+		COMP_ELECTRODE(compensators[10], data.e11, data.tdc)
+		COMP_ELECTRODE(compensators[11], data.e12, data.tdc)
+		COMP_ELECTRODE(compensators[12], data.e13, data.tdc)
+		COMP_ELECTRODE(compensators[13], data.e14, data.tdc)
+		COMP_ELECTRODE(compensators[14], data.e15, data.tdc)
+		COMP_ELECTRODE(compensators[15], data.e16, data.tdc)
+		COMP_ELECTRODE(compensators[16], data.e17, data.tdc)
+		COMP_ELECTRODE(compensators[17], data.e18, data.tdc)
+		COMP_ELECTRODE(compensators[18], data.e19, data.tdc)
+		
+		// Use the compensated electrodes in the force equation
+		float x = data.e1 * electrode_normals[0][0] +
+			data.e2 * electrode_normals[1][0] + 
+			data.e3 * electrode_normals[2][0] + 
+			data.e4 * electrode_normals[3][0] + 
+			data.e5 * electrode_normals[4][0] + 
+			data.e6 * electrode_normals[5][0] + 
+			data.e7 * electrode_normals[6][0] + 
+			data.e8 * electrode_normals[7][0] + 
+			data.e9 * electrode_normals[8][0] + 
+			data.e10 * electrode_normals[9][0] + 
+			data.e11 * electrode_normals[10][0] + 
+			data.e12 * electrode_normals[11][0] + 
+			data.e13 * electrode_normals[12][0] + 
+			data.e14 * electrode_normals[13][0] + 
+			data.e15 * electrode_normals[14][0] + 
+			data.e16 * electrode_normals[15][0] + 
+			data.e17 * electrode_normals[16][0] + 
+			data.e18 * electrode_normals[17][0] + 
+			data.e19 * electrode_normals[18][0];
+		x *= force_terms[0];
+
+		float y = data.e1 * electrode_normals[0][1] +
+			data.e2 * electrode_normals[1][1] + 
+			data.e3 * electrode_normals[2][1] + 
+			data.e4 * electrode_normals[3][1] + 
+			data.e5 * electrode_normals[4][1] + 
+			data.e6 * electrode_normals[5][1] + 
+			data.e7 * electrode_normals[6][1] + 
+			data.e8 * electrode_normals[7][1] + 
+			data.e9 * electrode_normals[8][1] + 
+			data.e10 * electrode_normals[9][1] + 
+			data.e11 * electrode_normals[10][1] + 
+			data.e12 * electrode_normals[11][1] + 
+			data.e13 * electrode_normals[12][1] + 
+			data.e14 * electrode_normals[13][1] + 
+			data.e15 * electrode_normals[14][1] + 
+			data.e16 * electrode_normals[15][1] + 
+			data.e17 * electrode_normals[16][1] + 
+			data.e18 * electrode_normals[17][1] + 
+			data.e19 * electrode_normals[18][1];
+		y *= force_terms[1];
+
+		float z = data.e1 * electrode_normals[0][2] +
+			data.e2 * electrode_normals[1][2] + 
+			data.e3 * electrode_normals[2][2] + 
+			data.e4 * electrode_normals[3][2] + 
+			data.e5 * electrode_normals[4][2] + 
+			data.e6 * electrode_normals[5][2] + 
+			data.e7 * electrode_normals[6][2] + 
+			data.e8 * electrode_normals[7][2] + 
+			data.e9 * electrode_normals[8][2] + 
+			data.e10 * electrode_normals[9][2] + 
+			data.e11 * electrode_normals[10][2] + 
+			data.e12 * electrode_normals[11][2] + 
+			data.e13 * electrode_normals[12][2] + 
+			data.e14 * electrode_normals[13][2] + 
+			data.e15 * electrode_normals[14][2] + 
+			data.e16 * electrode_normals[15][2] + 
+			data.e17 * electrode_normals[16][2] + 
+			data.e18 * electrode_normals[17][2] + 
+			data.e19 * electrode_normals[18][2];
+		z *= force_terms[2];
+		
+		// Set saved force value equal to magnitude of force vector
+		biotac_force_g = sqrt(x*x + y*y + z*z);
+		
 		break;
 	}
 
@@ -345,7 +448,88 @@ void biotac_init()
 	compensators[18].b = -702.581;
 	compensators[18].c = -0.0025263;
 	compensators[18].d = 2807.38;
-		
+
+
+	electrode_normals[0][0] = 0.196;
+	electrode_normals[0][1] = -0.953;
+	electrode_normals[0][2] = -0.22;
+
+	electrode_normals[1][0] = 0.0;
+	electrode_normals[1][1] = -0.692;
+	electrode_normals[1][2] = -0.722;
+
+	electrode_normals[2][0] = 0.0;
+	electrode_normals[2][1] = -0.692;
+	electrode_normals[2][2] = -0.722;
+	
+	electrode_normals[3][0] = 0.0;
+	electrode_normals[3][1] = -0.976;
+	electrode_normals[3][2] = -0.22;
+
+	electrode_normals[4][0] = 0.0;
+	electrode_normals[4][1] = -0.692;
+	electrode_normals[4][2] = -0.722;
+
+	electrode_normals[5][0] = 0.0;
+	electrode_normals[5][1] = -0.976;
+	electrode_normals[5][2] = -0.22;
+
+	electrode_normals[6][0] = 0.5;
+	electrode_normals[6][1] = 0.0;
+	electrode_normals[6][2] = -0.866;
+
+	electrode_normals[7][0] = 0.5;
+	electrode_normals[7][1] = 0.0;
+	electrode_normals[7][2] = -0.866;
+
+	electrode_normals[8][0] = 0.5;
+	electrode_normals[8][1] = 0.0;
+	electrode_normals[8][2] = -0.866;
+
+	electrode_normals[9][0] = 0.5;
+	electrode_normals[9][1] = 0.0;
+	electrode_normals[9][2] = -0.866;
+
+	electrode_normals[10][0] = 0.196;
+	electrode_normals[10][1] = 0.956;
+	electrode_normals[10][2] = -0.22;
+
+	electrode_normals[11][0] = 0.0;
+	electrode_normals[11][1] = 0.692;
+	electrode_normals[11][2] = -0.722;
+
+	electrode_normals[12][0] = 0.0;
+	electrode_normals[12][1] = 0.692;
+	electrode_normals[12][2] = -0.722;
+
+	electrode_normals[13][0] = 0.0;
+	electrode_normals[13][1] = 0.976;
+	electrode_normals[13][2] = -0.22;
+
+	electrode_normals[14][0] = 0.0;
+	electrode_normals[14][1] = 0.692;
+	electrode_normals[14][2] = -0.722;
+
+	electrode_normals[15][0] = 0.0;
+	electrode_normals[15][1] = 0.976;
+	electrode_normals[15][2] = -0.22;
+
+	electrode_normals[16][0] = 0.0;
+	electrode_normals[16][1] = 0.0;
+	electrode_normals[16][2] = -1.0;
+
+	electrode_normals[17][0] = 0.0;
+	electrode_normals[17][1] = 0.0;
+	electrode_normals[17][2] = -1.0;
+
+	electrode_normals[18][0] = 0.0;
+	electrode_normals[18][1] = 0.0;
+	electrode_normals[18][2] = -1.0;
+
+	force_terms[0] = 0.982401;
+	force_terms[1] = 0.401165;
+	force_terms[2] = -0.0226676;
+	
 	
 	// --- Set Up Timer 3 Interrupt --- //
 
