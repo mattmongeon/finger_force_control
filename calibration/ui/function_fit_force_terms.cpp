@@ -142,7 +142,7 @@ cBioTacForceCurve cFunctionFitForceTerms::TrainAgainstDataFiles(const std::vecto
 				new ceres::AutoDiffCostFunction<cTrainingResidual, 1, 1, 1, 1>(
 					new cTrainingResidual(electrodes,
 										  data[i].mData.tdc,
-										  data[i].mData.tac,
+										  data[i].mData.pdc,
 										  data[i].mLoadCell_g,
 										  &mCompensators)),
 				NULL,
@@ -175,7 +175,8 @@ cBioTacForceCurve cFunctionFitForceTerms::TrainAgainstDataFiles(const std::vecto
 void cFunctionFitForceTerms::TestAgainstDataFiles(const std::vector<std::string>& files, const cBioTacForceCurve& curve)
 {
 	std::vector<float> calculated, actual;
-	
+
+	int fileNum = 1;
 	for( std::vector<std::string>::const_iterator it = files.begin(); it != files.end(); ++it )
 	{
 		calculated.clear();
@@ -209,11 +210,12 @@ void cFunctionFitForceTerms::TestAgainstDataFiles(const std::vector<std::string>
 
 			// Use all of the calibration data and terms to generate a force value from the
 			// BioTac data and save it for plotting.
-			calculated.push_back( curve.GetForce_g(electrodes, data[dataIndex].mData.tdc, data[dataIndex].mData.tac) );
+			calculated.push_back( curve.GetForce_g(electrodes, data[dataIndex].mData.tdc, data[dataIndex].mData.pdc) );
 			actual.push_back( data[dataIndex].mLoadCell_g );
 		}
 
-		std::cout << "Plotting file \'" << *it << "\'" << std::endl;
+		std::cout << "Plotting file \'" << *it << "\' - " << fileNum << std::endl;
+		++fileNum;
 		PlotResults(calculated, actual);
 	}
 }

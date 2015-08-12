@@ -47,12 +47,12 @@ private:
 		sDataPoint()
 			{}
 		
-		sDataPoint( double tdc, double avgTac, double avgE )
-			: mTDC(tdc), mAvgTAC(avgTac), mAvgElectrode(avgE)
+		sDataPoint( double tdc, double avgPdc, double avgE )
+			: mTDC(tdc), mAvgPDC(avgPdc), mAvgElectrode(avgE)
 			{}
 		
 		double mTDC;
-		double mAvgTAC;
+		double mAvgPDC;
 		double mAvgElectrode;
 	};
 	
@@ -84,23 +84,20 @@ private:
 	class cPolynomialResidual
 	{
 	public:
-		cPolynomialResidual(double tdc, double tac, double electrode)
-			: mTDC(tdc), mTAC(tac), mElectrode(electrode) {}
+		cPolynomialResidual(double tdc, double pdc, double electrode)
+			: mTDC(tdc), mPDC(pdc), mElectrode(electrode) {}
 
 		template<typename T> bool operator()( const T* const a,
 											  const T* const b,
 											  const T* const c,
 											  const T* const d,
-											  const T* const e,
-											  const T* const f,
 											  T* residual ) const
 			{
 				residual[0] = T(mElectrode) -
-					(a[0]*pow(mTDC + b[0], c[0]) +
-					 
-					 // a[1]*pow(mTAC + b[1], c[1]) +
-					 a[1]*exp(b[1]*mTAC + c[1]) +
+					(a[0]*(1.0-exp((mTDC+b[0])*c[0])) +
 
+					 // a[1]*mPDC + 
+					 
 					 d[0]);
 
 				/*
@@ -132,7 +129,7 @@ private:
 
 	private:
 		const double mTDC;
-		const double mTAC;
+		const double mPDC;
 		const double mElectrode;
 	};
 	
@@ -169,7 +166,7 @@ private:
 	// d - [OUT] - An offset applied to the entire result.
 	void FitToElectrodeData( const std::vector<sDataPoint>& data,
 							 double* pA, double* pB, double* pC,
-							 double* pD, double* pE, double* pF );
+							 double* pD );
 
 	// Takes in an array of vectors (one for each electrode) and plots the errors
 	// at each measurement point.
