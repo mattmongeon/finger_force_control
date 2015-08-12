@@ -53,14 +53,14 @@ cBioTacForceCurve::~cBioTacForceCurve()
 //  Interface Functions
 ////////////////////////////////////////////////////////////////////////////////
 
-double cBioTacForceCurve::GetForce_g(const std::vector<uint16_t>& electrodes, uint16_t tdc, uint16_t tac) const
+double cBioTacForceCurve::GetForce_g(const std::vector<uint16_t>& electrodes, uint16_t tdc, uint16_t pdc) const
 {
 	double x = 0.0, y = 0.0, z = 0.0;
 	for( std::size_t i = 0; i < 19; ++i )
 	{
-		x += mElectrodeNormals[i][0] * mCompensators[i].CompensateTdc(tdc, tac, electrodes[i]);
-		y += mElectrodeNormals[i][1] * mCompensators[i].CompensateTdc(tdc, tac, electrodes[i]);
-		z += mElectrodeNormals[i][2] * mCompensators[i].CompensateTdc(tdc, tac, electrodes[i]);
+		x += mElectrodeNormals[i][0] * mCompensators[i].CompensateTdc(tdc, pdc, electrodes[i]);
+		y += mElectrodeNormals[i][1] * mCompensators[i].CompensateTdc(tdc, pdc, electrodes[i]);
+		z += mElectrodeNormals[i][2] * mCompensators[i].CompensateTdc(tdc, pdc, electrodes[i]);
 	}
 
 	return sqrt(mSx*mSx*x*x + mSy*mSy*y*y + mSz*mSz*z*z);
@@ -106,86 +106,86 @@ void cBioTacForceCurve::SaveFitTermsToFile(const std::string& file)
 
 	// --- Organize Data --- //
 
-	// The pair is <tac, electrode>
+	// The pair is <pdc, electrode>
 	std::map< uint16_t, std::vector< std::pair<uint16_t, uint16_t> > > organizedData;
 	for( std::size_t i = 0; i < fileData.size(); ++i )
 	{
 		switch(electrodeNum)
 		{
 		case 1:
-			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.tac, fileData[i].mData.e1) );
+			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.pdc, fileData[i].mData.e1) );
 			break;
 			
 		case 2:
-			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.tac, fileData[i].mData.e2) );
+			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.pdc, fileData[i].mData.e2) );
 			break;
 			
 		case 3:
-			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.tac, fileData[i].mData.e3) );
+			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.pdc, fileData[i].mData.e3) );
 			break;
 			
 		case 4:
-			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.tac, fileData[i].mData.e4) );
+			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.pdc, fileData[i].mData.e4) );
 			break;
 			
 		case 5:
-			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.tac, fileData[i].mData.e5) );
+			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.pdc, fileData[i].mData.e5) );
 			break;
 			
 		case 6:
-			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.tac, fileData[i].mData.e6) );
+			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.pdc, fileData[i].mData.e6) );
 			break;
 			
 		case 7:
-			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.tac, fileData[i].mData.e7) );
+			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.pdc, fileData[i].mData.e7) );
 			break;
 			
 		case 8:
-			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.tac, fileData[i].mData.e8) );
+			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.pdc, fileData[i].mData.e8) );
 			break;
 			
 		case 9:
-			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.tac, fileData[i].mData.e9) );
+			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.pdc, fileData[i].mData.e9) );
 			break;
 			
 		case 10:
-			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.tac, fileData[i].mData.e10) );
+			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.pdc, fileData[i].mData.e10) );
 			break;
 			
 		case 11:
-			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.tac, fileData[i].mData.e11) );
+			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.pdc, fileData[i].mData.e11) );
 			break;
 			
 		case 12:
-			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.tac, fileData[i].mData.e12) );
+			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.pdc, fileData[i].mData.e12) );
 			break;
 			
 		case 13:
-			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.tac, fileData[i].mData.e13) );
+			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.pdc, fileData[i].mData.e13) );
 			break;
 			
 		case 14:
-			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.tac, fileData[i].mData.e14) );
+			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.pdc, fileData[i].mData.e14) );
 			break;
 			
 		case 15:
-			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.tac, fileData[i].mData.e15) );
+			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.pdc, fileData[i].mData.e15) );
 			break;
 			
 		case 16:
-			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.tac, fileData[i].mData.e16) );
+			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.pdc, fileData[i].mData.e16) );
 			break;
 			
 		case 17:
-			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.tac, fileData[i].mData.e17) );
+			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.pdc, fileData[i].mData.e17) );
 			break;
 			
 		case 18:
-			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.tac, fileData[i].mData.e18) );
+			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.pdc, fileData[i].mData.e18) );
 			break;
 			
 		case 19:
-			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.tac, fileData[i].mData.e19) );
+			organizedData[fileData[i].mData.tdc].push_back( std::pair<uint16_t, uint16_t>(fileData[i].mData.pdc, fileData[i].mData.e19) );
 			break;
 			
 		default:
@@ -216,18 +216,18 @@ void cBioTacForceCurve::SaveFitTermsToFile(const std::string& file)
 #define PLOT_DRIVER "xcairo"
 #endif	
 	
-	// First plot the electrode and TAC values per TDC value.
-	std::vector< std::pair<PLFLT*, int> > xVector, tacVector, eVector;
+	// First plot the electrode and PDC values per TDC value.
+	std::vector< std::pair<PLFLT*, int> > xVector, pdcVector, eVector;
 	for( std::map< uint16_t, std::vector< std::pair<uint16_t, uint16_t> > >::iterator it = organizedData.begin(); it != organizedData.end(); ++it )
 	{
 		xVector.push_back( std::pair<PLFLT*, int>(new PLFLT[it->second.size()], it->second.size()) );
-		tacVector.push_back( std::pair<PLFLT*, int>(new PLFLT[it->second.size()], it->second.size()) );
+		pdcVector.push_back( std::pair<PLFLT*, int>(new PLFLT[it->second.size()], it->second.size()) );
 		eVector.push_back( std::pair<PLFLT*, int>(new PLFLT[it->second.size()], it->second.size()) );
 
 		for( std::size_t i = 0; i < it->second.size(); ++i )
 		{
 			xVector[xVector.size()-1].first[i] = it->first;
-			tacVector[tacVector.size()-1].first[i] = it->second[i].first;
+			pdcVector[pdcVector.size()-1].first[i] = it->second[i].first;
 			eVector[eVector.size()-1].first[i] = it->second[i].second;
 		}
 	}
@@ -243,16 +243,16 @@ void cBioTacForceCurve::SaveFitTermsToFile(const std::string& file)
 		pX[index] = it->first;
 		
 		pAvgFileE[index] = 0.0;
-		double avgTac = 0;
+		double avgPdc = 0;
 		for( std::size_t i = 0; i < it->second.size(); ++i )
 		{
-			avgTac += it->second[i].first;
+			avgPdc += it->second[i].first;
 			pAvgFileE[index] += it->second[i].second;
 		}
-		avgTac /= it->second.size();
+		avgPdc /= it->second.size();
 		pAvgFileE[index] /= it->second.size();
 
-		pCompOut[index] = pComp->GetUnforcedElectrodeValue(it->first, avgTac);
+		pCompOut[index] = pComp->GetUnforcedElectrodeValue(it->first, avgPdc);
 
 		ymax = std::max<PLFLT>(ymax, pCompOut[index]);
 		ymax = std::max<PLFLT>(ymax, pAvgFileE[index]);
@@ -274,13 +274,13 @@ void cBioTacForceCurve::SaveFitTermsToFile(const std::string& file)
 	for( std::size_t i = 0; i < xVector.size(); ++i )
 	{
 		plottingStream.col0(nUtils::enumPLplotColor_MAGENTA);
-		plottingStream.poin( xVector[i].second, xVector[i].first, tacVector[i].first, 9 );
+		plottingStream.poin( xVector[i].second, xVector[i].first, pdcVector[i].first, 9 );
 
 		plottingStream.col0(nUtils::enumPLplotColor_RED);
 		plottingStream.poin( xVector[i].second, xVector[i].first, eVector[i].first, 9 );
 
 		delete[] xVector[i].first;
-		delete[] tacVector[i].first;
+		delete[] pdcVector[i].first;
 		delete[] eVector[i].first;
 	}
 	

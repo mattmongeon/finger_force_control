@@ -37,138 +37,100 @@ std::vector<cElectrodeTdcCompensator> cFunctionFitNLS::TrainAgainstDataFiles(con
 	sTdcElectrodeData data = ParseFiles(files);
 
 
-	double a1[5] = {0,0,0,0,0};
-	double b1[5] = {0,0,0,0,0};
-	double c1[5] = {0,0,0,0,0};
-	double d1[5] = {0,0,0,0,0};
-	double e1[5] = {0,0,0,0,0};
-	double f1[5] = {0,0,0,0,0};
+	double a1[5] = {700.0,0.1,1,1,1};
+	double b1[5] = {-900.0,1,1,1,1};
+	double c1[5] = {-(1.0/1200.0),1,1,1,1};
+	double d1[5] = {2550.0,1,1,1,1};
 
-	double a2[5] = {0,0,0,0,0};
-	double b2[5] = {0,0,0,0,0};
-	double c2[5] = {0,0,0,0,0};
-	double d2[5] = {0,0,0,0,0};
-	double e2[5] = {0,0,0,0,0};
-	double f2[5] = {0,0,0,0,0};
+	double a2[5] = {700.0,0.1,1,1,1};
+	double b2[5] = {-900.0,1,1,1,1};
+	double c2[5] = {-(1.0/1200.0),1,1,1,1};
+	double d2[5] = {2550.0,1,1,1,1};
 
-	double a3[5] = {0,0,0,0,0};
-	double b3[5] = {0,0,0,0,0};
-	double c3[5] = {0,0,0,0,0};
-	double d3[5] = {0,0,0,0,0};
-	double e3[5] = {0,0,0,0,0};
-	double f3[5] = {0,0,0,0,0};
+	double a3[5] = {700.0,0.1,1,1,1};
+	double b3[5] = {-800.0,1,1,1,1};
+	double c3[5] = {-0.001,1,1,1,1};
+	double d3[5] = {3000.0,1,1,1,1};
 
-	double a4[5] = {0,0,0,0,0};
-	double b4[5] = {0,0,0,0,0};
-	double c4[5] = {0,0,0,0,0};
-	double d4[5] = {0,0,0,0,0};
-	double e4[5] = {0,0,0,0,0};
-	double f4[5] = {0,0,0,0,0};
+	double a4[5] = {700.0,0.1,1,1,1};
+	double b4[5] = {-900.0,1,1,1,1};
+	double c4[5] = {-(1.0/1200.0),1,1,1,1};
+	double d4[5] = {2550.0,1,1,1,1};
 
-	double a5[5] = {0,0,0,0,0};
-	double b5[5] = {0,0,0,0,0};
-	double c5[5] = {0,0,0,0,0};
-	double d5[5] = {0,0,0,0,0};
-	double e5[5] = {0,0,0,0,0};
-	double f5[5] = {0,0,0,0,0};
+	double a5[5] = {700.0,0.1,1,1,1};
+	double b5[5] = {-800.0,1,1,1,1};
+	double c5[5] = {-0.001,1,1,1,1};
+	double d5[5] = {3000.0,1,1,1,1};
 
-	double a6[5] = {0,0,0,0,0};
-	double b6[5] = {0,0,0,0,0};
-	double c6[5] = {0,0,0,0,0};
-	double d6[5] = {0,0,0,0,0};
-	double e6[5] = {0,0,0,0,0};
-	double f6[5] = {0,0,0,0,0};
+	double a6[5] = {700.0,0.1,1,1,1};
+	double b6[5] = {-900.0,1,1,1,1};
+	double c6[5] = {-(1.0/1200.0),1,1,1,1};
+	double d6[5] = {2550.0,1,1,1,1};
 
-	double a7[5] = {0,0,0,0,0};
-	double b7[5] = {0,0,0,0,0};
-	double c7[5] = {0,0,0,0,0};
-	double d7[5] = {0,0,0,0,0};
-	double e7[5] = {0,0,0,0,0};
-	double f7[5] = {0,0,0,0,0};
+	double a7[5] = {700.0,0.1,1,1,1};
+	double b7[5] = {-900.0,1,1,1,1};
+	double c7[5] = {-(1.0/1200.0),1,1,1,1};
+	double d7[5] = {2550.0,1,1,1,1};
 
-	double a8[5] = {0,0,0,0,0};
-	double b8[5] = {0,0,0,0,0};
-	double c8[5] = {0,0,0,0,0};
-	double d8[5] = {0,0,0,0,0};
-	double e8[5] = {0,0,0,0,0};
-	double f8[5] = {0,0,0,0,0};
+	double a8[5] = {700.0,0.1,1,1,1};
+	double b8[5] = {-900.0,1,1,1,1};
+	double c8[5] = {-(1.0/1200.0),1,1,1,1};
+	double d8[5] = {2550.0,1,1,1,1};
 
-	double a9[5] = {0,0,0,0,0};
-	double b9[5] = {0,0,0,0,0};
-	double c9[5] = {0,0,0,0,0};
-	double d9[5] = {0,0,0,0,0};
-	double e9[5] = {0,0,0,0,0};
-	double f9[5] = {0,0,0,0,0};
+	double a9[5] = {700.0,0.1,1,1,1};
+	double b9[5] = {-900.0,1,1,1,1};
+	double c9[5] = {-(1.0/1200.0),1,1,1,1};
+	double d9[5] = {2550.0,1,1,1,1};
 
-	double a10[5] = {0,0,0,0,0};
-	double b10[5] = {0,0,0,0,0};
-	double c10[5] = {0,0,0,0,0};
-	double d10[5] = {0,0,0,0,0};
-	double e10[5] = {0,0,0,0,0};
-	double f10[5] = {0,0,0,0,0};
+	double a10[5] = {700.0,0.1,1,1,1};
+	double b10[5] = {-900.0,1,1,1,1};
+	double c10[5] = {-(1.0/1200.0),1,1,1,1};
+	double d10[5] = {2550.0,1,1,1,1};
 
-	double a11[5] = {0,0,0,0,0};
-	double b11[5] = {0,0,0,0,0};
-	double c11[5] = {0,0,0,0,0};
-	double d11[5] = {0,0,0,0,0};
-	double e11[5] = {0,0,0,0,0};
-	double f11[5] = {0,0,0,0,0};
+	double a11[5] = {700.0,0.1,1,1,1};
+	double b11[5] = {-900.0,1,1,1,1};
+	double c11[5] = {-(1.0/1200.0),1,1,1,1};
+	double d11[5] = {2550.0,1,1,1,1};
 
-	double a12[5] = {0,0,0,0,0};
-	double b12[5] = {0,0,0,0,0};
-	double c12[5] = {0,0,0,0,0};
-	double d12[5] = {0,0,0,0,0};
-	double e12[5] = {0,0,0,0,0};
-	double f12[5] = {0,0,0,0,0};
+	double a12[5] = {700.0,0.1,1,1,1};
+	double b12[5] = {-900.0,1,1,1,1};
+	double c12[5] = {-(1.0/1200.0),1,1,1,1};
+	double d12[5] = {2550.0,1,1,1,1};
 
-	double a13[5] = {0,0,0,0,0};
-	double b13[5] = {0,0,0,0,0};
-	double c13[5] = {0,0,0,0,0};
-	double d13[5] = {0,0,0,0,0};
-	double e13[5] = {0,0,0,0,0};
-	double f13[5] = {0,0,0,0,0};
+	double a13[5] = {700.0,0.1,1,1,1};
+	double b13[5] = {-700.0,1,1,1,1};
+	double c13[5] = {-0.01,1,1,1,1};
+	double d13[5] = {3000.0,1,1,1,1};
 
-	double a14[5] = {0,0,0,0,0};
-	double b14[5] = {0,0,0,0,0};
-	double c14[5] = {0,0,0,0,0};
-	double d14[5] = {0,0,0,0,0};
-	double e14[5] = {0,0,0,0,0};
-	double f14[5] = {0,0,0,0,0};
+	double a14[5] = {700.0,0.1,1,1,1};
+	double b14[5] = {-700.0,1,1,1,1};
+	double c14[5] = {-0.01,1,1,1,1};
+	double d14[5] = {3000.0,1,1,1,1};
 
-	double a15[5] = {0,0,0,0,0};
-	double b15[5] = {0,0,0,0,0};
-	double c15[5] = {0,0,0,0,0};
-	double d15[5] = {0,0,0,0,0};
-	double e15[5] = {0,0,0,0,0};
-	double f15[5] = {0,0,0,0,0};
+	double a15[5] = {700.0,-0.1,1,1,1};
+	double b15[5] = {-700.0,1,1,1,1};
+	double c15[5] = {-0.01,1,1,1,1};
+	double d15[5] = {3000.0,1,1,1,1};
 
-	double a16[5] = {0,0,0,0,0};
-	double b16[5] = {0,0,0,0,0};
-	double c16[5] = {0,0,0,0,0};
-	double d16[5] = {0,0,0,0,0};
-	double e16[5] = {0,0,0,0,0};
-	double f16[5] = {0,0,0,0,0};
+	double a16[5] = {700.0,0.1,1,1,1};
+	double b16[5] = {-900.0,1,1,1,1};
+	double c16[5] = {-0.01,1,1,1,1};
+	double d16[5] = {3000.0,1,1,1,1};
 
-	double a17[5] = {0,0,0,0,0};
-	double b17[5] = {0,0,0,0,0};
-	double c17[5] = {0,0,0,0,0};
-	double d17[5] = {0,0,0,0,0};
-	double e17[5] = {0,0,0,0,0};
-	double f17[5] = {0,0,0,0,0};
+	double a17[5] = {700.0,0.1,1,1,1};
+	double b17[5] = {-900.0,1,1,1,1};
+	double c17[5] = {-(1.0/1200.0),1,1,1,1};
+	double d17[5] = {2550.0,1,1,1,1};
 
-	double a18[5] = {0,0,0,0,0};
-	double b18[5] = {0,0,0,0,0};
-	double c18[5] = {0,0,0,0,0};
-	double d18[5] = {0,0,0,0,0};
-	double e18[5] = {0,0,0,0,0};
-	double f18[5] = {0,0,0,0,0};
+	double a18[5] = {700.0,0.1,1,1,1};
+	double b18[5] = {-900.0,1,1,1,1};
+	double c18[5] = {-(1.0/1200.0),1,1,1,1};
+	double d18[5] = {2550.0,1,1,1,1};
 
-	double a19[5] = {0,0,0,0,0};
-	double b19[5] = {0,0,0,0,0};
-	double c19[5] = {0,0,0,0,0};
-	double d19[5] = {0,0,0,0,0};
-	double e19[5] = {0,0,0,0,0};
-	double f19[5] = {0,0,0,0,0};
+	double a19[5] = {700.0,0.1,1,1,1};
+	double b19[5] = {-800.0,1,1,1,1};
+	double c19[5] = {-0.02,1,1,1,1};
+	double d19[5] = {2900.0,1,1,1,1};
 
 			
 // --- Fit Against Data --- //
@@ -178,133 +140,133 @@ std::vector<cElectrodeTdcCompensator> cFunctionFitNLS::TrainAgainstDataFiles(con
 		#pragma omp section
 		{
 			std::cout << "E1:" << std::endl;
-			FitToElectrodeData(data.mE1, a1, b1, c1, d1, e1, f1);
+			FitToElectrodeData(data.mE1, a1, b1, c1, d1);
 			std::cout << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E2:" << std::endl;
-			FitToElectrodeData(data.mE2, a2, b2, c2, d2, e2, f2);
+			FitToElectrodeData(data.mE2, a2, b2, c2, d2);
 			std::cout << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E3:" << std::endl;
-			FitToElectrodeData(data.mE3, a3, b3, c3, d3, e3, f3);
+			FitToElectrodeData(data.mE3, a3, b3, c3, d3);
 			std::cout << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E4:" << std::endl;
-			FitToElectrodeData(data.mE4, a4, b4, c4, d4, e4, f4);
+			FitToElectrodeData(data.mE4, a4, b4, c4, d4);
 			std::cout << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E5:" << std::endl;
-			FitToElectrodeData(data.mE5, a5, b5, c5, d5, e5, f5);
+			FitToElectrodeData(data.mE5, a5, b5, c5, d5);
 			std::cout << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E6:" << std::endl;
-			FitToElectrodeData(data.mE6, a6, b6, c6, d6, e6, f6);
+			FitToElectrodeData(data.mE6, a6, b6, c6, d6);
 			std::cout << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E7:" << std::endl;
-			FitToElectrodeData(data.mE7, a7, b7, c7, d7, e7, f7);
+			FitToElectrodeData(data.mE7, a7, b7, c7, d7);
 			std::cout << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E8:" << std::endl;
-			FitToElectrodeData(data.mE8, a8, b8, c8, d8, e8, f8);
+			FitToElectrodeData(data.mE8, a8, b8, c8, d8);
 			std::cout << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E9:" << std::endl;
-			FitToElectrodeData(data.mE9, a9, b9, c9, d9, e9, f9);
+			FitToElectrodeData(data.mE9, a9, b9, c9, d9);
 			std::cout << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E10:" << std::endl;
-			FitToElectrodeData(data.mE10, a10, b10, c10, d10, e10, f10);
+			FitToElectrodeData(data.mE10, a10, b10, c10, d10);
 			std::cout << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E11:" << std::endl;
-			FitToElectrodeData(data.mE11, a11, b11, c11, d11, e11, f11);
+			FitToElectrodeData(data.mE11, a11, b11, c11, d11);
 			std::cout << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E12:" << std::endl;
-			FitToElectrodeData(data.mE12, a12, b12, c12, d12, e12, f12);
+			FitToElectrodeData(data.mE12, a12, b12, c12, d12);
 			std::cout << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E13:" << std::endl;
-			FitToElectrodeData(data.mE13, a13, b13, c13, d13, e13, f13);
+			FitToElectrodeData(data.mE13, a13, b13, c13, d13);
 			std::cout << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E14:" << std::endl;
-			FitToElectrodeData(data.mE14, a14, b14, c14, d14, e14, f14);
+			FitToElectrodeData(data.mE14, a14, b14, c14, d14);
 			std::cout << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E15:" << std::endl;
-			FitToElectrodeData(data.mE15, a15, b15, c15, d15, e15, f15);
+			FitToElectrodeData(data.mE15, a15, b15, c15, d15);
 			std::cout << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E16:" << std::endl;
-			FitToElectrodeData(data.mE16, a16, b16, c16, d16, e16, f16);
+			FitToElectrodeData(data.mE16, a16, b16, c16, d16);
 			std::cout << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E17:" << std::endl;
-			FitToElectrodeData(data.mE17, a17, b17, c17, d17, e17, f17);
+			FitToElectrodeData(data.mE17, a17, b17, c17, d17);
 			std::cout << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E18:" << std::endl;
-			FitToElectrodeData(data.mE18, a18, b18, c18, d18, e18, f18);
+			FitToElectrodeData(data.mE18, a18, b18, c18, d18);
 			std::cout << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E19:" << std::endl;
-			FitToElectrodeData(data.mE19, a19, b19, c19, d19, e19, f19);
+			FitToElectrodeData(data.mE19, a19, b19, c19, d19);
 			std::cout << std::endl;
 		}
 	}
@@ -312,25 +274,25 @@ std::vector<cElectrodeTdcCompensator> cFunctionFitNLS::TrainAgainstDataFiles(con
 	std::cout << "POW TDC, EXP TDC, CONSTANT" << std::endl;
 
 	std::vector<cElectrodeTdcCompensator> retVal;
-	retVal.push_back(cElectrodeTdcCompensator(a1, b1, c1, d1, e1, f1));
-	retVal.push_back(cElectrodeTdcCompensator(a2, b2, c2, d2, e2, f2));
-	retVal.push_back(cElectrodeTdcCompensator(a3, b3, c3, d3, e3, f3));
-	retVal.push_back(cElectrodeTdcCompensator(a4, b4, c4, d4, e4, f4));
-	retVal.push_back(cElectrodeTdcCompensator(a5, b5, c5, d5, e5, f5));
-	retVal.push_back(cElectrodeTdcCompensator(a6, b6, c6, d6, e6, f6));
-	retVal.push_back(cElectrodeTdcCompensator(a7, b7, c7, d7, e7, f7));
-	retVal.push_back(cElectrodeTdcCompensator(a8, b8, c8, d8, e8, f8));
-	retVal.push_back(cElectrodeTdcCompensator(a9, b9, c9, d9, e9, f9));
-	retVal.push_back(cElectrodeTdcCompensator(a10, b10, c10, d10, e10, f10));
-	retVal.push_back(cElectrodeTdcCompensator(a11, b11, c11, d11, e11, f11));
-	retVal.push_back(cElectrodeTdcCompensator(a12, b12, c12, d12, e12, f12));
-	retVal.push_back(cElectrodeTdcCompensator(a13, b13, c13, d13, e13, f13));
-	retVal.push_back(cElectrodeTdcCompensator(a14, b14, c14, d14, e14, f14));
-	retVal.push_back(cElectrodeTdcCompensator(a15, b15, c15, d15, e15, f15));
-	retVal.push_back(cElectrodeTdcCompensator(a16, b16, c16, d16, e16, f16));
-	retVal.push_back(cElectrodeTdcCompensator(a17, b17, c17, d17, e17, f17));
-	retVal.push_back(cElectrodeTdcCompensator(a18, b18, c18, d18, e18, f18));
-	retVal.push_back(cElectrodeTdcCompensator(a19, b19, c19, d19, e19, f19));
+	retVal.push_back(cElectrodeTdcCompensator(a1, b1, c1, d1));
+	retVal.push_back(cElectrodeTdcCompensator(a2, b2, c2, d2));
+	retVal.push_back(cElectrodeTdcCompensator(a3, b3, c3, d3));
+	retVal.push_back(cElectrodeTdcCompensator(a4, b4, c4, d4));
+	retVal.push_back(cElectrodeTdcCompensator(a5, b5, c5, d5));
+	retVal.push_back(cElectrodeTdcCompensator(a6, b6, c6, d6));
+	retVal.push_back(cElectrodeTdcCompensator(a7, b7, c7, d7));
+	retVal.push_back(cElectrodeTdcCompensator(a8, b8, c8, d8));
+	retVal.push_back(cElectrodeTdcCompensator(a9, b9, c9, d9));
+	retVal.push_back(cElectrodeTdcCompensator(a10, b10, c10, d10));
+	retVal.push_back(cElectrodeTdcCompensator(a11, b11, c11, d11));
+	retVal.push_back(cElectrodeTdcCompensator(a12, b12, c12, d12));
+	retVal.push_back(cElectrodeTdcCompensator(a13, b13, c13, d13));
+	retVal.push_back(cElectrodeTdcCompensator(a14, b14, c14, d14));
+	retVal.push_back(cElectrodeTdcCompensator(a15, b15, c15, d15));
+	retVal.push_back(cElectrodeTdcCompensator(a16, b16, c16, d16));
+	retVal.push_back(cElectrodeTdcCompensator(a17, b17, c17, d17));
+	retVal.push_back(cElectrodeTdcCompensator(a18, b18, c18, d18));
+	retVal.push_back(cElectrodeTdcCompensator(a19, b19, c19, d19));
 	
 	return retVal;
 }
@@ -356,25 +318,25 @@ void cFunctionFitNLS::TestAgainstDataFiles(const std::vector<std::string>& files
 		std::vector<biotac_tune_data> data = reader.GetData();
 		for( std::size_t dataIndex = 0; dataIndex < reader.GetNumDataPoints(); ++dataIndex )
 		{
-			errors[0].push_back(compensators[0].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e1));
-			errors[1].push_back(compensators[1].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e2));
-			errors[2].push_back(compensators[2].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e3));
-			errors[3].push_back(compensators[3].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e4));
-			errors[4].push_back(compensators[4].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e5));
-			errors[5].push_back(compensators[5].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e6));
-			errors[6].push_back(compensators[6].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e7));
-			errors[7].push_back(compensators[7].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e8));
-			errors[8].push_back(compensators[8].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e9));
-			errors[9].push_back(compensators[9].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e10));
-			errors[10].push_back(compensators[10].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e11));
-			errors[11].push_back(compensators[11].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e12));
-			errors[12].push_back(compensators[12].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e13));
-			errors[13].push_back(compensators[13].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e14));
-			errors[14].push_back(compensators[14].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e15));
-			errors[15].push_back(compensators[15].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e16));
-			errors[16].push_back(compensators[16].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e17));
-			errors[17].push_back(compensators[17].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e18));
-			errors[18].push_back(compensators[18].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.tac, data[dataIndex].mData.e19));
+			errors[0].push_back(compensators[0].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.pdc, data[dataIndex].mData.e1));
+			errors[1].push_back(compensators[1].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.pdc, data[dataIndex].mData.e2));
+			errors[2].push_back(compensators[2].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.pdc, data[dataIndex].mData.e3));
+			errors[3].push_back(compensators[3].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.pdc, data[dataIndex].mData.e4));
+			errors[4].push_back(compensators[4].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.pdc, data[dataIndex].mData.e5));
+			errors[5].push_back(compensators[5].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.pdc, data[dataIndex].mData.e6));
+			errors[6].push_back(compensators[6].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.pdc, data[dataIndex].mData.e7));
+			errors[7].push_back(compensators[7].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.pdc, data[dataIndex].mData.e8));
+			errors[8].push_back(compensators[8].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.pdc, data[dataIndex].mData.e9));
+			errors[9].push_back(compensators[9].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.pdc, data[dataIndex].mData.e10));
+			errors[10].push_back(compensators[10].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.pdc, data[dataIndex].mData.e11));
+			errors[11].push_back(compensators[11].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.pdc, data[dataIndex].mData.e12));
+			errors[12].push_back(compensators[12].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.pdc, data[dataIndex].mData.e13));
+			errors[13].push_back(compensators[13].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.pdc, data[dataIndex].mData.e14));
+			errors[14].push_back(compensators[14].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.pdc, data[dataIndex].mData.e15));
+			errors[15].push_back(compensators[15].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.pdc, data[dataIndex].mData.e16));
+			errors[16].push_back(compensators[16].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.pdc, data[dataIndex].mData.e17));
+			errors[17].push_back(compensators[17].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.pdc, data[dataIndex].mData.e18));
+			errors[18].push_back(compensators[18].CompensateTdc(data[dataIndex].mData.tdc, data[dataIndex].mData.pdc, data[dataIndex].mData.e19));
 		}
 
 
@@ -432,25 +394,25 @@ cFunctionFitNLS::sTdcElectrodeData cFunctionFitNLS::ParseFiles(const std::vector
 		std::size_t numDataPoints = readerData.size();
 		for( std::size_t dataIndex = 0; dataIndex < numDataPoints; ++dataIndex )
 		{
-			e1.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e1) );
-			e2.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e2) );
-			e3.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e3) );
-			e4.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e4) );
-			e5.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e5) );
-			e6.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e6) );
-			e7.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e7) );
-			e8.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e8) );
-			e9.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e9) );
-			e10.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e10) );
-			e11.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e11) );
-			e12.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e12) );
-			e13.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e13) );
-			e14.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e14) );
-			e15.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e15) );
-			e16.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e16) );
-			e17.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e17) );
-			e18.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e18) );
-			e19.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.tac, readerData[dataIndex].mData.e19) );
+			e1.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.pdc, readerData[dataIndex].mData.e1) );
+			e2.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.pdc, readerData[dataIndex].mData.e2) );
+			e3.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.pdc, readerData[dataIndex].mData.e3) );
+			e4.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.pdc, readerData[dataIndex].mData.e4) );
+			e5.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.pdc, readerData[dataIndex].mData.e5) );
+			e6.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.pdc, readerData[dataIndex].mData.e6) );
+			e7.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.pdc, readerData[dataIndex].mData.e7) );
+			e8.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.pdc, readerData[dataIndex].mData.e8) );
+			e9.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.pdc, readerData[dataIndex].mData.e9) );
+			e10.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.pdc, readerData[dataIndex].mData.e10) );
+			e11.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.pdc, readerData[dataIndex].mData.e11) );
+			e12.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.pdc, readerData[dataIndex].mData.e12) );
+			e13.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.pdc, readerData[dataIndex].mData.e13) );
+			e14.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.pdc, readerData[dataIndex].mData.e14) );
+			e15.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.pdc, readerData[dataIndex].mData.e15) );
+			e16.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.pdc, readerData[dataIndex].mData.e16) );
+			e17.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.pdc, readerData[dataIndex].mData.e17) );
+			e18.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.pdc, readerData[dataIndex].mData.e18) );
+			e19.push_back( sDataPoint( readerData[dataIndex].mData.tdc, readerData[dataIndex].mData.pdc, readerData[dataIndex].mData.e19) );
 		}
 
 
@@ -491,7 +453,7 @@ void cFunctionFitNLS::FillStructMember( std::vector<cFunctionFitNLS::sDataPoint>
 		 it != rawData.end();
 		 ++it )
 	{
-		eData[it->mTDC].push_back( sDataPoint(it->mTDC, it->mAvgTAC, it->mAvgElectrode) );
+		eData[it->mTDC].push_back( sDataPoint(it->mTDC, it->mAvgPDC, it->mAvgElectrode) );
 	}
 	
 
@@ -501,17 +463,17 @@ void cFunctionFitNLS::FillStructMember( std::vector<cFunctionFitNLS::sDataPoint>
 		 ++it )
 	{
 		// Calculate the average of all of the electrode and TAC values per TDC value.
-		double tacSum = 0, electrodeSum = 0;
+		double pdcSum = 0, electrodeSum = 0;
 		for( std::size_t i = 0; i < it->second.size(); ++i )
 		{
-			tacSum += it->second[i].mAvgTAC;
+			pdcSum += it->second[i].mAvgPDC;
 			electrodeSum += it->second[i].mAvgElectrode;
 		}
 		
 		// Generate a data point which consists of TDC value and electrode average.
 		sDataPoint p;
 		p.mTDC = static_cast<double>(it->first);
-		p.mAvgTAC = tacSum / static_cast<double>(it->second.size());
+		p.mAvgPDC = pdcSum / static_cast<double>(it->second.size());
 		p.mAvgElectrode = electrodeSum / static_cast<double>(it->second.size());
 		structData.push_back(p);
 	}
@@ -520,18 +482,17 @@ void cFunctionFitNLS::FillStructMember( std::vector<cFunctionFitNLS::sDataPoint>
 ////////////////////////////////////////////////////////////////////////////////
 
 void cFunctionFitNLS::FitToElectrodeData( const std::vector<cFunctionFitNLS::sDataPoint>& data,
-										  double* pA, double* pB, double* pC, double* pD,
-										  double* pE, double* pF )
+										  double* pA, double* pB, double* pC, double* pD )
 {
 	ceres::Problem problem;
 	int numDataPoints = data.size();
 	for( int index = 0; index < numDataPoints; ++index )
 	{
 		problem.AddResidualBlock(
-			new ceres::AutoDiffCostFunction<cPolynomialResidual, 1, 5, 5, 5, 5, 5, 5>(
-				new cPolynomialResidual( data[index].mTDC, data[index].mAvgTAC, data[index].mAvgElectrode ) ),
+			new ceres::AutoDiffCostFunction<cPolynomialResidual, 1, 5, 5, 5, 5>(
+				new cPolynomialResidual( data[index].mTDC, data[index].mAvgPDC, data[index].mAvgElectrode ) ),
 			NULL,
-			pA, pB, pC, pD, pE, pF);
+			pA, pB, pC, pD );
 	}
 
 	ceres::Solver::Options options;

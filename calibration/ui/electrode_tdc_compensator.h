@@ -16,7 +16,7 @@ public:
 	//--------------------------------------------------------------------------//
 	
 	cElectrodeTdcCompensator(double* pA, double* pB, double* pC,
-							 double* pD, double* pE, double* pF);
+							 double* pD);
 
 	cElectrodeTdcCompensator(std::ifstream& inFile);
 
@@ -40,7 +40,7 @@ public:
 	// electrode - The current electrode value raw from the BioTac.
 	//
 	// Return - The electrode value after compensating for temperature.
-	double CompensateTdc(double tdc, double tac, double electrode) const;
+	double CompensateTdc(double tdc, double pdc, double electrode) const;
 
 	// Takes in the current raw BioTac temperature sensor value and returns a
 	// value that corresponds to the electrode normalizing value, which is also
@@ -50,7 +50,7 @@ public:
 	// tdc - The current temperature value raw from the BioTac.
 	//
 	// Return - The electrode normalizing value.
-	double GetUnforcedElectrodeValue(double tdc, double tac) const;
+	double GetUnforcedElectrodeValue(double tdc, double pdc) const;
 	
 	void SaveCoefficientsToFile(std::ofstream& outFile) const;
 
@@ -62,7 +62,7 @@ private:
 	//--------------------------------------------------------------------------//
 
 	void InitMembers( const double* pA, const double* pB, const double* pC,
-					  const double* pD, const double* pE, const double* pF );
+					  const double* pD );
 
 	
 	//--------------------------------------------------------------------------//
@@ -74,9 +74,7 @@ private:
 	double mB[5];
 	double mC[5];
 	double mD[5];
-	double mE[5];
-	double mF[5];
-	
+
 };
 
 
