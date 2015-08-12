@@ -784,7 +784,7 @@ int main(int argc, char** argv)
 			cFunctionFitNLS fit;
 			std::vector<std::string> files;
 			files.push_back("./data/tdc_electrodes/cold_start.dat");
-			files.push_back("./data/tdc_electrodes/cooling_down_from_high.dat");
+			// files.push_back("./data/tdc_electrodes/cooling_down_from_high.dat");
 			files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
 			files.push_back("./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
 			files.push_back("./data/tdc_electrodes/data_2015_08_04_16_15_04.dat");
@@ -1290,6 +1290,69 @@ int main(int argc, char** argv)
 			// files.push_back("./data/data_2015_07_23_09_55_36.dat");
 			// files.push_back("./data/data_2015_07_23_09_55_48.dat");
 			ffTerms.TestAgainstDataFiles(files, curve);
+
+			break;
+		}
+
+		case '9':
+		{
+			cBioTacForceCurve curve("./coefficients.bio");
+			
+			// --- Load TDC vs Electrode Coefficients From File --- //
+			
+			std::vector<cElectrodeTdcCompensator> compensators;
+			compensators.clear();
+			std::ifstream file("./data/tdc_electrodes/tdc_electrode_curve.coeff", std::ios::binary | std::ios::in);
+			for( std::size_t i = 0; i < 19; ++i )
+			{
+				compensators.push_back( cElectrodeTdcCompensator(file) );
+			}
+			
+
+			std::string fileName = nFileUtils::GetFileSelectionInDirectory("./data/tdc_electrodes", ".dat");
+			fileName.insert(0, "./data/tdc_electrodes/");
+
+			cDataFileReader reader(fileName.c_str());
+			std::ofstream outFile("./out.csv");
+			std::vector<biotac_tune_data> data = reader.GetData();
+			for( std::size_t i = 0; i < data.size(); ++i )
+			{
+				for( std::size_t compIndex = 0; compIndex < compensators.size(); ++compIndex )
+				{
+					double electrode = 0.0;
+					switch(compIndex)
+					{
+					case 1: electrode = data[i].mData.e1; break;
+					case 2: electrode = data[i].mData.e2; break;
+					case 3: electrode = data[i].mData.e3; break;
+					case 4: electrode = data[i].mData.e4; break;
+					case 5: electrode = data[i].mData.e5; break;
+					case 6: electrode = data[i].mData.e6; break;
+					case 7: electrode = data[i].mData.e7; break;
+					case 8: electrode = data[i].mData.e8; break;
+					case 9: electrode = data[i].mData.e9; break;
+					case 10: electrode = data[i].mData.e10; break;
+					case 11: electrode = data[i].mData.e11; break;
+					case 12: electrode = data[i].mData.e12; break;
+					case 13: electrode = data[i].mData.e13; break;
+					case 14: electrode = data[i].mData.e14; break;
+					case 15: electrode = data[i].mData.e15; break;
+					case 16: electrode = data[i].mData.e16; break;
+					case 17: electrode = data[i].mData.e17; break;
+					case 18: electrode = data[i].mData.e18; break;
+					case 19: electrode = data[i].mData.e19; break;
+					default: break;
+					}
+					
+					double error = compensators[compIndex].CompensateTdc(data[i].mData.tdc, data[i].mData.pdc, electrode);
+					outFile << error << ", ";
+				}
+
+				outFile << data[i].mData.tac << ", " << data[i].mData.tdc << ", "
+						<< data[i].mData.pac << ", " << data[i].mData.pdc << std::endl;
+			}
+
+			outFile.close();
 
 			break;
 		}
