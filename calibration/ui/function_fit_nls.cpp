@@ -57,15 +57,15 @@ std::vector<cElectrodeTdcCompensator> cFunctionFitNLS::TrainAgainstDataFiles(con
 	double c4[5] = {-0.003,1,1,1,1};
 	double d4[5] = {2724.0,1,1,1,1};
 
-	double a5[5] = {516.0,0.1,1,1,1};
-	double b5[5] = {-784.0,1,1,1,1};
-	double c5[5] = {-0.002,1,1,1,1};
-	double d5[5] = {3000.0,1,1,1,1};
+	double a5[5] = {528.439,0.1,1,1,1};
+	double b5[5] = {-794.709,1,1,1,1};
+	double c5[5] = {-0.00269195,1,1,1,1};
+	double d5[5] = {3001.11,1,1,1,1};
 
-	double a6[5] = {654.0,0.1,1,1,1};
-	double b6[5] = {-765.0,1,1,1,1};
-	double c6[5] = {-0.003,1,1,1,1};
-	double d6[5] = {2716.0,1,1,1,1};
+	double a6[5] = {664.0,0.1,1,1,1};
+	double b6[5] = {-911.0,1,1,1,1};
+	double c6[5] = {-0.001,1,1,1,1};
+	double d6[5] = {2568.0,1,1,1,1};
 
 	double a7[5] = {817.0,0.1,1,1,1};
 	double b7[5] = {-816.0,1,1,1,1};
@@ -92,25 +92,25 @@ std::vector<cElectrodeTdcCompensator> cFunctionFitNLS::TrainAgainstDataFiles(con
 	double c11[5] = {-0.001,1,1,1,1};
 	double d11[5] = {2548.0,1,1,1,1};
 
-	double a12[5] = {606.0,0.1,1,1,1};
-	double b12[5] = {-691.0,1,1,1,1};
-	double c12[5] = {-0.002,1,1,1,1};
-	double d12[5] = {2917.0,1,1,1,1};
+	double a12[5] = {629.794,0.1,1,1,1};
+	double b12[5] = {-677.452,1,1,1,1};
+	double c12[5] = {-0.00237826,1,1,1,1};
+	double d12[5] = {2867.54,1,1,1,1};
 
-	double a13[5] = {633.0,0.1,1,1,1};
-	double b13[5] = {-683.0,1,1,1,1};
-	double c13[5] = {-0.002,1,1,1,1};
-	double d13[5] = {2876.0,1,1,1,1};
+	double a13[5] = {633.253,0.1,1,1,1};
+	double b13[5] = {-694.829,1,1,1,1};
+	double c13[5] = {-0.00271722,1,1,1,1};
+	double d13[5] = {2864.8,1,1,1,1};
 
 	double a14[5] = {480.0,0.1,1,1,1};
 	double b14[5] = {-864.0,1,1,1,1};
 	double c14[5] = {-0.002,1,1,1,1};
 	double d14[5] = {2867.0,1,1,1,1};
 
-	double a15[5] = {803.0,-0.1,1,1,1};
-	double b15[5] = {-626.0,1,1,1,1};
-	double c15[5] = {-0.002,1,1,1,1};
-	double d15[5] = {2674.0,1,1,1,1};
+	double a15[5] = {627.331,0.1,1,1,1};
+	double b15[5] = {-730.641,1,1,1,1};
+	double c15[5] = {-0.00278862,1,1,1,1};
+	double d15[5] = {2853.57,1,1,1,1};
 
 	double a16[5] = {489.0,0.1,1,1,1};
 	double b16[5] = {-870.0,1,1,1,1};
@@ -271,27 +271,44 @@ std::vector<cElectrodeTdcCompensator> cFunctionFitNLS::TrainAgainstDataFiles(con
 		}
 	}
 
-	std::cout << "POW TDC, EXP TDC, CONSTANT" << std::endl;
-
 	std::vector<cElectrodeTdcCompensator> retVal;
+	std::cout << "Electrode 1:" << std::endl;
 	retVal.push_back(cElectrodeTdcCompensator(a1, b1, c1, d1));
+	std::cout << "Electrode 2:" << std::endl;
 	retVal.push_back(cElectrodeTdcCompensator(a2, b2, c2, d2));
+	std::cout << "Electrode 3:" << std::endl;
 	retVal.push_back(cElectrodeTdcCompensator(a3, b3, c3, d3));
+	std::cout << "Electrode 4:" << std::endl;
 	retVal.push_back(cElectrodeTdcCompensator(a4, b4, c4, d4));
+	std::cout << "Electrode 5:" << std::endl;
 	retVal.push_back(cElectrodeTdcCompensator(a5, b5, c5, d5));
+	std::cout << "Electrode 6:" << std::endl;
 	retVal.push_back(cElectrodeTdcCompensator(a6, b6, c6, d6));
+	std::cout << "Electrode 7:" << std::endl;
 	retVal.push_back(cElectrodeTdcCompensator(a7, b7, c7, d7));
+	std::cout << "Electrode 8:" << std::endl;
 	retVal.push_back(cElectrodeTdcCompensator(a8, b8, c8, d8));
+	std::cout << "Electrode 9:" << std::endl;
 	retVal.push_back(cElectrodeTdcCompensator(a9, b9, c9, d9));
+	std::cout << "Electrode 10:" << std::endl;
 	retVal.push_back(cElectrodeTdcCompensator(a10, b10, c10, d10));
+	std::cout << "Electrode 11:" << std::endl;
 	retVal.push_back(cElectrodeTdcCompensator(a11, b11, c11, d11));
+	std::cout << "Electrode 12:" << std::endl;
 	retVal.push_back(cElectrodeTdcCompensator(a12, b12, c12, d12));
+	std::cout << "Electrode 13:" << std::endl;
 	retVal.push_back(cElectrodeTdcCompensator(a13, b13, c13, d13));
+	std::cout << "Electrode 14:" << std::endl;
 	retVal.push_back(cElectrodeTdcCompensator(a14, b14, c14, d14));
+	std::cout << "Electrode 15:" << std::endl;
 	retVal.push_back(cElectrodeTdcCompensator(a15, b15, c15, d15));
+	std::cout << "Electrode 16:" << std::endl;
 	retVal.push_back(cElectrodeTdcCompensator(a16, b16, c16, d16));
+	std::cout << "Electrode 17:" << std::endl;
 	retVal.push_back(cElectrodeTdcCompensator(a17, b17, c17, d17));
+	std::cout << "Electrode 18:" << std::endl;
 	retVal.push_back(cElectrodeTdcCompensator(a18, b18, c18, d18));
+	std::cout << "Electrode 19:" << std::endl;
 	retVal.push_back(cElectrodeTdcCompensator(a19, b19, c19, d19));
 	
 	return retVal;
