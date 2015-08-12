@@ -16,9 +16,11 @@ cElectrodeTdcCompensator::cElectrodeTdcCompensator(double* pA, double* pB, doubl
 {
 	InitMembers(pA, pB, pC, pD);
 
-	std::cout << "a[0]: " << mA[0] << ", b[0]: " << mB[0] << ", c[0]: " << mC[0] << std::endl
-			  << "a[1]: " << mA[1] << ", b[1]: " << mB[1] << ", c[1]: " << mC[1] << std::endl
-			  << "d[0]: " << mD[0] << std::endl << std::endl;
+	std::cout << "a[0]: " << mA[0] << ",\ta[1]: " << mA[1] << ",\ta[2]: " << mA[2] << std::endl
+			  << "b[0]: " << mB[0] << ",\tb[1]: " << mB[1] << ",\tb[2]: " << mB[2] << std::endl
+			  << "c[0]: " << mC[0] << ",\tc[1]: " << mC[1] << ",\tc[2]: " << mC[2] << std::endl
+			  << "d[0]: " << mD[0] << ",\td[1]: " << mD[1] << ",\td[2]: " << mD[2] << std::endl
+			  << std::endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -74,7 +76,6 @@ double cElectrodeTdcCompensator::GetUnforcedElectrodeValue(double tdc, double pd
 {
 	return
 		mA[0]*(1-exp((tdc+mB[0])*mC[0])) +
-		mA[1]*pdc + 
 		mD[0];
 /*
 		mA[0]*pow((tdc+mB[0]), 5.0) +
