@@ -1150,7 +1150,7 @@ int main(int argc, char** argv)
 			cFunctionFitNLS fit;
 			std::vector<std::string> files;
 			files.push_back("./data/tdc_electrodes/cold_start.dat");
-			files.push_back("./data/tdc_electrodes/cooling_down_from_high.dat");
+			// files.push_back("./data/tdc_electrodes/cooling_down_from_high.dat");
 			files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
 			files.push_back("./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
 			files.push_back("./data/tdc_electrodes/data_2015_08_04_16_15_04.dat");
@@ -1310,14 +1310,13 @@ int main(int argc, char** argv)
 			
 
 			std::string fileName = nFileUtils::GetFileSelectionInDirectory("./data/tdc_electrodes", ".dat");
-			fileName.insert(0, "./data/tdc_electrodes/");
 
 			cDataFileReader reader(fileName.c_str());
 			std::ofstream outFile("./out.csv");
 			std::vector<biotac_tune_data> data = reader.GetData();
 			for( std::size_t i = 0; i < data.size(); ++i )
 			{
-				for( std::size_t compIndex = 0; compIndex < compensators.size(); ++compIndex )
+				for( std::size_t compIndex = 1; compIndex <= compensators.size(); ++compIndex )
 				{
 					double electrode = 0.0;
 					switch(compIndex)
@@ -1344,7 +1343,7 @@ int main(int argc, char** argv)
 					default: break;
 					}
 					
-					double error = compensators[compIndex].CompensateTdc(data[i].mData.tdc, data[i].mData.pdc, electrode);
+					double error = compensators[compIndex-1].CompensateTdc(data[i].mData.tdc, data[i].mData.pdc, electrode);
 					outFile << error << ", ";
 				}
 
