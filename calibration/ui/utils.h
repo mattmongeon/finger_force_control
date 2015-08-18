@@ -20,6 +20,7 @@ namespace nUtils
 
 	const std::string BIOTAC_CAL_SINGLE = "a\n";
 	const std::string READ_BIOTAC = "b\n";
+	const std::string BIOTAC_TRACK_FORCE = "e\n";
 	const std::string HOLD_FORCE = "f\n";
 	const std::string SET_TORQUE_CTRL_GAINS = "g\n";
 	const std::string GET_TORQUE_CTRL_GAINS = "h\n";

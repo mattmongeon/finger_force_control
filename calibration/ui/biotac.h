@@ -26,6 +26,15 @@ public:
 	//--------------------------  INTERFACE FUNCTIONS  -------------------------//
 	//--------------------------------------------------------------------------//
 
+	void DisplayMenu();
+	
+	
+private:
+
+	//--------------------------------------------------------------------------//
+	//----------------------  BIOTAC OPERATION FUNCTIONS  ----------------------//
+	//--------------------------------------------------------------------------//
+
 	// Makes a single reading from the BioTac and returns the data.
 	void ReadSingle() const;
 
@@ -34,16 +43,31 @@ public:
 	void ReadContinuous() const;
 
 	
-	// Records a single run of calibrating the BioTac.
-	void RecordCalibrationRun();
+	// Records a single run of force holding while recording Biotac and load cell data.
+	void RecordForceHold();
 
 
-	// Records a calibration run following a force trajectory.
-	void RecordCalWithTrajectory();
+	// Records a force-hold run following a force trajectory.
+	void RecordForceTrajectory();
+
+
+	// Tells the PIC hold the BioTac at a force value measured from the calibrated
+	// BioTac.
+	void RecordBioTacForceTest();
+
+
+	// 2
+	void TrainElectrodeCompenstors();
+
+
+	// 3
+	void TrainForceVectorCoefficients();
+
+
+	// 7
+	void TrainAllForceTerms();
+
 	
-	
-private:
-
 	//--------------------------------------------------------------------------//
 	//---------------------------  HELPER FUNCTIONS  ---------------------------//
 	//--------------------------------------------------------------------------//
