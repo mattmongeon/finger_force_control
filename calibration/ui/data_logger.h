@@ -7,8 +7,7 @@
 #include <fstream>
 
 
-// Writes data to file in a binary format.  The file contains a header which gives
-// the names of the variables being written and their sizes in bytes. 
+// Writes data to file in a binary format.
 class cDataLogger
 {
 public:

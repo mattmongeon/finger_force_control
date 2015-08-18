@@ -98,38 +98,6 @@ void cDataLogger::ThreadFunc(cDataLogger* pThis)
 		{
 			writeData = false;
 			pThis->mOutFile.write(reinterpret_cast<const char*>(data.mpData), data.mNumBytes);
-
-			if( data.mNumBytes == sizeof(biotac_tune_data) )
-			{
-				biotac_tune_data* pData = reinterpret_cast<biotac_tune_data*>(data.mpData);
-				pThis->mTextFile << pData->mTimestamp << " "
-								 << pData->mData.pac << " "
-								 << pData->mData.pdc << " "
-								 << pData->mData.tac << " "
-								 << pData->mData.tdc << " "
-								 << pData->mData.e1 << " "
-								 << pData->mData.e2 << " "
-								 << pData->mData.e3 << " "
-								 << pData->mData.e4 << " "
-								 << pData->mData.e5 << " "
-								 << pData->mData.e6 << " "
-								 << pData->mData.e7 << " "
-								 << pData->mData.e8 << " "
-								 << pData->mData.e9 << " "
-								 << pData->mData.e10 << " "
-								 << pData->mData.e11 << " "
-								 << pData->mData.e12 << " "
-								 << pData->mData.e13 << " "
-								 << pData->mData.e14 << " "
-								 << pData->mData.e15 << " "
-								 << pData->mData.e16 << " "
-								 << pData->mData.e17 << " "
-								 << pData->mData.e18 << " "
-								 << pData->mData.e19 << " "
-								 << pData->mLoadCell_g << " "
-								 << pData->mReference_g << std::endl;
-			}
-			
 			delete data.mpData;
 		}
 	}
