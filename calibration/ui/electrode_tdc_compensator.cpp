@@ -75,21 +75,8 @@ double cElectrodeTdcCompensator::CompensateTdc(double tdc, double pdc, double el
 double cElectrodeTdcCompensator::GetUnforcedElectrodeValue(double tdc, double pdc) const
 {
 	return
-		mA[0]*(1-exp((tdc+mB[0])*mC[0])) +
+		mA[0]*(1.0-exp((tdc+mB[0])*mC[0])) +
 		mD[0];
-/*
-		mA[0]*pow((tdc+mB[0]), 5.0) +
-		mA[1]*pow((tdc+mB[1]), 4.0) +
-		mA[2]*pow((tdc+mB[2]), 3.0) +
-		mA[3]*pow((tdc+mB[3]), 2.0) +
-		mA[4]*pow((tdc+mB[4]), 1.0) +
-
-		mD[0]*pow( tdc+mG[0]*exp(mE[0]*tac+mF[0])+mC[0], 5.0) +
-		mD[1]*pow( tdc+mG[1]*exp(mE[1]*tac+mF[1])+mC[1], 4.0) +
-		mD[2]*pow( tdc+mG[2]*exp(mE[2]*tac+mF[2])+mC[2], 3.0) +
-		mD[3]*pow( tdc+mG[3]*exp(mE[3]*tac+mF[3])+mC[3], 2.0) +
-		mD[4]*pow( tdc+mG[4]*exp(mE[4]*tac+mF[4])+mC[4], 1.0);
-		*/
 }
 
 ////////////////////////////////////////////////////////////////////////////////

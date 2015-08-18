@@ -96,33 +96,7 @@ private:
 				residual[0] = T(mElectrode) -
 					(a[0]*(1.0-exp((mTDC+b[0])*c[0])) +
 
-					 // a[1]*mPDC + 
-					 
 					 d[0]);
-
-				/*
-					(a[0]*pow((mTDC+b[0]), 5.0) +
-					 a[1]*pow((mTDC+b[1]), 4.0) +
-					 a[2]*pow((mTDC+b[2]), 3.0) +
-					 a[3]*pow((mTDC+b[3]), 2.0) +
-					 a[4]*pow((mTDC+b[4]), 1.0) +
-
-					 // To try:
-					 // 1. d*pow( tdc+g*exp(e*tac+f)+c, #) + ... [PRETTY GOOD FORCE TRACKING, weird spikes every now and then]
-					 // 2. d*pow( tdc+g*exp(e*(tac+h)+f)+c, #) + ... [FORCE MATCHING IS EXTREMELY SCALED DOWN]
-					 // 3. d*pow( tdc+g*exp(e*tac+f)+c, #+h) + ... [PRETTY GOOD FORCE TRACKING, worth tweaking - HAS NANs]
-					 // 8. d*pow( tdc+(c*(tac+f)+g)+b), #) + ... [BAD FORCE MATCHING]
-					 // 7. c*pow( tdc+g*(d*tac+e)+f), #) + ... [DECENT FORCE MATCHING]
-					 // 7. c*pow( tdc+g*(d*tac+e)+f), #+h) + ...
-					 // 4. d*pow( tdc+g*pow(tac+e,f)+c, #) + ... 
-					 // 5. d*pow( tdc+g*exp(e*tac+f), #) + ... 
-					 // 6. d*pow( tdc+exp(e*tac+f), #) + ...
-					 d[0]*pow( mTDC+g[0]*exp(e[0]*mTAC+f[0])+c[0], 5.0) +
-					 d[1]*pow( mTDC+g[1]*exp(e[1]*mTAC+f[1])+c[1], 4.0) +
-					 d[2]*pow( mTDC+g[2]*exp(e[2]*mTAC+f[2])+c[2], 3.0) +
-					 d[3]*pow( mTDC+g[3]*exp(e[3]*mTAC+f[3])+c[3], 2.0) +
-					 d[4]*pow( mTDC+g[4]*exp(e[4]*mTAC+f[4])+c[4], 1.0) );
-				*/
 				
 				return true;
 			}
