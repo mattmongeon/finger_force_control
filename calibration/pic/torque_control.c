@@ -3,6 +3,7 @@
 #include "system.h"
 #include "motor.h"
 #include "uart.h"
+#include "biotac.h"
 #include "NU32.h"
 
 
@@ -51,7 +52,7 @@ static int get_pwm_from_desired_force(int force_g)
 // load_cell_g - The most recent reading of the load cell in grams.
 //
 // Return - The new control signal representing a current value in mA.
-static int torque_control_loop(int load_cell_g, torque_tune_data* pTuneData)
+static int torque_control_loop(int current_force_g, torque_tune_data* pTuneData, int valToSave)
 {
 	// --- Feed Forward --- //
 	
@@ -60,14 +61,14 @@ static int torque_control_loop(int load_cell_g, torque_tune_data* pTuneData)
 
 	// --- Feedback --- //
 	
-	int error = desired_force_g - load_cell_g;
-	saved_load_cell_g = load_cell_g;
+	int error = desired_force_g - current_force_g;
+	saved_load_cell_g = valToSave;
 
 	// This is a safety measure.  When it reaches 0 grams the integral term
 	// can still cause there to be some PWM send to the motor, which can cause
 	// the motor to run backwards.  This ensures the motor doesn't do that.  It
 	// will also keep the integral from blowing up.
-	if( !((desired_force_g == 0) && (load_cell_g < ZERO_DEADBAND_G)) )
+	if( !((desired_force_g == 0) && (current_force_g < ZERO_DEADBAND_G)) )
 	{
 		error_int += error;
 		if( error_int > MAX_ERROR_INT )
@@ -99,7 +100,7 @@ static int torque_control_loop(int load_cell_g, torque_tune_data* pTuneData)
 	// The BioTac is currently off the load cell.  Limit the maximum PWM so that
 	// we don't slam it back onto the surface.  Once it is on there, it can go back
 	// to normal operation.
-	if( load_cell_g < ZERO_DEADBAND_G )
+	if( valToSave < ZERO_DEADBAND_G )
 	{
 		if( u_new > MAX_PWM_OFF_LOADCELL )
 		{
@@ -120,7 +121,7 @@ static int torque_control_loop(int load_cell_g, torque_tune_data* pTuneData)
 	
 	motor_pwm_set(u_new);
 	
-	pTuneData->load_cell_g = load_cell_g;
+	pTuneData->load_cell_g = current_force_g;
 	pTuneData->error = error;
 	pTuneData->error_int = error_int;
 	pTuneData->pwm = u_new;
@@ -144,10 +145,18 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) torque_controller()
 	case TUNE_TORQUE_GAINS:
 	case BIOTAC_CAL_SINGLE:
 	case BIOTAC_CAL_TRAJECTORY:
+	case BIOTAC_TRACK:
 	{
 		unsigned int start = _CP0_GET_COUNT();
-		
-		torque_control_loop(load_cell_read_grams(), &tune_data);
+
+		int force_g = 0;
+		int load_cell_g = load_cell_read_grams();
+		if( system_get_state() == BIOTAC_TRACK )
+			force_g = biotac_get_force_g();
+		else
+			force_g = load_cell_g;
+
+		torque_control_loop(force_g, &tune_data, load_cell_g);
 
 		unsigned int end = _CP0_GET_COUNT();
 
@@ -176,7 +185,8 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) torque_controller()
 
 	case HOLD_FORCE:
 	{
-		torque_control_loop(load_cell_read_grams(), &tune_data);
+		int force = load_cell_read_grams();
+		torque_control_loop(force, &tune_data, force);
 		
 		break;
 	}

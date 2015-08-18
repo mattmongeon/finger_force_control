@@ -205,11 +205,11 @@ void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_reader_int()
 
 	case BIOTAC_TRACK:
 	{
-		static biotac_data data;
+		static biotac_tune_data data;
 
 		unsigned int start = _CP0_GET_COUNT();
 		// Read from the BioTac
-		read_biotac(&data);
+		read_biotac(&(data.mData));
 		
 		// Run through the compensators
 		float e1 = COMP_ELECTRODE(compensators[0], data.e1, data.tdc)
@@ -299,6 +299,29 @@ void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_reader_int()
 		// Set saved force value equal to magnitude of force vector
 		biotac_force_g = sqrt(x*x + y*y + z*z);
 
+		// Fill in and transmit data
+		data.mTimestamp = _CP0_GET_COUNT();
+		// HACK:  SEE FUNCTION COMMENTS IN TORQUE_CONTROL.H
+		data.mLoadCell_g = torque_control_get_load_cell_g();
+		data.mReference_g = torque_control_get_desired_force_g();
+
+		uart1_send_packet((unsigned char*)(&data), sizeof(biotac_tune_data));
+
+		uart1_send_packet((unsigned char*)(&biotac_force_g), sizeof(biotac_force_g));
+		
+		++biotac_tune_samples;
+		if( biotac_tune_samples >= max_tuning_samples )
+		{
+			// Signal end of data stream to the UI.
+			biotac_tune_data data;
+			memset(&data, 0x00, sizeof(biotac_tune_data));
+			uart1_send_packet((unsigned char*)(&data), sizeof(biotac_tune_data));
+
+			biotac_tune_samples = 0;
+			
+			system_set_state(IDLE);
+		}
+		
 		break;
 	}
 

@@ -97,7 +97,30 @@ int main()
 
 		case 'e':
 		{
+			// --- Track Force With BioTac Calibration --- //
+			
+			int seconds;
+			uart1_read_packet( (unsigned char*)(&seconds), sizeof(int) );
+			if( seconds > 0 )
+			{
+				biotac_set_time_length(seconds);
+			}
+			else
+			{
+				// Provide our own default value.
+				biotac_set_time_length(2);
+			}
+			
+			int force;
+			uart1_read_packet( (unsigned char*)(&force), sizeof(int) );
+			torque_control_set_desired_force(force);
+			
 			system_set_state(BIOTAC_TRACK);
+
+			while(system_get_state() == BIOTAC_TRACK)
+			{
+				;
+			}
 			
 			break;
 		}
