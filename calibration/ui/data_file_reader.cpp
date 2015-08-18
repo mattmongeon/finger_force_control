@@ -16,7 +16,7 @@ cDataFileReader::cDataFileReader(const std::string& filePath)
 	if( !inFile.is_open() )
 	{
 		std::cout << "Could not open file \'" << filePath << "\'!" << std::endl;
-		throw std::invalid_argument("Could not open file for plotting!");
+		throw std::invalid_argument("Could not open file!");
 	}
 
 	inFile.seekg(0, std::ios::end);

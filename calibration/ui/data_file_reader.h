@@ -7,6 +7,7 @@
 #include <string>
 
 
+// Parses a binary .dat file and makes the data available to be used.
 class cDataFileReader
 {
 public:
