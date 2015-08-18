@@ -29,6 +29,53 @@ cLoadCell::~cLoadCell()
 //  Interface Functions
 ////////////////////////////////////////////////////////////////////////////////
 
+void cLoadCell::DisplayMenu()
+{
+	nUtils::ClearConsole();
+	
+	bool keepGoing = true;
+	while(keepGoing)
+	{
+		std::cout << "Load Cell Function Menu" << std::endl;
+		std::cout << "-----------------------" << std::endl;
+		std::cout << std::endl;
+		std::cout << "a: Calibrate" << std::endl;
+		std::cout << "b: Read load cell once" << std::endl;
+		std::cout << "c: Continuously read load cell" << std::endl;
+		std::cout << "q: Go back to main menu" << std::endl;
+		std::cout << std::endl;
+
+		switch(nUtils::GetMenuSelection())
+		{
+		case 'a':
+			RunCalibrationRoutine();
+			break;
+
+		case 'b':
+			ReadSingle();
+			break;
+
+		case 'c':
+			ReadContinuous();
+			break;
+
+		case 'q':
+			keepGoing = false;
+			break;
+
+		default:
+			std::cout << "Invalid selection!  Please choose again." << std::endl << std::endl;
+			break;
+		}
+	}
+
+	nUtils::ClearConsole();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Load Cell Operation Functions
+////////////////////////////////////////////////////////////////////////////////
+
 void cLoadCell::RunCalibrationRoutine()
 {
 	nUtils::ClearConsole();
@@ -173,85 +220,5 @@ void cLoadCell::ReadContinuous()
 			break;
 		}
 	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-void cLoadCell::TuneForceHolding()
-{
-	// --- Preparations --- //
-
-	// Ahead of time we will set up the things to be used during real-time processing so we can move fast.
-	torque_tune_data rxData;
-	torque_tune_data stopCondition;
-	memset(&stopCondition, 0, sizeof(torque_tune_data));
-	std::vector<torque_tune_data> tuneData;
-	
-
-	// --- Start The Process --- //
-	
-	mpPicSerial->DiscardIncomingData(0);
-	mpPicSerial->WriteCommandToPic(nUtils::TUNE_TORQUE_GAINS);
-
-	std::cout << "Enter number of seconds for this run (s):  " ;
-	int seconds = 0;
-	std::cin >> seconds;
-
-	mpPicSerial->WriteValueToPic(seconds);
-	
-	std::cout << "Enter force to hold (g):  ";
-
-	int force;
-	std::cin >> force;
-
-	// Do this one next.  It is really annoying to create it before sending the force, because it pops up
-	// a window right in the way.
-	cRealTimePlot plotter("Load Cell", "Sample", "Force (g)", "Force (g)", "", "", "", seconds * 200.0, 0.0, 10.0);
-
-	mpPicSerial->WriteValueToPic(force);
-
-	std::cout << "Waiting for tuning results..." << std::endl;
-
-	while(true)
-	{
-		mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&rxData), sizeof(torque_tune_data) );
-
-		if( memcmp(&rxData, &stopCondition, sizeof(torque_tune_data)) != 0 )
-		{
-			plotter.AddDataPoint(rxData.load_cell_g);
-			tuneData.push_back(rxData);
-		}
-		else
-		{
-			break;
-		}
-	}
-
-
-	// --- Print Results --- //
-	
-	std::cout << "Tuning results received!" << std::endl;
-	std::cout << "Load Cell\tError\t\tError Integral\t\tPWM\t\tTimestamp\t\tExe Time (ms)\t\tFrequency (Hz)" << std::endl;
-	unsigned int prevTimestamp = 0;
-	for( size_t i = 0; i < tuneData.size(); ++i )
-	{
-		std::cout << tuneData[i].load_cell_g << "\t\t"
-				  << tuneData[i].error << "\t\t"
-				  << tuneData[i].error_int << "\t\t"
-				  << tuneData[i].pwm << "\t\t"
-				  << tuneData[i].timestamp << "\t\t"
-				  << tuneData[i].loop_exe_time_ms << "\t\t"
-				  << 1.0 / ((tuneData[i].timestamp - prevTimestamp) * 25.0 / 1000000000.0) << "\t\t"
-				  << std::endl;
-
-		prevTimestamp = tuneData[i].timestamp;
-	}
-
-
-	std::cout << std::endl;
-
-
-	// Just in case...
-	mpPicSerial->DiscardIncomingData(0);
 }
 

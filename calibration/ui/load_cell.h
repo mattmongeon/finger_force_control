@@ -20,9 +20,18 @@ public:
 
 	~cLoadCell();
 
-
+	
 	//--------------------------------------------------------------------------//
 	//--------------------------  INTERFACE FUNCTIONS  -------------------------//
+	//--------------------------------------------------------------------------//
+
+	void DisplayMenu();
+	
+
+private:
+
+	//--------------------------------------------------------------------------//
+	//--------------------  LOAD CELL OPERATION FUNCTIONS  ---------------------//
 	//--------------------------------------------------------------------------//
 
 	// Runs through the calibration routine for the load cell.  It will ask the user
@@ -39,11 +48,6 @@ public:
 	// Continuously reads streaming data from the load cell.
 	void ReadContinuous();
 	
-
-	// Requests a force value through the UI and then commands the PIC to hold that
-	// value and return the results for analysis.
-	void TuneForceHolding();
-
 	
 private:
 
