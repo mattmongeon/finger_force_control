@@ -123,7 +123,8 @@ void cFileSystem::PrintFileToCSV()
 			<< data[i].mData.e17 << ", " << data[i].mData.e18 << ", "
 			<< data[i].mData.e19 << ", " << data[i].mData.tac << ", "
 			<< data[i].mData.tdc << ", " << data[i].mData.pac << ", "
-			<< data[i].mData.pdc << std::endl;
+			<< data[i].mData.pdc << ", " << data[i].mLoadCell_g << ", "
+			<< data[i].mReference_g << std::endl;
 	}
 
 	out.close();

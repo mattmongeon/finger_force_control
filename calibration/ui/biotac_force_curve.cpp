@@ -7,7 +7,6 @@
 #include <fstream>
 #include <map>
 #include <sstream>
-#include <iostream>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -63,7 +62,6 @@ double cBioTacForceCurve::GetForce_g(const std::vector<uint16_t>& electrodes, ui
 		y += mElectrodeNormals[i][1] * comp;
 		z += mElectrodeNormals[i][2] * comp;
 	}
-	std::cout << std::endl;
 
 	return sqrt(mSx*mSx*x*x + mSy*mSy*y*y + mSz*mSz*z*z);
 }
