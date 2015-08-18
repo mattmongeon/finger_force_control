@@ -67,6 +67,12 @@ private:
 	// 7
 	void TrainAllForceTerms();
 
+
+	void TestElectrodeCompensators();
+
+
+	void TestForceCurve();
+
 	
 	//--------------------------------------------------------------------------//
 	//---------------------------  HELPER FUNCTIONS  ---------------------------//
