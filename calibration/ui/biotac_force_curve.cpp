@@ -58,10 +58,12 @@ double cBioTacForceCurve::GetForce_g(const std::vector<uint16_t>& electrodes, ui
 	double x = 0.0, y = 0.0, z = 0.0;
 	for( std::size_t i = 0; i < 19; ++i )
 	{
-		x += mElectrodeNormals[i][0] * mCompensators[i].CompensateTdc(tdc, pdc, electrodes[i]);
-		y += mElectrodeNormals[i][1] * mCompensators[i].CompensateTdc(tdc, pdc, electrodes[i]);
-		z += mElectrodeNormals[i][2] * mCompensators[i].CompensateTdc(tdc, pdc, electrodes[i]);
+		double comp = mCompensators[i].CompensateTdc(tdc, pdc, electrodes[i]);
+		x += mElectrodeNormals[i][0] * comp;
+		y += mElectrodeNormals[i][1] * comp;
+		z += mElectrodeNormals[i][2] * comp;
 	}
+	std::cout << std::endl;
 
 	return sqrt(mSx*mSx*x*x + mSy*mSy*y*y + mSz*mSz*z*z);
 }
