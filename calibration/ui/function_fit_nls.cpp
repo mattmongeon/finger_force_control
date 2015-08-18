@@ -36,7 +36,7 @@ std::vector<cElectrodeTdcCompensator> cFunctionFitNLS::TrainAgainstDataFiles(con
 	
 	sTdcElectrodeData data = ParseFiles(files);
 
-
+	
 	double a1[5] = {398.615,0.1,1,1,1};
 	double b1[5] = {-1232.17,1,1,1,1};
 	double c1[5] = {-0.00152345,1,1,1,1};
@@ -131,9 +131,9 @@ std::vector<cElectrodeTdcCompensator> cFunctionFitNLS::TrainAgainstDataFiles(con
 	double b19[5] = {-700.0,1,1,1,1};
 	double c19[5] = {-0.0025,1,1,1,1};
 	double d19[5] = {2800,1,1,1,1};
+	
 
-			
-// --- Fit Against Data --- //
+	// --- Fit Against Data --- //
 
 	#pragma omp parallel sections
 	{
@@ -141,133 +141,133 @@ std::vector<cElectrodeTdcCompensator> cFunctionFitNLS::TrainAgainstDataFiles(con
 		{
 			std::cout << "E1:" << std::endl;
 			FitToElectrodeData(data.mE1, a1, b1, c1, d1);
-			std::cout << std::endl;
+			std::cout << "E1 FINISHED" << std::endl << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E2:" << std::endl;
 			FitToElectrodeData(data.mE2, a2, b2, c2, d2);
-			std::cout << std::endl;
+			std::cout << "E2 FINISHED" << std::endl << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E3:" << std::endl;
 			FitToElectrodeData(data.mE3, a3, b3, c3, d3);
-			std::cout << std::endl;
+			std::cout << "E3 FINISHED" << std::endl << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E4:" << std::endl;
 			FitToElectrodeData(data.mE4, a4, b4, c4, d4);
-			std::cout << std::endl;
+			std::cout << "E4 FINISHED" << std::endl << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E5:" << std::endl;
 			FitToElectrodeData(data.mE5, a5, b5, c5, d5);
-			std::cout << std::endl;
+			std::cout << "E5 FINISHED" << std::endl << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E6:" << std::endl;
 			FitToElectrodeData(data.mE6, a6, b6, c6, d6);
-			std::cout << std::endl;
+			std::cout << "E6 FINISHED" << std::endl << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E7:" << std::endl;
 			FitToElectrodeData(data.mE7, a7, b7, c7, d7);
-			std::cout << std::endl;
+			std::cout << "E7 FINISHED" << std::endl << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E8:" << std::endl;
 			FitToElectrodeData(data.mE8, a8, b8, c8, d8);
-			std::cout << std::endl;
+			std::cout << "E8 FINISHED" << std::endl << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E9:" << std::endl;
 			FitToElectrodeData(data.mE9, a9, b9, c9, d9);
-			std::cout << std::endl;
+			std::cout << "E9 FINISHED" << std::endl << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E10:" << std::endl;
 			FitToElectrodeData(data.mE10, a10, b10, c10, d10);
-			std::cout << std::endl;
+			std::cout << "E10 FINISHED" << std::endl << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E11:" << std::endl;
 			FitToElectrodeData(data.mE11, a11, b11, c11, d11);
-			std::cout << std::endl;
+			std::cout << "E11 FINISHED" << std::endl << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E12:" << std::endl;
 			FitToElectrodeData(data.mE12, a12, b12, c12, d12);
-			std::cout << std::endl;
+			std::cout << "E12 FINISHED" << std::endl << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E13:" << std::endl;
 			FitToElectrodeData(data.mE13, a13, b13, c13, d13);
-			std::cout << std::endl;
+			std::cout << "E13 FINISHED" << std::endl << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E14:" << std::endl;
 			FitToElectrodeData(data.mE14, a14, b14, c14, d14);
-			std::cout << std::endl;
+			std::cout << "E14 FINISHED" << std::endl << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E15:" << std::endl;
 			FitToElectrodeData(data.mE15, a15, b15, c15, d15);
-			std::cout << std::endl;
+			std::cout << "E15 FINISHED" << std::endl << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E16:" << std::endl;
 			FitToElectrodeData(data.mE16, a16, b16, c16, d16);
-			std::cout << std::endl;
+			std::cout << "E16 FINISHED" << std::endl << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E17:" << std::endl;
 			FitToElectrodeData(data.mE17, a17, b17, c17, d17);
-			std::cout << std::endl;
+			std::cout << "E17 FINISHED" << std::endl << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E18:" << std::endl;
 			FitToElectrodeData(data.mE18, a18, b18, c18, d18);
-			std::cout << std::endl;
+			std::cout << "E18 FINISHED" << std::endl << std::endl;
 		}
 
 		#pragma omp section
 		{
 			std::cout << "E19:" << std::endl;
 			FitToElectrodeData(data.mE19, a19, b19, c19, d19);
-			std::cout << std::endl;
+			std::cout << "E19 FINISHED" << std::endl << std::endl;
 		}
 	}
 
