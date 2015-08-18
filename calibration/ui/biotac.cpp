@@ -52,6 +52,8 @@ void cBioTac::DisplayMenu()
 		std::cout << "f: Train electrode compensators" << std::endl;
 		std::cout << "g: Train force vector coefficients" << std::endl;
 		std::cout << "h: Train all force terms" << std::endl;
+		std::cout << "i: Test TDC vs Electrode curve" << std::endl;
+		std::cout << "j: Test full force curve" << std::endl;
 		std::cout << "q: Go back to main menu" << std::endl;
 		std::cout << std::endl;
 
@@ -87,6 +89,14 @@ void cBioTac::DisplayMenu()
 
 		case 'h':
 			TrainAllForceTerms();
+			break;
+
+		case 'i':
+			TestElectrodeCompensators();
+			break;
+
+		case 'j':
+			TestForceCurve();
 			break;
 
 		case 'q':
@@ -743,6 +753,91 @@ void cBioTac::TrainAllForceTerms()
 	files.push_back(file);
 			
 	curve.PlotElectrodeCurveAgainstFileData(files, electrode);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void cBioTac::TestElectrodeCompensators()
+{
+	cBioTacForceCurve curve("./coefficients.bio");
+
+	nUtils::ClearConsole();
+	int electrode = 0;
+	while( true )
+	{
+		std::cout << "Select electrode: " << std::flush;
+		std::cin >> electrode;
+		if( (electrode >= 1) && (electrode <= 19) )
+		{
+			break;
+		}
+		else
+		{
+			std::cout << "Invalid selection: " << electrode << "!" << std::endl;
+			std::cout << "Selection must be in the range 1-19" << std::endl;
+			std::cout << std::endl;
+		}
+	}
+
+	std::vector<std::string> files;
+	// files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
+	// files.push_back("./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
+	// files.push_back("./data/tdc_electrodes/data_2015_08_04_16_15_04.dat");
+	// files.push_back("./data/tdc_electrodes/cooling_down_from_high.dat");
+	// files.push_back("./data/tdc_electrodes/heating_up.dat");
+	// files.push_back("./data/tdc_electrodes/high_temp.dat");
+	// files.push_back("./data/tdc_electrodes/zero1.dat");
+	// files.push_back("./data/tdc_electrodes/zero2.dat");
+	// files.push_back("./data/tdc_electrodes/zero3.dat");
+
+	std::string file = nFileUtils::GetFileSelectionInDirectory("./data/tdc_electrodes", ".dat");
+	files.push_back(file);
+			
+	curve.PlotElectrodeCurveAgainstFileData(files, electrode);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void cBioTac::TestForceCurve()
+{
+	cBioTacForceCurve curve("./coefficients.bio");
+			
+	// --- Load TDC vs Electrode Coefficients From File --- //
+			
+	std::vector<cElectrodeTdcCompensator> compensators;
+	compensators.clear();
+	std::ifstream file("./data/tdc_electrodes/tdc_electrode_curve.coeff", std::ios::binary | std::ios::in);
+	for( std::size_t i = 0; i < 19; ++i )
+	{
+		compensators.push_back( cElectrodeTdcCompensator(file) );
+	}
+			
+
+	// --- Test Force Fit --- //
+			
+	cFunctionFitForceTerms ffTerms(compensators);
+
+	std::vector<std::string> files = nFileUtils::GetFilesInDirectory("./data", ".dat");
+	for( std::size_t i = 0; i < files.size(); ++i )
+	{
+		files[i].insert(0, "./data/");
+	}
+
+	std::vector<std::string> tdcFiles = nFileUtils::GetFilesInDirectory("./data/tdc_electrodes", ".dat");
+	for( std::size_t i = 0; i < tdcFiles.size(); ++i )
+	{
+		tdcFiles[i].insert(0, "./data/tdc_electrodes/");
+		files.push_back(tdcFiles[i]);
+	}
+
+	std::vector<std::string> testFiles = nFileUtils::GetFilesInDirectory("./data/test", ".dat");
+	for( std::size_t i = 0; i < testFiles.size(); ++i )
+	{
+		testFiles[i].insert(0, "./data/test/");
+		files.push_back(testFiles[i]);
+	}
+			
+	ffTerms.TestAgainstDataFiles(files, curve);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
