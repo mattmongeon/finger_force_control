@@ -35,6 +35,10 @@ static float force_terms[3];
 
 static int biotac_force_g = 0;
 
+static int desired_testing_force_g = 0;
+
+static const int wait_secs_before_force = 2;
+
 
 // --- BioTac Sampling Commands --- //
 
@@ -183,6 +187,11 @@ void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_reader_int()
 	{
 	case BIOTAC_CAL_SINGLE:
 	{
+		if( biotac_tune_samples >= wait_secs_before_force * LOOP_RATE_HZ )
+			torque_control_set_desired_force(desired_testing_force_g);
+		else
+			torque_control_set_desired_force(0);
+		
 		// Read a single BioTac reading and associated load cell reading
 		// and transmit it.
 		biotac_read_and_tx();
@@ -207,30 +216,35 @@ void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_reader_int()
 	{
 		static biotac_tune_data data;
 
+		if( biotac_tune_samples >= LOOP_RATE_HZ )
+			torque_control_set_desired_force(desired_testing_force_g);
+		else
+			torque_control_set_desired_force(0);
+		
 		unsigned int start = _CP0_GET_COUNT();
 		// Read from the BioTac
 		read_biotac(&(data.mData));
 		
 		// Run through the compensators
-		float e1 = COMP_ELECTRODE(compensators[0], data.e1, data.tdc)
-		float e2 = COMP_ELECTRODE(compensators[1], data.e2, data.tdc)
-		float e3 = COMP_ELECTRODE(compensators[2], data.e3, data.tdc)
-		float e4 = COMP_ELECTRODE(compensators[3], data.e4, data.tdc)
-		float e5 = COMP_ELECTRODE(compensators[4], data.e5, data.tdc)
-		float e6 = COMP_ELECTRODE(compensators[5], data.e6, data.tdc)
-		float e7 = COMP_ELECTRODE(compensators[6], data.e7, data.tdc)
-		float e8 = COMP_ELECTRODE(compensators[7], data.e8, data.tdc)
-		float e9 = COMP_ELECTRODE(compensators[8], data.e9, data.tdc)
-		float e10 = COMP_ELECTRODE(compensators[9], data.e10, data.tdc)
-		float e11 = COMP_ELECTRODE(compensators[10], data.e11, data.tdc)
-		float e12 = COMP_ELECTRODE(compensators[11], data.e12, data.tdc)
-		float e13 = COMP_ELECTRODE(compensators[12], data.e13, data.tdc)
-		float e14 = COMP_ELECTRODE(compensators[13], data.e14, data.tdc)
-		float e15 = COMP_ELECTRODE(compensators[14], data.e15, data.tdc)
-		float e16 = COMP_ELECTRODE(compensators[15], data.e16, data.tdc)
-		float e17 = COMP_ELECTRODE(compensators[16], data.e17, data.tdc)
-		float e18 = COMP_ELECTRODE(compensators[17], data.e18, data.tdc)
-		float e19 = COMP_ELECTRODE(compensators[18], data.e19, data.tdc)
+		float e1 = COMP_ELECTRODE(compensators[0], data.mData.e1, data.mData.tdc)
+		float e2 = COMP_ELECTRODE(compensators[1], data.mData.e2, data.mData.tdc)
+		float e3 = COMP_ELECTRODE(compensators[2], data.mData.e3, data.mData.tdc)
+		float e4 = COMP_ELECTRODE(compensators[3], data.mData.e4, data.mData.tdc)
+		float e5 = COMP_ELECTRODE(compensators[4], data.mData.e5, data.mData.tdc)
+		float e6 = COMP_ELECTRODE(compensators[5], data.mData.e6, data.mData.tdc)
+		float e7 = COMP_ELECTRODE(compensators[6], data.mData.e7, data.mData.tdc)
+		float e8 = COMP_ELECTRODE(compensators[7], data.mData.e8, data.mData.tdc)
+		float e9 = COMP_ELECTRODE(compensators[8], data.mData.e9, data.mData.tdc)
+		float e10 = COMP_ELECTRODE(compensators[9], data.mData.e10, data.mData.tdc)
+		float e11 = COMP_ELECTRODE(compensators[10], data.mData.e11, data.mData.tdc)
+		float e12 = COMP_ELECTRODE(compensators[11], data.mData.e12, data.mData.tdc)
+		float e13 = COMP_ELECTRODE(compensators[12], data.mData.e13, data.mData.tdc)
+		float e14 = COMP_ELECTRODE(compensators[13], data.mData.e14, data.mData.tdc)
+		float e15 = COMP_ELECTRODE(compensators[14], data.mData.e15, data.mData.tdc)
+		float e16 = COMP_ELECTRODE(compensators[15], data.mData.e16, data.mData.tdc)
+		float e17 = COMP_ELECTRODE(compensators[16], data.mData.e17, data.mData.tdc)
+		float e18 = COMP_ELECTRODE(compensators[17], data.mData.e18, data.mData.tdc)
+		float e19 = COMP_ELECTRODE(compensators[18], data.mData.e19, data.mData.tdc)
 		
 		// Use the compensated electrodes in the force equation
 		float x = e1 * electrode_normals[0][0] +
@@ -609,7 +623,9 @@ void biotac_set_time_length(int seconds)
 {
 	__builtin_disable_interrupts();
 
-	max_tuning_samples = seconds * LOOP_RATE_HZ;
+	// Add one second which will simply be a time of zero force before applying
+	// and holding the force value.
+	max_tuning_samples = (seconds + wait_secs_before_force) * LOOP_RATE_HZ;
 
 	__builtin_enable_interrupts();
 }
@@ -632,4 +648,15 @@ unsigned int biotac_receive_force_trajectory()
 int biotac_get_force_g()
 {
 	return biotac_force_g;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void biotac_set_desired_testing_force_g(int force_g)
+{
+	__builtin_disable_interrupts();
+
+	desired_testing_force_g = force_g;
+
+	__builtin_enable_interrupts();
 }

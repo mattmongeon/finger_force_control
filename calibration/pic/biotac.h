@@ -52,5 +52,13 @@ unsigned int biotac_receive_force_trajectory();
 int biotac_get_force_g();
 
 
+// Sets the amount of force to be held when using the motor to exert force in any
+// state in which the BioTac is pressing against the load cell.
+//
+// Params:
+// force_g - The amount of force in grams to hold.
+void biotac_set_desired_testing_force_g(int force_g);
+
+
 #endif  // INCLUDED_BIOTAC_H
 
