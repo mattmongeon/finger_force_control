@@ -90,9 +90,6 @@ private:
 	// The file for writing the data. 
 	std::ofstream mOutFile;
 
-	// A human-readable output file.
-	std::ofstream mTextFile;
-
 	// The handle to the worker thread.
 	boost::thread mThread;
 

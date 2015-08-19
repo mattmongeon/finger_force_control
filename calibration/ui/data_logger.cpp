@@ -42,10 +42,6 @@ cDataLogger::cDataLogger(const std::string& fileName)
 	mOutFile.open(s.str().c_str(), std::ios::binary | std::ios::out);
 
 	
-	s << ".text" << std::flush;
-	mTextFile.open(s.str().c_str());
-
-	
 	mLoopRunning = true;
 	mThread = boost::thread(ThreadFunc, this);
 }
@@ -71,7 +67,6 @@ cDataLogger::~cDataLogger()
 	mThread.join();
 	
 	mOutFile.close();
-	mTextFile.close();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
