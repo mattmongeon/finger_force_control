@@ -149,14 +149,16 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) torque_controller()
 	{
 		unsigned int start = _CP0_GET_COUNT();
 
-		int force_g = 0;
+		int current_force_g = 0;
 		int load_cell_g = load_cell_read_grams();
-		if( system_get_state() == BIOTAC_TRACK )
-			force_g = biotac_get_force_g();
-		else
-			force_g = load_cell_g;
 
-		torque_control_loop(force_g, &tune_data, load_cell_g);
+		// We might be tracking the BioTac's force sensing rather than the load cell.
+		if( system_get_state() == BIOTAC_TRACK )
+			current_force_g = biotac_get_force_g();
+		else
+			current_force_g = load_cell_g;
+
+		torque_control_loop(current_force_g, &tune_data, load_cell_g);
 
 		unsigned int end = _CP0_GET_COUNT();
 

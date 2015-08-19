@@ -47,13 +47,6 @@ int main()
 	{
 		NU32_ReadUART1(buffer, 20);
 
-		/*
-		LCD_Clear();
-		LCD_WriteString("Received:  ");
-		LCD_WriteChar(buffer[0]);
-		LCD_Move(1,0);
-		*/
-		
 		switch(buffer[0])
 		{
 		case 'a':
@@ -74,7 +67,7 @@ int main()
 			
 			int force;
 			uart1_read_packet( (unsigned char*)(&force), sizeof(int) );
-			torque_control_set_desired_force(force);
+			biotac_set_desired_testing_force_g(force);
 			
 			system_set_state(BIOTAC_CAL_SINGLE);
 			
