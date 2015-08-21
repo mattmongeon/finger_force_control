@@ -14,7 +14,7 @@ cFunctionFitForceTerms::cFunctionFitForceTerms(const std::vector<cElectrodeTdcCo
 	: mCompensators(compensators)
 {
 	mElectrodeNormalVectors[0][0] = 0.196;
-	mElectrodeNormalVectors[0][1] = -0.953;
+	mElectrodeNormalVectors[0][1] = -0.956;
 	mElectrodeNormalVectors[0][2] = -0.22;
 
 	mElectrodeNormalVectors[1][0] = 0.0;
@@ -115,7 +115,7 @@ cBioTacForceCurve cFunctionFitForceTerms::TrainAgainstDataFiles(const std::vecto
 		cDataFileReader reader(*it);
 
 		std::vector<biotac_tune_data> data = reader.GetData();
-		for( std::size_t i = 100; i < data.size(); ++i )
+		for( std::size_t i = 0; i < data.size(); ++i )
 		{
 			std::vector<uint16_t> electrodes;
 			electrodes.push_back(data[i].mData.e1);
