@@ -285,17 +285,26 @@ int main(int argc, char** argv)
 			int force = 0;
 			std::cin >> force;
 
+			std::cout << "Enter time length (s, max 10): " << std::flush;
+			int time = 0;
+			std::cin >> time;
+
+			std::cout << "Enter frequency (Hz): " << std::flush;
+			double freq = 0;
+			std::cin >> freq;
+
 			picSerial.WriteCommandToPic(nUtils::SEND_FORCE_TRAJECTORY);
-			picSerial.WriteValueToPic<int>(5);
+			picSerial.WriteValueToPic<int>(time);
 			
 			switch(selection)
 			{
 			case '1':
 			{
 				double pi = 3.14159265358979323846264338;
-				for( double i = 0.0; i < 500.0; ++i )
+				double samples = time * 100.0;
+				for( double i = 0.0; i < samples; ++i )
 				{
-					double val = static_cast<double>(force/2) - static_cast<double>(force/2) * cos( 3 * i * pi / 500.0 );
+					double val = static_cast<double>(force/2) - static_cast<double>(force/2) * cos( i * freq * 2 * pi / 100.0 );
 					picSerial.WriteValueToPic<int>(static_cast<int>(val));
 				}
 				break;
@@ -303,29 +312,19 @@ int main(int argc, char** argv)
 
 			case '2':
 			{
-				for( int i = 0; i < 100; ++i )
+				int samples = time * 100.0;
+				int halfPeriod = 50.0 / freq;
+				while( samples > 0 )
 				{
-					picSerial.WriteValueToPic<int>(force);
-				}
+					for( int i = 0; (i < halfPeriod) && (samples > 0); ++i, --samples )
+					{
+						picSerial.WriteValueToPic<int>(force);
+					}
 
-				for( int i = 0; i < 100; ++i )
-				{
-					picSerial.WriteValueToPic<int>(static_cast<int>(0));
-				}
-				
-				for( int i = 0; i < 100; ++i )
-				{
-					picSerial.WriteValueToPic<int>(force);
-				}
-
-				for( int i = 0; i < 100; ++i )
-				{
-					picSerial.WriteValueToPic<int>(static_cast<int>(0));
-				}
-
-				for( int i = 0; i < 100; ++i )
-				{
-					picSerial.WriteValueToPic<int>(force);
+					for( int i = 0; (i < halfPeriod) && (samples > 0); ++i, --samples )
+					{
+						picSerial.WriteValueToPic<int>(0);
+					}
 				}
 				
 				break;
