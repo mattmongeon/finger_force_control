@@ -17,7 +17,7 @@ static volatile int adc_value = 0;
 
 // --- Constants --- //
 
-#define LOOP_RATE_HZ  500
+#define LOOP_RATE_HZ  5000
 #define LOOP_TIMER_PRESCALAR  64
 
 
@@ -119,7 +119,7 @@ void load_cell_init()
 
 int load_cell_read_grams()
 {
-	float f = (1.03478 * load_cell_raw_value()) - 16.4474;
+	float f = (1.01985 * load_cell_raw_value()) - 26.4673;
 
 	int retVal = (int)f;
 	if( retVal >= 0 )
