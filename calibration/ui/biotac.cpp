@@ -10,6 +10,8 @@
 #include "biotac_force_curve.h"
 #include "file_utils.h"
 #include "data_file_reader.h"
+#include "function_fit_tare.h"
+#include "biotac_force_curve_tare.h"
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -56,7 +58,9 @@ void cBioTac::DisplayMenu()
 		std::cout << "h: Train all force terms" << std::endl;
 		std::cout << "i: Test TDC vs Electrode curve" << std::endl;
 		std::cout << "j: Test full force curve" << std::endl;
+		std::cout << "k: Train taring force vector" << std::endl;
 		std::cout << "q: Go back to main menu" << std::endl;
+		std::cout << "z: Frequency sweep" << std::endl;
 		std::cout << std::endl;
 
 		switch(nUtils::GetMenuSelection())
@@ -101,8 +105,16 @@ void cBioTac::DisplayMenu()
 			TestForceCurve();
 			break;
 
+		case 'k':
+			TrainTaringForceVector();
+			break;
+
 		case 'q':
 			keepGoing = false;
+			break;
+
+		case 'z':
+			FrequencySweep();
 			break;
 
 		default:
@@ -183,7 +195,7 @@ void cBioTac::ReadContinuous() const
 		pLogger = new cDataLogger(fileName);
 	}
 
-	cRealTimePlot plotter("Load Cell", "Sample", "Force (g)", "Force (g)", "", "", "", 2500.0);
+	cRealTimePlot plotter("Load Cell", "Sample", "Force (g)", "Force (g)", "", "", "", 2500.0, 0.0, 10.0);
 	
 	
 	cKeyboardThread::Instance()->StartDetection();
@@ -390,12 +402,11 @@ void cBioTac::RecordForceTrajectory()
 	// --- Preparations --- //
 
 	// Ahead of time we will set up the things to be used during real-time processing.
-	biotac_tune_data rxData;
-	biotac_tune_data stopCondition;
-	memset(&stopCondition, 0, sizeof(biotac_tune_data));
-	std::vector<biotac_tune_data> tuneData;
+	biotac_characterize rxData;
+	biotac_characterize stopCondition;
+	memset(&stopCondition, 0, sizeof(biotac_characterize));
+	std::vector<biotac_characterize> tuneData;
 	cDataLogger logger;
-	cRealTimePlot plotter("Load Cell", "Sample", "Force (g)", "Force (g)", "", "", "", 500.0);
 
 	
 	// --- Start The Process --- //
@@ -405,14 +416,21 @@ void cBioTac::RecordForceTrajectory()
 
 	std::cout << "Waiting for tuning results..." << std::endl;
 
+	// Poll the serial port and wait until data is available before trying to actually read
+	// from it.  Otherwise the read will time out and throw an exception.
+	while(!mpPicSerial->CheckDataAvailable())
+	{
+		;
+	}
+	
+
 	while(true)
 	{
-		mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&rxData), sizeof(biotac_tune_data) );
+		mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&rxData), sizeof(biotac_characterize) );
 
-		if( memcmp(&rxData, &stopCondition, sizeof(biotac_tune_data)) != 0 )
+		if( memcmp(&rxData, &stopCondition, sizeof(biotac_characterize)) != 0 )
 		{
-			logger.LogDataBuffer(&rxData, sizeof(biotac_tune_data));
-			plotter.AddDataPoint(rxData.mLoadCell_g);
+			logger.LogDataBuffer(&rxData, sizeof(biotac_characterize));
 			tuneData.push_back(rxData);
 		}
 		else
@@ -426,16 +444,7 @@ void cBioTac::RecordForceTrajectory()
 
 	std::cout << "Results received!" << std::endl << std::endl;
 
-	std::cout << "Load cell\tBioTac PDC\tBioTac PAC\tBioTac TDC\tBioTac TAC\tTimestamp" << std::endl;
-	for( size_t i = 0; i < tuneData.size(); ++i )
-	{
-		std::cout << tuneData[i].mLoadCell_g << "\t\t" << tuneData[i].mData.pdc << "\t\t" << tuneData[i].mData.pac << "\t\t"
-				  << tuneData[i].mData.tdc << "\t\t" << tuneData[i].mData.tac << "\t\t" << tuneData[i].mTimestamp << std::endl;
-	}
-
 	std::cout << std::endl;
-
-
 
 	
 	// Just in case...
@@ -584,6 +593,7 @@ void cBioTac::TrainForceVectorCoefficients()
 	files = nFileUtils::GetFilesInDirectory("./data/force", ".dat");
 	for( std::size_t i = 0; i < files.size(); ++i )
 		files[i].insert(0, "./data/force/");
+	
 	// std::vector<std::string> dataFiles = nFileUtils::GetFilesInDirectory("./data/tdc_electrodes", ".dat");
 	// for( std::size_t i = 0; i < dataFiles.size(); ++i )
 	// {
@@ -592,6 +602,7 @@ void cBioTac::TrainForceVectorCoefficients()
 	// }
 
 	// ffTerms.TestAgainstDataFiles(files, curve);
+	
 	std::ofstream csvFile("./error_temp.csv");
 	std::ofstream errRefFile("./error_ref.csv");
 	std::ofstream tempForceFile("./temp_force.csv");
@@ -632,28 +643,36 @@ void cBioTac::TrainForceVectorCoefficients()
 			avgForce += data[j].mLoadCell_g;
 		}
 
-		std::cout << files[i] << " - Total Error: " << totalError << ",\tAvg Error: " << totalError / data.size() << ",\tAvg T: " << avgTemp / data.size() << std::endl;
-		csvFile << avgTemp / data.size() << ", " << totalError / data.size() << std::endl;
+		avgTemp /= data.size();
+		avgForce /= data.size();
+		double avgError = totalError / data.size();
 
-		errRefFile << avgForce / data.size() << ", " << totalError / data.size() << std::endl;
-
-		tempForceFile << avgTemp / data.size() << ", " << avgForce / data.size() << std::endl;
+		std::cout << "Name: " << files[i]
+				  << "\tAvg TDC: " << avgTemp
+				  << "\tAvg Force: " << avgForce
+				  << "\tAvg Force Error: " << avgError
+				  << "\tRef: " << data[0].mReference_g
+				  << std::endl;
+		
+		csvFile << avgTemp << ", " << totalError / data.size() << std::endl;
+		errRefFile << avgForce << ", " << totalError / data.size() << std::endl;
+		tempForceFile << avgTemp << ", " << avgForce << std::endl;
 
 		if( fabs((avgForce/data.size())-100) < 20 )
 		{
-			tempErr100 << avgTemp / data.size() << ", " << totalError / data.size() << std::endl;
+			tempErr100 << avgTemp << ", " << totalError / data.size() << std::endl;
 		}
 		else if( fabs((avgForce/data.size())-200) < 20 )
 		{
-			tempErr200 << avgTemp / data.size() << ", " << totalError / data.size() << std::endl;
+			tempErr200 << avgTemp << ", " << totalError / data.size() << std::endl;
 		}
 		else if( fabs((avgForce/data.size())-300) < 20 )
 		{
-			tempErr300 << avgTemp / data.size() << ", " << totalError / data.size() << std::endl;
+			tempErr300 << avgTemp << ", " << totalError / data.size() << std::endl;
 		}
 		else if( fabs((avgForce/data.size())-400) < 20 )
 		{
-			tempErr400 << avgTemp / data.size() << ", " << totalError / data.size() << std::endl;
+			tempErr400 << avgTemp << ", " << totalError / data.size() << std::endl;
 		}
 	}
 
@@ -818,16 +837,6 @@ void cBioTac::TestElectrodeCompensators()
 	}
 
 	std::vector<std::string> files;
-	// files.push_back("./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
-	// files.push_back("./data/tdc_electrodes/data_2015_08_04_15_27_33.dat");
-	// files.push_back("./data/tdc_electrodes/data_2015_08_04_16_15_04.dat");
-	// files.push_back("./data/tdc_electrodes/cooling_down_from_high.dat");
-	// files.push_back("./data/tdc_electrodes/heating_up.dat");
-	// files.push_back("./data/tdc_electrodes/high_temp.dat");
-	// files.push_back("./data/tdc_electrodes/zero1.dat");
-	// files.push_back("./data/tdc_electrodes/zero2.dat");
-	// files.push_back("./data/tdc_electrodes/zero3.dat");
-
 	std::string file = nFileUtils::GetFileSelectionInDirectory("./data/tdc_electrodes", ".dat");
 	files.push_back(file);
 			
@@ -876,6 +885,127 @@ void cBioTac::TestForceCurve()
 	}
 			
 	ffTerms.TestAgainstDataFiles(files, curve);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void cBioTac::TrainTaringForceVector()
+{
+	// --- Prepare Compensators --- //
+			
+	std::vector<cElectrodeCompensatorTare> compensators;
+	compensators.clear();
+	for( std::size_t i = 0; i < 19; ++i )
+	{
+		compensators.push_back(cElectrodeCompensatorTare());
+	}
+			
+
+	// --- Train Fit For Force Equation --- //
+			
+	cFunctionFitTare ffTare;
+	std::vector<std::string> files = nFileUtils::GetFilesInDirectory("./data/force", ".dat");
+	for( std::size_t i = 0; i < files.size(); ++i )
+		files[i].insert(0, "./data/force/");
+
+	cBioTacForceCurveTare curve = ffTare.TrainAgainstDataFiles(files);
+
+
+	// --- Test Fit --- //
+
+	ffTare.TestAgainstDataFiles(files, curve);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void cBioTac::FrequencySweep()
+{
+	for( std::size_t freq = 1; freq <= 20; ++freq )
+	{
+		for( std::size_t trial = 1; trial <= 3; ++trial )
+		{
+			std::cout << "Frequency: " << freq << " Hz, Trial: " << trial << std::endl;
+			
+			// --- Preparations --- //
+
+			// Ahead of time we will set up the things to be used during real-time processing.
+			biotac_characterize rxData;
+			biotac_characterize stopCondition;
+			memset(&stopCondition, 0, sizeof(biotac_characterize));
+			std::vector<biotac_characterize> tuneData;
+			std::ostringstream name;
+			name << "new_sinewaves/without_ff/biotac/";
+
+			if( freqs[freqIndex] < 10 )
+				name << "0";
+			name << freqs[freqIndex] << "hz_00" << trial;
+
+			cDataLogger* pLogger = new cDataLogger(name.str());
+
+			std::cout << "Saving to file: " << name.str() << std::endl;
+
+
+			// --- Transmit Waveform --- //
+			
+			int time = 10;
+			int loopRate = 1000;
+
+			mpPicSerial->WriteCommandToPic(nUtils::SEND_FORCE_TRAJECTORY);
+			mpPicSerial->WriteValueToPic<uint16_t>(time);
+
+			double pi = 3.14159265358979323846264338;
+			double samples = time * loopRate;
+			for( double i = 0.0; i < samples; ++i )
+			{
+				double val = 150.0 - 150.0 * cos( i * freq * 2 * pi / loopRate );
+				val += 100.0;  // Won't let it go below 100
+				mpPicSerial->WriteValueToPic<uint16_t>(static_cast<uint16_t>(val));
+			}
+
+			std::cout << "Waveform sent" << std::endl;
+
+			
+			// --- Start The Process --- //
+	
+			mpPicSerial->DiscardIncomingData(0);
+			mpPicSerial->WriteCommandToPic(nUtils::BIOTAC_CAL_TRAJECTORY);
+
+			std::cout << "Waiting for tuning results..." << std::endl;
+
+			// Poll the serial port and wait until data is available before trying to actually read
+			// from it.  Otherwise the read will time out and throw an exception.
+			while(!mpPicSerial->CheckDataAvailable())
+			{
+				;
+			}
+	
+
+			while(true)
+			{
+				mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&rxData), sizeof(biotac_characterize) );
+
+				if( memcmp(&rxData, &stopCondition, sizeof(biotac_characterize)) != 0 )
+				{
+					pLogger->LogDataBuffer(&rxData, sizeof(biotac_characterize));
+					tuneData.push_back(rxData);
+				}
+				else
+				{
+					break;
+				}
+			}
+
+
+			// --- Print Results --- //
+
+			std::cout << "Results received!" << std::endl << std::endl;
+
+			// Just in case...
+			mpPicSerial->DiscardIncomingData(0);
+
+			delete pLogger;
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
