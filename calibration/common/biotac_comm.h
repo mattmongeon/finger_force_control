@@ -47,6 +47,14 @@ typedef struct
 	int32_t mLoadCell_g;
 	int32_t mReference_g;
 } biotac_tune_data;
+
+
+typedef struct
+{
+	uint16_t mReference_g;
+	uint16_t mLoadCell_g;
+} biotac_characterize;
+
 #pragma pack(pop)
 
 
