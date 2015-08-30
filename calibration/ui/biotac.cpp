@@ -936,9 +936,9 @@ void cBioTac::FrequencySweep()
 			std::ostringstream name;
 			name << "new_sinewaves/without_ff/biotac/";
 
-			if( freqs[freqIndex] < 10 )
+			if( freq < 10 )
 				name << "0";
-			name << freqs[freqIndex] << "hz_00" << trial;
+			name << freq << "hz_00" << trial;
 
 			cDataLogger* pLogger = new cDataLogger(name.str());
 
