@@ -3,6 +3,7 @@
 #include "utils.h"
 #include "../common/torque_control_comm.h"
 #include "real_time_plot.h"
+#include "stopwatch.h"
 #include <iostream>
 #include <string>
 
@@ -159,19 +160,25 @@ void cMotor::TestTorqueController()
 
 	// Do this one next.  It is really annoying to create it before sending the force, because it pops up
 	// a window right in the way.
-	cRealTimePlot plotter("Load Cell", "Sample", "Force (g)", "Force (g)", "", "", "", seconds * 200.0, 0.0, 10.0);
+	cRealTimePlot plotter("Load Cell", "Sample", "Force (g)", "Force (g)", "", "", "", 600.0, 0.0, 10.0);
 
 	mpPicSerial->WriteValueToPic(force);
 
 	std::cout << "Waiting for tuning results..." << std::endl;
 
+	// Poll the serial port and wait until data is available before trying to actually read
+	// from it.  Otherwise the read will time out and throw an exception.
+	while(!mpPicSerial->CheckDataAvailable())
+	{
+		;
+	}
+	
 	while(true)
 	{
 		mpPicSerial->ReadFromPic( reinterpret_cast<unsigned char*>(&rxData), sizeof(torque_tune_data) );
 
 		if( memcmp(&rxData, &stopCondition, sizeof(torque_tune_data)) != 0 )
 		{
-			plotter.AddDataPoint(rxData.load_cell_g);
 			tuneData.push_back(rxData);
 		}
 		else
@@ -180,6 +187,18 @@ void cMotor::TestTorqueController()
 		}
 	}
 
+	cStopwatch timer;
+	for( std::size_t i = 0; i < tuneData.size(); ++i )
+	{
+		plotter.AddDataPoint(tuneData[i].load_cell_g);
+		timer.Start();
+		while(timer.GetElapsedTime_ms() < 1)
+		{
+			;
+		}
+		timer.Stop();
+	}
+	
 
 	// --- Print Results --- //
 	
@@ -189,11 +208,8 @@ void cMotor::TestTorqueController()
 	for( size_t i = 0; i < tuneData.size(); ++i )
 	{
 		std::cout << tuneData[i].load_cell_g << "\t\t"
-				  << tuneData[i].error << "\t\t"
 				  << tuneData[i].error_int << "\t\t"
-				  << tuneData[i].pwm << "\t\t"
 				  << tuneData[i].timestamp << "\t\t"
-				  << tuneData[i].loop_exe_time_ms << "\t\t"
 				  << 1.0 / ((tuneData[i].timestamp - prevTimestamp) * 25.0 / 1000000000.0) << "\t\t"
 				  << std::endl;
 
