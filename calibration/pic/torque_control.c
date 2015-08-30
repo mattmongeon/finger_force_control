@@ -13,8 +13,7 @@
 
 // --- Constants --- //
 
-#define MAX_ERROR_INT 10000
-#define LOOP_RATE_HZ 200
+#define LOOP_RATE_HZ 5000
 #define LOOP_TIMER_PRESCALAR 16
 
 #define ZERO_DEADBAND_G 10
@@ -23,24 +22,31 @@
 
 #define MAX_PWM_OFF_LOADCELL 400
 
+#define SAMPLE_RATE_HZ 1000
+
 
 // --- Variables --- //
 
 static volatile int desired_force_g = 0;
 
-static volatile float kp = 0.2;
-static volatile float ki = 2.0;
+static volatile float kp = 0.05; // 0.05;
+static volatile float ki = 0.05; // 0.5;
 
 static int error_int = 0;
 static volatile int saved_load_cell_g = 0;
 
 // Default to 2 seconds.
-static int max_tuning_samples = 2 * LOOP_RATE_HZ;
+static int max_tuning_samples = 3 * SAMPLE_RATE_HZ;
+
+
+static torque_tune_data buffer[SAMPLE_RATE_HZ * 3];
+static uint8_t save_counter = 0;
 
 
 static int get_pwm_from_desired_force(int force_g)
 {
-	return (int)(6.44719 * force_g - 513.421);
+	return 0;
+	/* return (int)(4.9333333 * force_g + 26.66667); */
 }
 
 
@@ -70,11 +76,12 @@ static int torque_control_loop(int current_force_g, torque_tune_data* pTuneData,
 	// will also keep the integral from blowing up.
 	if( !((desired_force_g == 0) && (current_force_g < ZERO_DEADBAND_G)) )
 	{
+		int maxError = 2000/ki;
 		error_int += error;
-		if( error_int > MAX_ERROR_INT )
-			error_int = MAX_ERROR_INT;
-		else if( error_int < -MAX_ERROR_INT )
-			error_int = -MAX_ERROR_INT;
+		if( error_int > maxError )
+			error_int = maxError;
+		else if( error_int < -maxError )
+			error_int = -maxError;
 
 		u_new += (kp*error) + (ki*error_int);
 	}
@@ -118,14 +125,14 @@ static int torque_control_loop(int current_force_g, torque_tune_data* pTuneData,
 
 
 	// --- Send New Command --- //
-	
+
 	motor_pwm_set(u_new);
 	
 	pTuneData->load_cell_g = current_force_g;
-	pTuneData->error = error;
+	/* pTuneData->error = error; */
 	pTuneData->error_int = error_int;
-	pTuneData->pwm = u_new;
-
+	/* pTuneData->pwm = u_new; */
+	
 	return u_new;
 }
 
@@ -166,15 +173,27 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) torque_controller()
 		{
 			// Only do this part if we are specifically tuning torque gains.  Otherwise
 			// the BioTac portion is actually in charge.
-			tune_data.loop_exe_time_ms = end - start;
-			tune_data.loop_exe_time_ms *= 0.000025;	// Put it in ms
+			/* tune_data.loop_exe_time_ms = end - start; */
+			/* tune_data.loop_exe_time_ms *= 0.000025;	// Put it in ms */
 			tune_data.timestamp = start;
 
-			uart1_send_packet( (unsigned char*)(&tune_data), sizeof(torque_tune_data) );
+			if( save_counter % (LOOP_RATE_HZ / SAMPLE_RATE_HZ) == 0 )
+			{
+				/* uart1_send_packet( (unsigned char*)(&tune_data), sizeof(torque_tune_data) ); */
+				memcpy(&(buffer[torqueTuneSamples]), &tune_data, sizeof(torque_tune_data));
+				++torqueTuneSamples;
+			}
+
+			++save_counter;
 			
-			++torqueTuneSamples;
 			if( torqueTuneSamples >= max_tuning_samples )
 			{
+				int i = 0;
+				for( ; i < torqueTuneSamples; ++i )
+				{
+					uart1_send_packet( (unsigned char*)(&(buffer[i])), sizeof(torque_tune_data) );
+				}
+				
 				memset(&tune_data, 0, sizeof(torque_tune_data));
 				uart1_send_packet( (unsigned char*)(&tune_data), sizeof(torque_tune_data) );
 				
@@ -205,10 +224,12 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) torque_controller()
 		motor_pwm_set(0);
 		torqueTuneSamples = 0;
 		error_int = 0;
+		save_counter = 0;
 	
 	default:
 		torqueTuneSamples = 0;
 		error_int = 0;
+		save_counter = 0;
 		break;
 	}
 
@@ -269,7 +290,7 @@ void torque_control_set_time_length(int seconds)
 {
 	__builtin_disable_interrupts();
 
-	max_tuning_samples = seconds * LOOP_RATE_HZ;
+	max_tuning_samples = seconds * SAMPLE_RATE_HZ;
 
 	__builtin_enable_interrupts();
 }
