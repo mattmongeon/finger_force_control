@@ -29,8 +29,8 @@
 
 static volatile int desired_force_g = 0;
 
-static volatile float kp = 0.05; // 0.05;
-static volatile float ki = 0.05; // 0.5;
+static volatile float kp = 0.05;
+static volatile float ki = 0.05;
 
 static int error_int = 0;
 static volatile int saved_load_cell_g = 0;
@@ -45,8 +45,7 @@ static uint8_t save_counter = 0;
 
 static int get_pwm_from_desired_force(int force_g)
 {
-	return 0;
-	/* return (int)(4.9333333 * force_g + 26.66667); */
+	return (int)(4.9333333 * force_g + 26.66667);
 }
 
 

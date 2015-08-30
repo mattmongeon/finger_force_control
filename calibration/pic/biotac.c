@@ -27,6 +27,7 @@
 // Default to 2 seconds.
 static int max_tuning_samples = 2 * LOOP_RATE_HZ;
 
+<<<<<<< HEAD
 static uint16_t force_trajectory_g[10 * LOOP_RATE_HZ];
 static volatile int force_trajectory_index = 0;
 static int num_force_trajectory_samples = 10 * LOOP_RATE_HZ;
@@ -41,6 +42,21 @@ static uint16_t desired_testing_force_g = 0;
 static const int wait_secs_before_force = 3;
 
 static int loop_counter = 0;
+=======
+static int force_trajectory_g[10 * LOOP_RATE_HZ];
+static volatile int force_trajectory_index = 0;
+static int num_force_trajectory_samples = 10 * LOOP_RATE_HZ;
+
+static electrode_compensator compensators[19];
+static float electrode_normals[19][3];
+static float force_terms[3];
+
+static int biotac_force_g = 0;
+
+static int desired_testing_force_g = 0;
+
+static const int wait_secs_before_force = 2;
+>>>>>>> 729c484522a8cd7ad99a2cfba976b662d0b0c046
 
 
 // --- BioTac Sampling Commands --- //
@@ -182,7 +198,11 @@ static void biotac_read_and_tx()
 ////////////////////////////////////////////////////////////////////////////////
 
 // Timer 5 interrupt which is responsible for handling real-time BioTac operations.
+<<<<<<< HEAD
 void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_timer_int()
+=======
+void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_reader_int()
+>>>>>>> 729c484522a8cd7ad99a2cfba976b662d0b0c046
 {
 	static int biotac_tune_samples = 0;
 	
@@ -190,12 +210,16 @@ void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_timer_int()
 	{
 	case BIOTAC_CAL_SINGLE:
 	{
+<<<<<<< HEAD
 		++loop_counter;
 		loop_counter %= (LOOP_RATE_HZ  / LOW_SPEED_RATE_HZ);
 		if( loop_counter != 0 )
 			break;
 		
 		if( biotac_tune_samples >= wait_secs_before_force * LOW_SPEED_RATE_HZ)
+=======
+		if( biotac_tune_samples >= wait_secs_before_force * LOOP_RATE_HZ )
+>>>>>>> 729c484522a8cd7ad99a2cfba976b662d0b0c046
 			torque_control_set_desired_force(desired_testing_force_g);
 		else
 			torque_control_set_desired_force(0);
@@ -220,6 +244,7 @@ void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_timer_int()
 		break;
 	}
 
+<<<<<<< HEAD
 	case BIOTAC_CAL_TRAJECTORY:
 	{
 		if( biotac_tune_samples < (LOOP_RATE_HZ * wait_secs_before_force) )
@@ -254,6 +279,150 @@ void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_timer_int()
 			biotac_characterize data;
 			memset(&data, 0x00, sizeof(biotac_characterize));
 			uart1_send_packet((unsigned char*)(&data), sizeof(biotac_characterize));
+=======
+	case BIOTAC_TRACK:
+	{
+		static biotac_tune_data data;
+
+		if( biotac_tune_samples >= LOOP_RATE_HZ )
+			torque_control_set_desired_force(desired_testing_force_g);
+		else
+			torque_control_set_desired_force(0);
+		
+		unsigned int start = _CP0_GET_COUNT();
+		// Read from the BioTac
+		read_biotac(&(data.mData));
+		
+		// Run through the compensators
+		float e1 = COMP_ELECTRODE(compensators[0], data.mData.e1, data.mData.tdc)
+		float e2 = COMP_ELECTRODE(compensators[1], data.mData.e2, data.mData.tdc)
+		float e3 = COMP_ELECTRODE(compensators[2], data.mData.e3, data.mData.tdc)
+		float e4 = COMP_ELECTRODE(compensators[3], data.mData.e4, data.mData.tdc)
+		float e5 = COMP_ELECTRODE(compensators[4], data.mData.e5, data.mData.tdc)
+		float e6 = COMP_ELECTRODE(compensators[5], data.mData.e6, data.mData.tdc)
+		float e7 = COMP_ELECTRODE(compensators[6], data.mData.e7, data.mData.tdc)
+		float e8 = COMP_ELECTRODE(compensators[7], data.mData.e8, data.mData.tdc)
+		float e9 = COMP_ELECTRODE(compensators[8], data.mData.e9, data.mData.tdc)
+		float e10 = COMP_ELECTRODE(compensators[9], data.mData.e10, data.mData.tdc)
+		float e11 = COMP_ELECTRODE(compensators[10], data.mData.e11, data.mData.tdc)
+		float e12 = COMP_ELECTRODE(compensators[11], data.mData.e12, data.mData.tdc)
+		float e13 = COMP_ELECTRODE(compensators[12], data.mData.e13, data.mData.tdc)
+		float e14 = COMP_ELECTRODE(compensators[13], data.mData.e14, data.mData.tdc)
+		float e15 = COMP_ELECTRODE(compensators[14], data.mData.e15, data.mData.tdc)
+		float e16 = COMP_ELECTRODE(compensators[15], data.mData.e16, data.mData.tdc)
+		float e17 = COMP_ELECTRODE(compensators[16], data.mData.e17, data.mData.tdc)
+		float e18 = COMP_ELECTRODE(compensators[17], data.mData.e18, data.mData.tdc)
+		float e19 = COMP_ELECTRODE(compensators[18], data.mData.e19, data.mData.tdc)
+		
+		// Use the compensated electrodes in the force equation
+		float x = e1 * electrode_normals[0][0] +
+			e2 * electrode_normals[1][0] + 
+			e3 * electrode_normals[2][0] + 
+			e4 * electrode_normals[3][0] + 
+			e5 * electrode_normals[4][0] + 
+			e6 * electrode_normals[5][0] + 
+			e7 * electrode_normals[6][0] + 
+			e8 * electrode_normals[7][0] + 
+			e9 * electrode_normals[8][0] + 
+			e10 * electrode_normals[9][0] + 
+			e11 * electrode_normals[10][0] + 
+			e12 * electrode_normals[11][0] + 
+			e13 * electrode_normals[12][0] + 
+			e14 * electrode_normals[13][0] + 
+			e15 * electrode_normals[14][0] + 
+			e16 * electrode_normals[15][0] + 
+			e17 * electrode_normals[16][0] + 
+			e18 * electrode_normals[17][0] + 
+			e19 * electrode_normals[18][0];
+		x *= force_terms[0];
+
+		float y = e1 * electrode_normals[0][1] +
+			e2 * electrode_normals[1][1] + 
+			e3 * electrode_normals[2][1] + 
+			e4 * electrode_normals[3][1] + 
+			e5 * electrode_normals[4][1] + 
+			e6 * electrode_normals[5][1] + 
+			e7 * electrode_normals[6][1] + 
+			e8 * electrode_normals[7][1] + 
+			e9 * electrode_normals[8][1] + 
+			e10 * electrode_normals[9][1] + 
+			e11 * electrode_normals[10][1] + 
+			e12 * electrode_normals[11][1] + 
+			e13 * electrode_normals[12][1] + 
+			e14 * electrode_normals[13][1] + 
+			e15 * electrode_normals[14][1] + 
+			e16 * electrode_normals[15][1] + 
+			e17 * electrode_normals[16][1] + 
+			e18 * electrode_normals[17][1] + 
+			e19 * electrode_normals[18][1];
+		y *= force_terms[1];
+
+		float z = e1 * electrode_normals[0][2] +
+			e2 * electrode_normals[1][2] + 
+			e3 * electrode_normals[2][2] + 
+			e4 * electrode_normals[3][2] + 
+			e5 * electrode_normals[4][2] + 
+			e6 * electrode_normals[5][2] + 
+			e7 * electrode_normals[6][2] + 
+			e8 * electrode_normals[7][2] + 
+			e9 * electrode_normals[8][2] + 
+			e10 * electrode_normals[9][2] + 
+			e11 * electrode_normals[10][2] + 
+			e12 * electrode_normals[11][2] + 
+			e13 * electrode_normals[12][2] + 
+			e14 * electrode_normals[13][2] + 
+			e15 * electrode_normals[14][2] + 
+			e16 * electrode_normals[15][2] + 
+			e17 * electrode_normals[16][2] + 
+			e18 * electrode_normals[17][2] + 
+			e19 * electrode_normals[18][2];
+		z *= force_terms[2];
+		
+		// Set saved force value equal to magnitude of force vector
+		biotac_force_g = sqrt(x*x + y*y + z*z);
+
+		// Fill in and transmit data
+		data.mTimestamp = _CP0_GET_COUNT();
+		// HACK:  SEE FUNCTION COMMENTS IN TORQUE_CONTROL.H
+		data.mLoadCell_g = torque_control_get_load_cell_g();
+		data.mReference_g = torque_control_get_desired_force_g();
+
+		uart1_send_packet((unsigned char*)(&data), sizeof(biotac_tune_data));
+
+		uart1_send_packet((unsigned char*)(&biotac_force_g), sizeof(biotac_force_g));
+		
+		++biotac_tune_samples;
+		if( biotac_tune_samples >= max_tuning_samples )
+		{
+			// Signal end of data stream to the UI.
+			biotac_tune_data data;
+			memset(&data, 0x00, sizeof(biotac_tune_data));
+			uart1_send_packet((unsigned char*)(&data), sizeof(biotac_tune_data));
+
+			biotac_tune_samples = 0;
+			
+			system_set_state(IDLE);
+		}
+		
+		break;
+	}
+
+	case BIOTAC_CAL_TRAJECTORY:
+	{
+		torque_control_set_desired_force( force_trajectory_g[force_trajectory_index] );
+		
+		// Read a single BioTac reading and associated load cell reading
+		// and transmit it.
+		biotac_read_and_tx();
+
+		++force_trajectory_index;
+		if( force_trajectory_index >= num_force_trajectory_samples )
+		{
+			// Signal end of data stream to the UI.
+			biotac_tune_data data;
+			memset(&data, 0x00, sizeof(biotac_tune_data));
+			uart1_send_packet((unsigned char*)(&data), sizeof(biotac_tune_data));
+>>>>>>> 729c484522a8cd7ad99a2cfba976b662d0b0c046
 
 			biotac_tune_samples = 0;
 			
@@ -265,18 +434,24 @@ void __ISR(_TIMER_5_VECTOR, IPL4SOFT) biotac_timer_int()
 	
 	case BIOTAC_CONTINUOUS_READ:
 	{
+<<<<<<< HEAD
 		++loop_counter;
 		loop_counter %= (LOOP_RATE_HZ  / LOW_SPEED_RATE_HZ);
 		if( loop_counter != 0 )
 			break;
 		
+=======
+>>>>>>> 729c484522a8cd7ad99a2cfba976b662d0b0c046
 		biotac_read_and_tx();
 		
 		break;
 	}
 
 	default:
+<<<<<<< HEAD
 		cal_traj_buffer_index = 0;
+=======
+>>>>>>> 729c484522a8cd7ad99a2cfba976b662d0b0c046
 		biotac_tune_samples = 0;
 		force_trajectory_index = 0;
 		break;
@@ -296,6 +471,188 @@ void biotac_init()
 	spi_init();
 	biotac_configure();
 
+<<<<<<< HEAD
+=======
+
+	// --- Initialize Compensators --- //
+
+	compensators[0].a = 398.615;
+	compensators[0].b = -1232.17;
+	compensators[0].c = -0.00152345;
+	compensators[0].d = 2818.41;
+
+	compensators[1].a = 526.55;
+	compensators[1].b = -764.712;
+	compensators[1].c = -0.0023338;
+	compensators[1].d = 3000.48;
+
+	compensators[2].a = 529.63;
+	compensators[2].b = -766.768;
+	compensators[2].c = -0.00268468;
+	compensators[2].d = 3001.55;
+
+	compensators[3].a = 670.453;
+	compensators[3].b = -752.5;
+	compensators[3].c = -0.00281257;
+	compensators[3].d = 2729.95;
+
+	compensators[4].a = 533.689;
+	compensators[4].b = -791.039;
+	compensators[4].c = -0.00269191;
+	compensators[4].d = 2995.86;
+
+	compensators[5].a = 691.525;
+	compensators[5].b = -767.93;
+	compensators[5].c = -0.00251413;
+	compensators[5].d = 2733.18;
+
+	compensators[6].a = 705.889;
+	compensators[6].b = -818.915;
+	compensators[6].c = -0.00142316;
+	compensators[6].d = 2586.5;
+	
+	compensators[7].a = 676.765;
+	compensators[7].b = -775.942;
+	compensators[7].c = -0.00164395;
+	compensators[7].d = 2679.84;
+
+	compensators[8].a = 686.158;
+	compensators[8].b = -748.538;
+	compensators[8].c = -0.0016712;
+	compensators[8].d = 2679.12;
+
+	compensators[9].a = 627.525;
+	compensators[9].b = -762.805;
+	compensators[9].c = -0.001872;
+	compensators[9].d = 2788.79;
+
+	compensators[10].a = 476.722;
+	compensators[10].b = -1091.05;
+	compensators[10].c = -0.00152282;
+	compensators[10].d = 2681.74;
+
+	compensators[11].a = 629.794;
+	compensators[11].b = -677.452;
+	compensators[11].c = -0.00237826;
+	compensators[11].d = 2867.54;
+
+	compensators[12].a = 633.253;
+	compensators[12].b = -694.829;
+	compensators[12].c = -0.00271722;
+	compensators[12].d = 2864.8;
+
+	compensators[13].a = 468.709;
+	compensators[13].b = -871.527;
+	compensators[13].c = -0.00292024;
+	compensators[13].d = 2864.48;
+
+	compensators[14].a = 627.331;
+	compensators[14].b = -730.641;
+	compensators[14].c = -0.00278862;
+	compensators[14].d = 2853.57;
+
+	compensators[15].a = 493.346;
+	compensators[15].b = -883.858;
+	compensators[15].c = -0.00269728;
+	compensators[15].d = 2865.7;
+
+	compensators[16].a = 664.641;
+	compensators[16].b = -682.099;
+	compensators[16].c = -0.00218528;
+	compensators[16].d = 2810.61;
+
+	compensators[17].a = 695.038;
+	compensators[17].b = -675.955;
+	compensators[17].c = -0.00257467;
+	compensators[17].d = 2825.06;
+
+	compensators[18].a = 669.269;
+	compensators[18].b = -702.581;
+	compensators[18].c = -0.0025263;
+	compensators[18].d = 2807.38;
+
+
+	electrode_normals[0][0] = 0.196;
+	electrode_normals[0][1] = -0.953;
+	electrode_normals[0][2] = -0.22;
+
+	electrode_normals[1][0] = 0.0;
+	electrode_normals[1][1] = -0.692;
+	electrode_normals[1][2] = -0.722;
+
+	electrode_normals[2][0] = 0.0;
+	electrode_normals[2][1] = -0.692;
+	electrode_normals[2][2] = -0.722;
+	
+	electrode_normals[3][0] = 0.0;
+	electrode_normals[3][1] = -0.976;
+	electrode_normals[3][2] = -0.22;
+
+	electrode_normals[4][0] = 0.0;
+	electrode_normals[4][1] = -0.692;
+	electrode_normals[4][2] = -0.722;
+
+	electrode_normals[5][0] = 0.0;
+	electrode_normals[5][1] = -0.976;
+	electrode_normals[5][2] = -0.22;
+
+	electrode_normals[6][0] = 0.5;
+	electrode_normals[6][1] = 0.0;
+	electrode_normals[6][2] = -0.866;
+
+	electrode_normals[7][0] = 0.5;
+	electrode_normals[7][1] = 0.0;
+	electrode_normals[7][2] = -0.866;
+
+	electrode_normals[8][0] = 0.5;
+	electrode_normals[8][1] = 0.0;
+	electrode_normals[8][2] = -0.866;
+
+	electrode_normals[9][0] = 0.5;
+	electrode_normals[9][1] = 0.0;
+	electrode_normals[9][2] = -0.866;
+
+	electrode_normals[10][0] = 0.196;
+	electrode_normals[10][1] = 0.956;
+	electrode_normals[10][2] = -0.22;
+
+	electrode_normals[11][0] = 0.0;
+	electrode_normals[11][1] = 0.692;
+	electrode_normals[11][2] = -0.722;
+
+	electrode_normals[12][0] = 0.0;
+	electrode_normals[12][1] = 0.692;
+	electrode_normals[12][2] = -0.722;
+
+	electrode_normals[13][0] = 0.0;
+	electrode_normals[13][1] = 0.976;
+	electrode_normals[13][2] = -0.22;
+
+	electrode_normals[14][0] = 0.0;
+	electrode_normals[14][1] = 0.692;
+	electrode_normals[14][2] = -0.722;
+
+	electrode_normals[15][0] = 0.0;
+	electrode_normals[15][1] = 0.976;
+	electrode_normals[15][2] = -0.22;
+
+	electrode_normals[16][0] = 0.0;
+	electrode_normals[16][1] = 0.0;
+	electrode_normals[16][2] = -1.0;
+
+	electrode_normals[17][0] = 0.0;
+	electrode_normals[17][1] = 0.0;
+	electrode_normals[17][2] = -1.0;
+
+	electrode_normals[18][0] = 0.0;
+	electrode_normals[18][1] = 0.0;
+	electrode_normals[18][2] = -1.0;
+
+	force_terms[0] = 0.982401;
+	force_terms[1] = 0.401165;
+	force_terms[2] = -0.0226676;
+	
+>>>>>>> 729c484522a8cd7ad99a2cfba976b662d0b0c046
 	
 	// --- Set Up Timer 3 Interrupt --- //
 
@@ -361,11 +718,19 @@ void biotac_set_time_length(int seconds)
 
 unsigned int biotac_receive_force_trajectory()
 {
+<<<<<<< HEAD
 	uart1_read_packet( (unsigned char*)(&num_force_trajectory_samples), sizeof(uint16_t) );
 	num_force_trajectory_samples *= LOOP_RATE_HZ;  // The GUI sends us time in seconds...
 	
 	uart1_read_packet( (unsigned char*)(&force_trajectory_g[0]),
 					   sizeof(uint16_t) * num_force_trajectory_samples );
+=======
+	uart1_read_packet( (unsigned char*)(&num_force_trajectory_samples), sizeof(int) );
+	num_force_trajectory_samples *= LOOP_RATE_HZ;
+
+	uart1_read_packet( (unsigned char*)(&force_trajectory_g[0]),
+					   sizeof(int) * num_force_trajectory_samples );
+>>>>>>> 729c484522a8cd7ad99a2cfba976b662d0b0c046
 
 	return num_force_trajectory_samples;
 }

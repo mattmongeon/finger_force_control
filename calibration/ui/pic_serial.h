@@ -106,6 +106,9 @@ public:
 	void DiscardIncomingData(int wait_ms=500) const;
 
 
+	// Peeks the serial line to see if any data is ready to be read.
+	//
+	// Return - True if data is available to be read from the serial line.
 	bool CheckDataAvailable() const;
 
 
