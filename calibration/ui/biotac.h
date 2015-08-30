@@ -73,6 +73,12 @@ private:
 
 	void TestForceCurve();
 
+
+	void TrainTaringForceVector();
+
+
+	void FrequencySweep();
+
 	
 	//--------------------------------------------------------------------------//
 	//---------------------------  HELPER FUNCTIONS  ---------------------------//
