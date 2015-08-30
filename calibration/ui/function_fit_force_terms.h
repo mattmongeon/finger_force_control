@@ -2,7 +2,6 @@
 #define INCLUDED_FUNCTION_FIT_FORCE_TERMS_H
 
 
-#include "function_fit_nls.h"
 #include "electrode_tdc_compensator.h"
 #include "biotac_force_curve.h"
 #include <cmath>
