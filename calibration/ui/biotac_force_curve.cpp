@@ -303,7 +303,7 @@ void cBioTacForceCurve::InitMembers( const std::vector<cElectrodeTdcCompensator>
 									 double sx, double sy, double sz )
 {
 	mElectrodeNormals[0][0] = 0.196;
-	mElectrodeNormals[0][1] = -0.953;
+	mElectrodeNormals[0][1] = -0.956;
 	mElectrodeNormals[0][2] = -0.22;
 
 	mElectrodeNormals[1][0] = 0.0;
