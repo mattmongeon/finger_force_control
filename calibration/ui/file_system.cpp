@@ -88,6 +88,8 @@ void cFileSystem::PlotFile()
 
 void cFileSystem::EditFiles()
 {
+	// For now, this function is intended to be edited as needed.
+	
 	cDataFileEditor("./data/tdc_electrodes/full_heat_up.dat", "./data/tdc_electrodes/full_heat_up.dat");
 	// cDataFileEditor("./data/tdc_electrodes/original/cooling_down_from_high.dat", "./data/tdc_electrodes/cooling_down_from_high.dat");
 	// cDataFileEditor("./data/tdc_electrodes/original/data_2015_07_30_09_44_43.dat", "./data/tdc_electrodes/data_2015_07_30_09_44_43.dat");
