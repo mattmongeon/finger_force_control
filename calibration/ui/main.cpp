@@ -284,6 +284,7 @@ int main(int argc, char** argv)
 			std::cout << "Enter maximum force (g): " << std::flush;
 			int force = 0;
 			std::cin >> force;
+			force -= 100;  // This will make more sense below when we won't let it go below 100g.
 
 			std::cout << "Enter time length (s, max 10): " << std::flush;
 			int time = 0;
@@ -294,36 +295,39 @@ int main(int argc, char** argv)
 			std::cin >> freq;
 
 			picSerial.WriteCommandToPic(nUtils::SEND_FORCE_TRAJECTORY);
-			picSerial.WriteValueToPic<int>(time);
-			
+			picSerial.WriteValueToPic<uint16_t>(time);
+
+			int loopRate = 1000;
+
 			switch(selection)
 			{
 			case '1':
 			{
 				double pi = 3.14159265358979323846264338;
-				double samples = time * 100.0;
+				double samples = time * loopRate;
 				for( double i = 0.0; i < samples; ++i )
 				{
-					double val = static_cast<double>(force/2) - static_cast<double>(force/2) * cos( i * freq * 2 * pi / 100.0 );
-					picSerial.WriteValueToPic<int>(static_cast<int>(val));
+					double val = static_cast<double>(force/2) - static_cast<double>(force/2) * cos( i * freq * 2 * pi / loopRate );
+					val += 100.0;  // Won't let it go below 100
+					picSerial.WriteValueToPic<uint16_t>(static_cast<uint16_t>(val));
 				}
 				break;
 			}
 
 			case '2':
 			{
-				int samples = time * 100.0;
-				int halfPeriod = 50.0 / freq;
+				int samples = time * loopRate;
+				int halfPeriod = (loopRate/2) / freq;
 				while( samples > 0 )
 				{
 					for( int i = 0; (i < halfPeriod) && (samples > 0); ++i, --samples )
 					{
-						picSerial.WriteValueToPic<int>(force);
+						picSerial.WriteValueToPic<uint16_t>(400);
 					}
 
 					for( int i = 0; (i < halfPeriod) && (samples > 0); ++i, --samples )
 					{
-						picSerial.WriteValueToPic<int>(0);
+						picSerial.WriteValueToPic<uint16_t>(100);
 					}
 				}
 				
