@@ -106,6 +106,9 @@ public:
 	void DiscardIncomingData(int wait_ms=500) const;
 
 
+	bool CheckDataAvailable() const;
+
+
 private:	
 
 	//--------------------------------------------------------------------------//
